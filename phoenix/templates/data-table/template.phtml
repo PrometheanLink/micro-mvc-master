@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($config['title'] ?? 'Data Table') ?> - PHOENIX</title>
+
+    <!-- PHOENIX Core -->
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <link rel="stylesheet" href="/phoenix/templates/data-table/template.css">
+
+    <?php if (!empty($slots['css'])): ?>
+    <style><?= $slots['css'] ?></style>
+    <?php endif; ?>
+</head>
+<body class="phoenix-page phoenix-data-table theme-<?= htmlspecialchars($config['theme'] ?? 'dark') ?>">
+
+    <!-- Header Slot -->
+    <?php if (!empty($slots['header'])): ?>
+    <header class="dt-header">
+        <?= $slots['header'] ?>
+    </header>
+    <?php else: ?>
+    <header class="dt-header">
+        <div class="dt-header-content">
+            <h1 class="dt-title"><?= htmlspecialchars($config['title'] ?? 'Data Table') ?></h1>
+            <div class="dt-header-actions">
+                <button class="phoenix-btn phoenix-btn-primary" id="btn-create">
+                    <span class="btn-icon">+</span>
+                    <span>Add New</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <?php endif; ?>
+
+    <div class="dt-layout <?= ($config['sidebar_visible'] ?? false) ? 'has-sidebar' : '' ?>">
+
+        <!-- Main Content -->
+        <main class="dt-main">
+
+            <!-- Toolbar Slot -->
+            <?php if (!empty($slots['toolbar'])): ?>
+            <div class="dt-toolbar">
+                <?= $slots['toolbar'] ?>
+            </div>
+            <?php elseif ($config['enable_search'] ?? true || $config['enable_filters'] ?? true): ?>
+            <div class="dt-toolbar">
+                <?php if ($config['enable_search'] ?? true): ?>
+                <div class="dt-search">
+                    <input type="text" class="dt-search-input" placeholder="Search..." id="table-search">
+                    <span class="dt-search-icon">🔍</span>
+                </div>
+                <?php endif; ?>
+
+                <?php if ($config['enable_filters'] ?? true): ?>
+                <div class="dt-filters">
+                    <button class="phoenix-btn phoenix-btn-ghost" id="btn-filters">
+                        <span>⚙️</span> Filters
+                    </button>
+                </div>
+                <?php endif; ?>
+
+                <div class="dt-toolbar-spacer"></div>
+
+                <?php if ($config['enable_bulk_actions'] ?? true): ?>
+                <div class="dt-bulk-actions" id="bulk-actions" style="display: none;">
+                    <span class="bulk-count"><span id="selected-count">0</span> selected</span>
+                    <button class="phoenix-btn phoenix-btn-ghost">Edit</button>
+                    <button class="phoenix-btn phoenix-btn-danger">Delete</button>
+                </div>
+                <?php endif; ?>
+
+                <?php if ($config['enable_export'] ?? true): ?>
+                <div class="dt-export">
+                    <button class="phoenix-btn phoenix-btn-ghost" id="btn-export">
+                        📥 Export
+                    </button>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <!-- Table Slot (Required) -->
+            <div class="dt-table-container phoenix-card">
+                <?php if (!empty($slots['table'])): ?>
+                    <?= $slots['table'] ?>
+                <?php else: ?>
+                <div class="dt-empty-state">
+                    <span class="empty-icon">📊</span>
+                    <h3>No Table Configured</h3>
+                    <p>Add a data-table widget to the table slot</p>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Footer Slot -->
+            <?php if (!empty($slots['footer'])): ?>
+            <footer class="dt-footer">
+                <?= $slots['footer'] ?>
+            </footer>
+            <?php else: ?>
+            <footer class="dt-footer">
+                <div class="dt-summary">
+                    Showing <span id="showing-start">1</span>-<span id="showing-end">25</span>
+                    of <span id="total-rows">0</span> entries
+                </div>
+                <div class="dt-pagination">
+                    <button class="phoenix-btn phoenix-btn-ghost" id="prev-page" disabled>← Previous</button>
+                    <div class="dt-page-numbers" id="page-numbers"></div>
+                    <button class="phoenix-btn phoenix-btn-ghost" id="next-page">Next →</button>
+                </div>
+                <div class="dt-per-page">
+                    <label>Show:</label>
+                    <select id="rows-per-page">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </footer>
+            <?php endif; ?>
+
+        </main>
+
+        <!-- Sidebar Slot -->
+        <?php if ($config['sidebar_visible'] ?? false): ?>
+        <aside class="dt-sidebar phoenix-card">
+            <?php if (!empty($slots['sidebar'])): ?>
+                <?= $slots['sidebar'] ?>
+            <?php else: ?>
+            <div class="dt-sidebar-placeholder">
+                <h4>Details Panel</h4>
+                <p>Select a row to view details</p>
+            </div>
+            <?php endif; ?>
+        </aside>
+        <?php endif; ?>
+
+    </div>
+
+    <!-- Modal Slot -->
+    <?php if (!empty($slots['modal'])): ?>
+    <div class="dt-modals">
+        <?= $slots['modal'] ?>
+    </div>
+    <?php endif; ?>
+
+    <!-- PHOENIX Core JS -->
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script src="/phoenix/templates/data-table/template.js"></script>
+
+    <?php if (!empty($slots['js'])): ?>
+    <script><?= $slots['js'] ?></script>
+    <?php endif; ?>
+
+</body>
+</html>

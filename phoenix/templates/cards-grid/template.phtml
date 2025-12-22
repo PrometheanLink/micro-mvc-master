@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($config['title'] ?? 'Cards') ?> - PHOENIX</title>
+
+    <!-- PHOENIX Core -->
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <link rel="stylesheet" href="/phoenix/templates/cards-grid/template.css">
+
+    <?php if (!empty($slots['css'])): ?>
+    <style><?= $slots['css'] ?></style>
+    <?php endif; ?>
+</head>
+<body class="phoenix-page phoenix-cards-grid theme-<?= htmlspecialchars($config['theme'] ?? 'dark') ?>">
+
+    <!-- Particles Background -->
+    <?php if ($config['show_particles'] ?? true): ?>
+    <div class="particles-container" id="particles"></div>
+    <?php endif; ?>
+
+    <!-- Grid Background -->
+    <div class="grid-background"></div>
+
+    <!-- Header Slot -->
+    <?php if (!empty($slots['header'])): ?>
+    <header class="cards-header">
+        <?= $slots['header'] ?>
+    </header>
+    <?php else: ?>
+    <header class="cards-header">
+        <div class="cards-header-content">
+            <h1 class="cards-title"><?= htmlspecialchars($config['title'] ?? 'Cards') ?></h1>
+            <div class="cards-header-actions">
+                <button class="phoenix-btn phoenix-btn-primary" id="btn-add">
+                    <span>+ Add New</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <?php endif; ?>
+
+    <div class="cards-layout <?= ($config['sidebar_visible'] ?? false) ? 'has-sidebar' : '' ?>">
+
+        <!-- Sidebar Slot -->
+        <?php if ($config['sidebar_visible'] ?? false): ?>
+        <aside class="cards-sidebar phoenix-card">
+            <?php if (!empty($slots['sidebar'])): ?>
+                <?= $slots['sidebar'] ?>
+            <?php else: ?>
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">Categories</h4>
+                <ul class="category-list">
+                    <li class="category-item active">
+                        <span>All Items</span>
+                        <span class="category-count">24</span>
+                    </li>
+                    <li class="category-item">
+                        <span>Featured</span>
+                        <span class="category-count">8</span>
+                    </li>
+                    <li class="category-item">
+                        <span>Recent</span>
+                        <span class="category-count">12</span>
+                    </li>
+                </ul>
+            </div>
+            <?php endif; ?>
+        </aside>
+        <?php endif; ?>
+
+        <!-- Main Content -->
+        <main class="cards-main">
+
+            <!-- Toolbar Slot -->
+            <?php if (!empty($slots['toolbar'])): ?>
+            <div class="cards-toolbar">
+                <?= $slots['toolbar'] ?>
+            </div>
+            <?php else: ?>
+            <div class="cards-toolbar">
+                <?php if ($config['enable_search'] ?? true): ?>
+                <div class="cards-search">
+                    <input type="text" class="cards-search-input" placeholder="Search cards..." id="cards-search">
+                    <span class="cards-search-icon">🔍</span>
+                </div>
+                <?php endif; ?>
+
+                <div class="cards-toolbar-spacer"></div>
+
+                <?php if ($config['enable_sort'] ?? true): ?>
+                <div class="cards-sort">
+                    <select id="cards-sort" class="cards-sort-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                    </select>
+                </div>
+                <?php endif; ?>
+
+                <div class="cards-view-toggle">
+                    <button class="view-btn active" data-view="grid" title="Grid View">▦</button>
+                    <button class="view-btn" data-view="list" title="List View">☰</button>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Cards Container -->
+            <div
+                class="cards-container layout-<?= htmlspecialchars($config['layout_mode'] ?? 'grid') ?> size-<?= htmlspecialchars($config['card_size'] ?? 'medium') ?>"
+                id="cards-container"
+                style="--columns: <?= intval($config['columns'] ?? 4) ?>"
+            >
+                <?php if (!empty($slots['cards'])): ?>
+                    <?= $slots['cards'] ?>
+                <?php else: ?>
+                <div class="cards-empty-state">
+                    <span class="empty-icon">📦</span>
+                    <h3>No Cards Yet</h3>
+                    <p>Add cards to the cards slot to display them here</p>
+                    <button class="phoenix-btn phoenix-btn-primary">Add First Card</button>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="cards-loading" id="cards-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <span>Loading more...</span>
+            </div>
+
+            <!-- Footer Slot -->
+            <?php if (!empty($slots['footer'])): ?>
+            <footer class="cards-footer">
+                <?= $slots['footer'] ?>
+            </footer>
+            <?php elseif (!($config['infinite_scroll'] ?? false)): ?>
+            <footer class="cards-footer">
+                <div class="cards-pagination">
+                    <button class="phoenix-btn phoenix-btn-ghost" id="prev-page" disabled>← Previous</button>
+                    <div class="cards-page-info">
+                        Page <span id="current-page">1</span> of <span id="total-pages">1</span>
+                    </div>
+                    <button class="phoenix-btn phoenix-btn-ghost" id="next-page">Next →</button>
+                </div>
+            </footer>
+            <?php endif; ?>
+
+        </main>
+
+    </div>
+
+    <!-- PHOENIX Core JS -->
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script src="/phoenix/templates/cards-grid/template.js"></script>
+
+    <?php if (!empty($slots['js'])): ?>
+    <script><?= $slots['js'] ?></script>
+    <?php endif; ?>
+
+</body>
+</html>

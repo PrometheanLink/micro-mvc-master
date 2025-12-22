@@ -1,0 +1,112 @@
+{
+  "id": "cards-grid",
+  "name": "Cards Grid",
+  "description": "Responsive grid of cards for displaying collections, products, or content",
+  "category": "display",
+  "version": "1.0.0",
+  "author": "PHOENIX",
+
+  "slots": {
+    "header": {
+      "description": "Page header with title and actions",
+      "accepts": ["page-header", "breadcrumb"],
+      "max": 1
+    },
+    "toolbar": {
+      "description": "Filter bar, search, and view controls",
+      "accepts": ["search-box", "filter-dropdown", "view-toggle", "sort-dropdown"],
+      "max": 1
+    },
+    "cards": {
+      "description": "Card items to display in grid",
+      "accepts": ["info-card", "product-card", "content-card", "image-card", "stats-card"],
+      "max": 100
+    },
+    "sidebar": {
+      "description": "Optional sidebar for filters or categories",
+      "accepts": ["filter-panel", "category-tree", "tag-cloud"],
+      "max": 3
+    },
+    "footer": {
+      "description": "Pagination or load more",
+      "accepts": ["pagination", "load-more"],
+      "max": 1
+    }
+  },
+
+  "layout": {
+    "type": "grid",
+    "columns": "auto-fill",
+    "minWidth": "280px",
+    "gap": "var(--phoenix-gap)"
+  },
+
+  "features": {
+    "particles": true,
+    "glassmorphism": true,
+    "grid_background": true,
+    "infinite_scroll": true,
+    "masonry": false,
+    "drag_reorder": false
+  },
+
+  "themes": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+
+  "config": {
+    "title": {
+      "type": "string",
+      "default": "Cards",
+      "description": "Page title"
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+      "default": "dark"
+    },
+    "columns": {
+      "type": "number",
+      "default": 4,
+      "min": 1,
+      "max": 6,
+      "description": "Number of columns (auto-adjusts on smaller screens)"
+    },
+    "card_size": {
+      "type": "string",
+      "enum": ["small", "medium", "large"],
+      "default": "medium"
+    },
+    "layout_mode": {
+      "type": "string",
+      "enum": ["grid", "masonry", "list"],
+      "default": "grid"
+    },
+    "sidebar_visible": {
+      "type": "boolean",
+      "default": false
+    },
+    "enable_search": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_filters": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_sort": {
+      "type": "boolean",
+      "default": true
+    },
+    "infinite_scroll": {
+      "type": "boolean",
+      "default": false
+    },
+    "items_per_page": {
+      "type": "number",
+      "default": 12
+    },
+    "show_particles": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

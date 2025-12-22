@@ -1,0 +1,98 @@
+{
+  "id": "data-table",
+  "name": "Data Table View",
+  "description": "Full-page tabular data with CRUD operations, filters, and actions",
+  "category": "data",
+  "version": "1.0.0",
+  "author": "PHOENIX",
+
+  "slots": {
+    "header": {
+      "description": "Page header with title and global actions",
+      "accepts": ["page-header", "breadcrumb"],
+      "max": 1
+    },
+    "toolbar": {
+      "description": "Filter bar, search, and table controls",
+      "accepts": ["search-box", "filter-dropdown", "button-group", "date-range"],
+      "max": 1
+    },
+    "table": {
+      "description": "Main data table",
+      "accepts": ["data-table"],
+      "max": 1,
+      "required": true
+    },
+    "sidebar": {
+      "description": "Optional sidebar for detail view or filters",
+      "accepts": ["*"],
+      "max": 5
+    },
+    "modal": {
+      "description": "Modal dialogs for create/edit/delete",
+      "accepts": ["form-modal", "confirm-modal", "detail-modal"],
+      "max": 3
+    },
+    "footer": {
+      "description": "Pagination and summary",
+      "accepts": ["pagination", "table-summary"],
+      "max": 2
+    }
+  },
+
+  "layout": {
+    "type": "split",
+    "main": "85%",
+    "sidebar": "15%"
+  },
+
+  "features": {
+    "particles": false,
+    "glassmorphism": true,
+    "grid_background": false,
+    "crud": true,
+    "bulk_actions": true,
+    "export": true,
+    "print": true
+  },
+
+  "themes": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+
+  "config": {
+    "title": {
+      "type": "string",
+      "default": "Data Table",
+      "description": "Page title"
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+      "default": "dark"
+    },
+    "sidebar_visible": {
+      "type": "boolean",
+      "default": false
+    },
+    "enable_search": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_filters": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_export": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_bulk_actions": {
+      "type": "boolean",
+      "default": true
+    },
+    "rows_per_page": {
+      "type": "number",
+      "default": 25,
+      "enum": [10, 25, 50, 100]
+    }
+  }
+}

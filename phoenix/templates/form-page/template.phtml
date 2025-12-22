@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($config['title'] ?? 'Form') ?> - PHOENIX</title>
+
+    <!-- PHOENIX Core -->
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <link rel="stylesheet" href="/phoenix/templates/form-page/template.css">
+
+    <?php if (!empty($slots['css'])): ?>
+    <style><?= $slots['css'] ?></style>
+    <?php endif; ?>
+</head>
+<body class="phoenix-page phoenix-form-page theme-<?= htmlspecialchars($config['theme'] ?? 'dark') ?>">
+
+    <!-- Header Slot -->
+    <?php if (!empty($slots['header'])): ?>
+    <header class="form-header">
+        <?= $slots['header'] ?>
+    </header>
+    <?php else: ?>
+    <header class="form-header">
+        <div class="form-header-content">
+            <div class="form-header-left">
+                <button class="phoenix-btn phoenix-btn-ghost" id="btn-back">
+                    ← Back
+                </button>
+                <h1 class="form-title"><?= htmlspecialchars($config['title'] ?? 'Form') ?></h1>
+            </div>
+            <div class="form-header-right">
+                <span class="form-status" id="form-status"></span>
+            </div>
+        </div>
+    </header>
+    <?php endif; ?>
+
+    <div class="form-layout <?= ($config['sidebar_visible'] ?? true) ? 'has-sidebar' : '' ?>">
+
+        <!-- Main Form -->
+        <main class="form-main">
+            <form
+                class="phoenix-form form-layout-<?= htmlspecialchars($config['form_layout'] ?? 'stacked') ?>"
+                id="phoenix-form"
+                action="<?= htmlspecialchars($config['submit_action'] ?? '') ?>"
+                method="<?= htmlspecialchars($config['submit_method'] ?? 'POST') ?>"
+                novalidate
+            >
+
+                <!-- Form Sections Slot -->
+                <?php if (!empty($slots['form_sections'])): ?>
+                    <?= $slots['form_sections'] ?>
+                <?php else: ?>
+                <div class="form-section phoenix-card">
+                    <div class="form-section-header">
+                        <h3 class="form-section-title">Form Fields</h3>
+                        <p class="form-section-desc">Add form fields to this section</p>
+                    </div>
+
+                    <div class="form-section-body">
+                        <div class="form-empty-state">
+                            <span class="empty-icon">📝</span>
+                            <h4>No Form Fields</h4>
+                            <p>Add form fields to the form_sections slot</p>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Footer / Actions Slot -->
+                <?php if (!empty($slots['footer'])): ?>
+                <div class="form-actions">
+                    <?= $slots['footer'] ?>
+                </div>
+                <?php else: ?>
+                <div class="form-actions phoenix-card">
+                    <div class="form-actions-left">
+                        <button type="button" class="phoenix-btn phoenix-btn-ghost" id="btn-cancel">
+                            Cancel
+                        </button>
+                    </div>
+                    <div class="form-actions-right">
+                        <button type="button" class="phoenix-btn phoenix-btn-ghost" id="btn-save-draft">
+                            Save Draft
+                        </button>
+                        <button type="submit" class="phoenix-btn phoenix-btn-primary" id="btn-submit">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+            </form>
+        </main>
+
+        <!-- Sidebar Slot -->
+        <?php if ($config['sidebar_visible'] ?? true): ?>
+        <aside class="form-sidebar">
+            <?php if (!empty($slots['sidebar'])): ?>
+                <?= $slots['sidebar'] ?>
+            <?php else: ?>
+            <!-- Default Help Panel -->
+            <div class="phoenix-card form-help-panel">
+                <h4 class="help-title">Need Help?</h4>
+                <p class="help-text">Fill out the form fields on the left. Required fields are marked with an asterisk (*).</p>
+
+                <div class="help-section">
+                    <h5>Tips</h5>
+                    <ul class="help-list">
+                        <li>All required fields must be completed</li>
+                        <li>Use Tab to navigate between fields</li>
+                        <li>Your progress is auto-saved</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Form Progress -->
+            <div class="phoenix-card form-progress-panel">
+                <h4 class="progress-title">Completion</h4>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="form-progress" style="width: 0%"></div>
+                </div>
+                <span class="progress-text"><span id="progress-percent">0</span>% Complete</span>
+            </div>
+            <?php endif; ?>
+        </aside>
+        <?php endif; ?>
+
+    </div>
+
+    <!-- PHOENIX Core JS -->
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script src="/phoenix/templates/form-page/template.js"></script>
+
+    <?php if (!empty($slots['js'])): ?>
+    <script><?= $slots['js'] ?></script>
+    <?php endif; ?>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+{
+  "id": "form-page",
+  "name": "Form Page",
+  "description": "Data entry forms with validation, sections, and submit actions",
+  "category": "forms",
+  "version": "1.0.0",
+  "author": "PHOENIX",
+
+  "slots": {
+    "header": {
+      "description": "Page header with title and breadcrumb",
+      "accepts": ["page-header", "breadcrumb"],
+      "max": 1
+    },
+    "form_sections": {
+      "description": "Form sections containing form fields",
+      "accepts": ["form-section", "form-group", "form-field", "divider"],
+      "max": 20
+    },
+    "sidebar": {
+      "description": "Optional sidebar for help, summary, or actions",
+      "accepts": ["info-card", "help-panel", "summary-card", "action-list"],
+      "max": 5
+    },
+    "footer": {
+      "description": "Form actions (submit, cancel, etc.)",
+      "accepts": ["button-group", "form-actions"],
+      "max": 1
+    }
+  },
+
+  "layout": {
+    "type": "split",
+    "main": "70%",
+    "sidebar": "30%"
+  },
+
+  "features": {
+    "particles": false,
+    "glassmorphism": true,
+    "grid_background": false,
+    "validation": true,
+    "auto_save": true,
+    "step_navigation": false
+  },
+
+  "themes": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+
+  "config": {
+    "title": {
+      "type": "string",
+      "default": "Form",
+      "description": "Page title"
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+      "default": "dark"
+    },
+    "sidebar_visible": {
+      "type": "boolean",
+      "default": true
+    },
+    "form_layout": {
+      "type": "string",
+      "enum": ["stacked", "inline", "horizontal"],
+      "default": "stacked"
+    },
+    "submit_action": {
+      "type": "string",
+      "description": "API endpoint or action for form submission"
+    },
+    "submit_method": {
+      "type": "string",
+      "enum": ["POST", "PUT", "PATCH"],
+      "default": "POST"
+    },
+    "enable_validation": {
+      "type": "boolean",
+      "default": true
+    },
+    "enable_auto_save": {
+      "type": "boolean",
+      "default": false
+    },
+    "auto_save_interval": {
+      "type": "number",
+      "default": 30,
+      "description": "Auto-save interval in seconds"
+    },
+    "confirm_navigation": {
+      "type": "boolean",
+      "default": true,
+      "description": "Warn user about unsaved changes"
+    }
+  }
+}
