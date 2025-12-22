@@ -1,0 +1,244 @@
+/**
+ * PHOENIX Stats Card Widget Styles
+ *
+ * Glassmorphic stats card with color accents and animations.
+ */
+
+.phoenix-stats-card {
+    position: relative;
+    background: var(--bg-card, rgba(20, 20, 30, 0.8));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    border-radius: var(--radius, 16px);
+    padding: 24px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.phoenix-stats-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--card-accent, var(--accent-primary));
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px var(--card-glow, rgba(0, 212, 255, 0.2));
+}
+
+/* Color Variants */
+.phoenix-stats-card.color-cyan {
+    --card-accent: #00d4ff;
+    --card-glow: rgba(0, 212, 255, 0.3);
+}
+
+.phoenix-stats-card.color-purple {
+    --card-accent: #7b2cbf;
+    --card-glow: rgba(123, 44, 191, 0.3);
+}
+
+.phoenix-stats-card.color-pink {
+    --card-accent: #ff006e;
+    --card-glow: rgba(255, 0, 110, 0.3);
+}
+
+.phoenix-stats-card.color-green {
+    --card-accent: #00ff88;
+    --card-glow: rgba(0, 255, 136, 0.3);
+}
+
+.phoenix-stats-card.color-orange {
+    --card-accent: #ff6b35;
+    --card-glow: rgba(255, 107, 53, 0.3);
+}
+
+.phoenix-stats-card.color-red {
+    --card-accent: #ff4444;
+    --card-glow: rgba(255, 68, 68, 0.3);
+}
+
+.phoenix-stats-card.color-blue {
+    --card-accent: #0077b6;
+    --card-glow: rgba(0, 119, 182, 0.3);
+}
+
+.phoenix-stats-card.color-yellow {
+    --card-accent: #ffd60a;
+    --card-glow: rgba(255, 214, 10, 0.3);
+}
+
+/* Link Wrapper */
+.stats-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Inner Container */
+.stats-card-inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+.stats-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.stats-card-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stats-card-icon {
+    font-size: 1.8rem;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 10px var(--card-glow));
+}
+
+/* Value Display */
+.stats-card-value {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.value-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary, #ffffff);
+    line-height: 1;
+    background: linear-gradient(135deg, var(--card-accent), #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.value-prefix,
+.value-suffix {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.value-prefix {
+    margin-right: 2px;
+}
+
+.value-suffix {
+    margin-left: 4px;
+}
+
+/* Trend Indicator */
+.stats-card-trend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.trend-arrow {
+    font-weight: 700;
+}
+
+.trend-value {
+    font-weight: 600;
+}
+
+.trend-period {
+    color: var(--text-muted, rgba(255, 255, 255, 0.5));
+}
+
+/* Trend Colors */
+.stats-card-trend.trend-up {
+    color: var(--success, #00ff88);
+}
+
+.stats-card-trend.trend-down {
+    color: var(--danger, #ff4444);
+}
+
+.stats-card-trend.trend-flat {
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+/* Glow Effect */
+.stats-card-glow {
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, var(--card-glow) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.phoenix-stats-card:hover .stats-card-glow {
+    opacity: 1;
+}
+
+/* Animated Border */
+.phoenix-stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        var(--card-accent) 50%,
+        transparent 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.phoenix-stats-card:hover::before {
+    opacity: 1;
+}
+
+/* Value Animation */
+@keyframes stats-card-value-pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.phoenix-stats-card[data-animate="true"] .value-number.updating {
+    animation: stats-card-value-pop 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .phoenix-stats-card {
+        padding: 20px;
+    }
+
+    .value-number {
+        font-size: 2rem;
+    }
+
+    .stats-card-icon {
+        font-size: 1.5rem;
+    }
+}

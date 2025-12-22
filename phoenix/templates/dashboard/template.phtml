@@ -1,0 +1,106 @@
+<?php
+/**
+ * PHOENIX Template: Dashboard
+ *
+ * A multi-widget dashboard layout with stats row, charts row,
+ * main content area with sidebar, and optional footer.
+ *
+ * Variables available:
+ * - $template_config: Template configuration
+ * - $page_slots: Slot widget configurations
+ */
+
+$config = $template_config ?? [];
+$slots = $page_slots ?? [];
+$theme = $config['theme'] ?? 'dark';
+$title = $config['title'] ?? 'Dashboard';
+$features = $config['features'] ?? [];
+
+// Helper to render a slot
+function render_dashboard_slot($slot_id, $slots) {
+    if (empty($slots[$slot_id])) {
+        return "<!-- Slot '$slot_id' is empty -->";
+    }
+    return WidgetRenderer::render_slot($slots[$slot_id]);
+}
+?>
+
+<!-- Dashboard Template Root -->
+<div class="phoenix-template phoenix-dashboard theme-<?= htmlspecialchars($theme) ?>"
+     data-template="dashboard"
+     data-config='<?= htmlspecialchars(json_encode($config)) ?>'>
+
+    <?php if ($features['particles'] ?? true): ?>
+    <!-- Particle Background -->
+    <div class="phoenix-particles" id="phoenix-particles"></div>
+    <?php endif; ?>
+
+    <?php if ($features['grid-background'] ?? true): ?>
+    <!-- Grid Background -->
+    <div class="phoenix-grid-bg"></div>
+    <?php endif; ?>
+
+    <!-- Dashboard Container -->
+    <div class="phoenix-dashboard-container">
+
+        <!-- Slot: Header -->
+        <header class="phoenix-slot phoenix-header" data-slot="header">
+            <?php if (!empty($slots['header'])): ?>
+                <?= WidgetRenderer::render_slot($slots['header'], 'single') ?>
+            <?php else: ?>
+                <!-- Default Header -->
+                <div class="phoenix-page-header">
+                    <h1 class="phoenix-title"><?= htmlspecialchars($title) ?></h1>
+                    <?php if (!empty($config['description'])): ?>
+                    <p class="phoenix-subtitle"><?= htmlspecialchars($config['description']) ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+        </header>
+
+        <!-- Slot: Stats Row -->
+        <section class="phoenix-slot phoenix-stats-row" data-slot="stats">
+            <?php if (!empty($slots['stats'])): ?>
+                <?= WidgetRenderer::render_slot($slots['stats'], 'grid', ['columns' => 4]) ?>
+            <?php else: ?>
+                <!-- Empty Stats Slot -->
+                <div class="phoenix-empty-slot">
+                    <span>Add stats widgets here</span>
+                </div>
+            <?php endif; ?>
+        </section>
+
+        <!-- Slot: Charts Row -->
+        <section class="phoenix-slot phoenix-charts-row" data-slot="charts">
+            <?php if (!empty($slots['charts'])): ?>
+                <?= WidgetRenderer::render_slot($slots['charts'], 'grid', ['columns' => 2]) ?>
+            <?php endif; ?>
+        </section>
+
+        <!-- Slot: Main Content Area -->
+        <div class="phoenix-slot phoenix-main-area" data-slot="main">
+            <!-- Content Column -->
+            <main class="phoenix-content-column" data-slot="content">
+                <?php if (!empty($slots['content'])): ?>
+                    <?= WidgetRenderer::render_slot($slots['content'], 'stack') ?>
+                <?php endif; ?>
+            </main>
+
+            <!-- Sidebar Column -->
+            <aside class="phoenix-sidebar-column" data-slot="sidebar">
+                <?php if (!empty($slots['sidebar'])): ?>
+                    <?= WidgetRenderer::render_slot($slots['sidebar'], 'stack') ?>
+                <?php endif; ?>
+            </aside>
+        </div>
+
+        <!-- Slot: Footer -->
+        <?php if (!empty($slots['footer'])): ?>
+        <footer class="phoenix-slot phoenix-footer" data-slot="footer">
+            <?= WidgetRenderer::render_slot($slots['footer'], 'single') ?>
+        </footer>
+        <?php endif; ?>
+
+    </div>
+
+</div>

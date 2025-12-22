@@ -1,0 +1,102 @@
+{
+  "version": "1.0.0",
+  "templates": {
+    "dashboard": {
+      "path": "dashboard",
+      "category": "analytics",
+      "featured": true,
+      "description": "Multi-widget dashboard with stats, charts, and activity feeds"
+    },
+    "data-table": {
+      "path": "data-table",
+      "category": "data",
+      "featured": true,
+      "description": "Tabular data display with sorting, filtering, and CRUD"
+    },
+    "form-page": {
+      "path": "form-page",
+      "category": "forms",
+      "featured": true,
+      "description": "Data entry forms with validation"
+    },
+    "kanban": {
+      "path": "kanban",
+      "category": "productivity",
+      "description": "Drag-and-drop task/status board"
+    },
+    "calendar": {
+      "path": "calendar",
+      "category": "productivity",
+      "description": "Event and scheduling view"
+    },
+    "gallery": {
+      "path": "gallery",
+      "category": "media",
+      "description": "Media grid with lightbox"
+    },
+    "profile": {
+      "path": "profile",
+      "category": "user",
+      "description": "User profile and settings"
+    },
+    "auth": {
+      "path": "auth",
+      "category": "user",
+      "description": "Login/register/password flows"
+    },
+    "landing": {
+      "path": "landing",
+      "category": "marketing",
+      "description": "Marketing and hero sections"
+    },
+    "wizard": {
+      "path": "wizard",
+      "category": "forms",
+      "description": "Multi-step forms"
+    },
+    "chat": {
+      "path": "chat",
+      "category": "communication",
+      "description": "Messaging interface"
+    },
+    "timeline": {
+      "path": "timeline",
+      "category": "content",
+      "description": "Chronological activity/history"
+    },
+    "cards-grid": {
+      "path": "cards-grid",
+      "category": "content",
+      "featured": true,
+      "description": "Card-based item display"
+    },
+    "split-view": {
+      "path": "split-view",
+      "category": "layout",
+      "description": "Master-detail layout"
+    },
+    "blank": {
+      "path": "blank",
+      "category": "utility",
+      "description": "Empty canvas for custom layouts"
+    },
+    "report": {
+      "path": "report",
+      "category": "analytics",
+      "description": "Print-ready data reports"
+    }
+  },
+  "categories": [
+    {"id": "analytics", "label": "Analytics & Dashboards", "icon": "chart-line"},
+    {"id": "data", "label": "Data Management", "icon": "table"},
+    {"id": "forms", "label": "Forms & Input", "icon": "edit"},
+    {"id": "content", "label": "Content Display", "icon": "file-text"},
+    {"id": "communication", "label": "Communication", "icon": "message-circle"},
+    {"id": "productivity", "label": "Productivity", "icon": "clipboard"},
+    {"id": "media", "label": "Media", "icon": "image"},
+    {"id": "user", "label": "User Management", "icon": "user"},
+    {"id": "marketing", "label": "Marketing", "icon": "megaphone"},
+    {"id": "layout", "label": "Layout", "icon": "layout"},
+    {"id": "utility", "label": "Utility", "icon": "tool"}
+  ]
+}

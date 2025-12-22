@@ -1,0 +1,100 @@
+{
+  "$schema": "../schemas/template.schema.json",
+  "name": "dashboard",
+  "version": "1.0.0",
+  "displayName": "Dashboard",
+  "description": "Multi-widget dashboard with stats, charts, and activity feeds",
+  "category": "analytics",
+  "tags": ["stats", "charts", "monitoring", "kpi"],
+
+  "layout": {
+    "type": "grid",
+    "columns": 4,
+    "gap": "25px",
+    "responsive": {
+      "tablet": { "columns": 2 },
+      "mobile": { "columns": 1 }
+    }
+  },
+
+  "slots": [
+    {
+      "id": "header",
+      "type": "single",
+      "position": "top",
+      "span": "full",
+      "accepts": ["page-header", "breadcrumbs", "search-bar"],
+      "default": "page-header"
+    },
+    {
+      "id": "stats",
+      "type": "grid",
+      "columns": 4,
+      "position": "row-1",
+      "accepts": ["stats-card", "progress-ring", "countdown", "clock"],
+      "minItems": 1,
+      "maxItems": 8
+    },
+    {
+      "id": "charts",
+      "type": "grid",
+      "columns": 2,
+      "position": "row-2",
+      "accepts": ["chart-*", "data-table", "progress-bar"],
+      "minItems": 0,
+      "maxItems": 4
+    },
+    {
+      "id": "main",
+      "type": "flex",
+      "direction": "row",
+      "position": "row-3",
+      "accepts": ["*"],
+      "children": [
+        {
+          "id": "content",
+          "flex": 2,
+          "accepts": ["*"]
+        },
+        {
+          "id": "sidebar",
+          "flex": 1,
+          "accepts": ["activity-feed", "notification-list", "timeline", "stats-card", "info-card"]
+        }
+      ]
+    },
+    {
+      "id": "footer",
+      "type": "single",
+      "position": "bottom",
+      "span": "full",
+      "accepts": ["page-footer"],
+      "optional": true
+    }
+  ],
+
+  "theme": {
+    "supports": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+    "default": "dark",
+    "variables": {
+      "--template-bg": "var(--bg-primary)",
+      "--template-gap": "25px",
+      "--template-padding": "30px"
+    }
+  },
+
+  "features": {
+    "particles": true,
+    "grid-background": true,
+    "glassmorphism": true,
+    "animations": true
+  },
+
+  "data": {
+    "refresh": {
+      "enabled": true,
+      "interval": 30,
+      "method": "ajax"
+    }
+  }
+}

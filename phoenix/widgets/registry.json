@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0",
+  "widgets": {
+    "stats-card": {
+      "path": "stats-card",
+      "category": "display",
+      "featured": true,
+      "description": "Displays a single statistic with icon, value, and optional trend"
+    },
+    "chart-bar": {
+      "path": "chart-bar",
+      "category": "display",
+      "dependencies": ["chart.js"],
+      "description": "Bar chart visualization"
+    },
+    "chart-line": {
+      "path": "chart-line",
+      "category": "display",
+      "dependencies": ["chart.js"],
+      "description": "Line chart visualization"
+    },
+    "chart-pie": {
+      "path": "chart-pie",
+      "category": "display",
+      "dependencies": ["chart.js"],
+      "description": "Pie chart visualization"
+    },
+    "progress-bar": {
+      "path": "progress-bar",
+      "category": "display",
+      "description": "Horizontal progress indicator"
+    },
+    "progress-ring": {
+      "path": "progress-ring",
+      "category": "display",
+      "description": "Circular progress indicator"
+    },
+    "data-table": {
+      "path": "data-table",
+      "category": "data",
+      "featured": true,
+      "description": "Sortable, filterable data table"
+    },
+    "activity-feed": {
+      "path": "activity-feed",
+      "category": "display",
+      "description": "List of recent activities with timestamps"
+    },
+    "info-card": {
+      "path": "info-card",
+      "category": "display",
+      "description": "Information display card with icon and content"
+    },
+    "page-header": {
+      "path": "page-header",
+      "category": "layout",
+      "description": "Page title bar with optional actions"
+    },
+    "alert-box": {
+      "path": "alert-box",
+      "category": "display",
+      "description": "Alert or notification box"
+    }
+  },
+  "categories": [
+    {"id": "display", "label": "Display", "icon": "eye"},
+    {"id": "data", "label": "Data", "icon": "database"},
+    {"id": "input", "label": "Input", "icon": "edit-3"},
+    {"id": "media", "label": "Media", "icon": "image"},
+    {"id": "layout", "label": "Layout", "icon": "layout"}
+  ]
+}

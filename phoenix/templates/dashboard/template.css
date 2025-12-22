@@ -1,0 +1,379 @@
+/**
+ * PHOENIX Dashboard Template Styles
+ *
+ * Dark-first design with glassmorphism and neon accents.
+ * Supports multiple color themes.
+ */
+
+/* ============================================
+   CSS CUSTOM PROPERTIES (THEMES)
+   ============================================ */
+
+.phoenix-dashboard {
+    /* Base dark theme */
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --bg-card: rgba(20, 20, 30, 0.8);
+    --bg-hover: rgba(30, 30, 45, 0.9);
+
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.5);
+
+    --accent-primary: #00d4ff;
+    --accent-secondary: #7b2cbf;
+    --accent-tertiary: #ff006e;
+
+    --glow-primary: rgba(0, 212, 255, 0.3);
+    --glow-secondary: rgba(123, 44, 191, 0.3);
+
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-glow: rgba(0, 212, 255, 0.5);
+
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff4444;
+
+    --gap: 25px;
+    --radius: 16px;
+    --radius-sm: 8px;
+}
+
+/* Theme: Cyber (default) */
+.phoenix-dashboard.theme-dark,
+.phoenix-dashboard.theme-cyber {
+    --accent-primary: #00d4ff;
+    --accent-secondary: #7b2cbf;
+    --glow-primary: rgba(0, 212, 255, 0.3);
+}
+
+/* Theme: Matrix */
+.phoenix-dashboard.theme-matrix {
+    --accent-primary: #00ff00;
+    --accent-secondary: #003300;
+    --glow-primary: rgba(0, 255, 0, 0.3);
+    --bg-card: rgba(0, 20, 0, 0.8);
+}
+
+/* Theme: Sunset */
+.phoenix-dashboard.theme-sunset {
+    --accent-primary: #ff6b35;
+    --accent-secondary: #f7931e;
+    --glow-primary: rgba(255, 107, 53, 0.3);
+}
+
+/* Theme: Ocean */
+.phoenix-dashboard.theme-ocean {
+    --accent-primary: #0077b6;
+    --accent-secondary: #00b4d8;
+    --glow-primary: rgba(0, 119, 182, 0.3);
+    --bg-primary: #03045e;
+    --bg-secondary: #023e8a;
+}
+
+/* Theme: Light */
+.phoenix-dashboard.theme-light {
+    --bg-primary: #f5f7fa;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-hover: rgba(245, 247, 250, 0.95);
+    --text-primary: #1a1a2e;
+    --text-secondary: rgba(26, 26, 46, 0.7);
+    --text-muted: rgba(26, 26, 46, 0.5);
+    --border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   BASE LAYOUT
+   ============================================ */
+
+.phoenix-dashboard {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.phoenix-dashboard-container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: var(--gap);
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   BACKGROUND EFFECTS
+   ============================================ */
+
+.phoenix-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.phoenix-grid-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+}
+
+/* ============================================
+   HEADER SLOT
+   ============================================ */
+
+.phoenix-header {
+    margin-bottom: var(--gap);
+}
+
+.phoenix-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(20px);
+}
+
+.phoenix-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.phoenix-subtitle {
+    margin: 5px 0 0 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   STATS ROW SLOT
+   ============================================ */
+
+.phoenix-stats-row {
+    margin-bottom: var(--gap);
+}
+
+.phoenix-stats-row .phoenix-slot {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap);
+}
+
+/* ============================================
+   CHARTS ROW SLOT
+   ============================================ */
+
+.phoenix-charts-row {
+    margin-bottom: var(--gap);
+}
+
+.phoenix-charts-row .phoenix-slot {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap);
+}
+
+/* ============================================
+   MAIN AREA (CONTENT + SIDEBAR)
+   ============================================ */
+
+.phoenix-main-area {
+    display: flex;
+    gap: var(--gap);
+}
+
+.phoenix-content-column {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.phoenix-sidebar-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+/* ============================================
+   FOOTER SLOT
+   ============================================ */
+
+.phoenix-footer {
+    margin-top: var(--gap);
+    padding: 20px 30px;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(20px);
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* ============================================
+   SLOT UTILITIES
+   ============================================ */
+
+.phoenix-slot {
+    position: relative;
+}
+
+.phoenix-slot.phoenix-grid {
+    display: grid;
+    gap: var(--gap);
+}
+
+.phoenix-slot.cols-1 { grid-template-columns: repeat(1, 1fr); }
+.phoenix-slot.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.phoenix-slot.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.phoenix-slot.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+.phoenix-slot.phoenix-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.phoenix-slot.phoenix-flex {
+    display: flex;
+    gap: var(--gap);
+}
+
+.phoenix-empty-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    background: var(--bg-card);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   WIDGET WRAPPER
+   ============================================ */
+
+.phoenix-widget-wrapper {
+    position: relative;
+}
+
+.phoenix-widget-wrapper[data-span="2"] {
+    grid-column: span 2;
+}
+
+.phoenix-widget-wrapper[data-span="3"] {
+    grid-column: span 3;
+}
+
+.phoenix-widget-wrapper[data-span="4"],
+.phoenix-widget-wrapper[data-span="full"] {
+    grid-column: 1 / -1;
+}
+
+/* ============================================
+   GLASSMORPHISM BASE
+   ============================================ */
+
+.phoenix-glass {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.phoenix-glass:hover {
+    border-color: var(--border-glow);
+    box-shadow: 0 0 30px var(--glow-primary);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .phoenix-stats-row .phoenix-slot {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .phoenix-main-area {
+        flex-direction: column;
+    }
+
+    .phoenix-sidebar-column {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .phoenix-stats-row .phoenix-slot,
+    .phoenix-charts-row .phoenix-slot {
+        grid-template-columns: 1fr;
+    }
+
+    .phoenix-dashboard-container {
+        padding: 15px;
+    }
+
+    .phoenix-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes phoenix-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes phoenix-glow-pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px var(--glow-primary);
+    }
+    50% {
+        box-shadow: 0 0 40px var(--glow-primary), 0 0 60px var(--glow-secondary);
+    }
+}
+
+.phoenix-widget {
+    animation: phoenix-fade-in 0.5s ease-out forwards;
+}
+
+.phoenix-widget:nth-child(1) { animation-delay: 0.1s; }
+.phoenix-widget:nth-child(2) { animation-delay: 0.2s; }
+.phoenix-widget:nth-child(3) { animation-delay: 0.3s; }
+.phoenix-widget:nth-child(4) { animation-delay: 0.4s; }

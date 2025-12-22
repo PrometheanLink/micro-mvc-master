@@ -1,0 +1,140 @@
+<?php
+/**
+ * PHOENIX Widget: Stats Card
+ *
+ * Displays a single statistic with icon, value, and optional trend.
+ *
+ * @param array $config Widget configuration
+ * @param string $widget_id Unique widget instance ID
+ */
+
+// Extract configuration with defaults
+$title = $config['title'] ?? 'Statistic';
+$value = $config['value'] ?? '0';
+$icon = $config['icon'] ?? '📊';
+$color = $config['color'] ?? 'cyan';
+$prefix = $config['prefix'] ?? '';
+$suffix = $config['suffix'] ?? '';
+$trend = $config['trend'] ?? null;
+$link = $config['link'] ?? null;
+$animate = $config['animate'] ?? true;
+
+// Map common icon names to emojis (can be extended)
+$icon_map = [
+    'users' => '👥',
+    'user' => '👤',
+    'chart' => '📊',
+    'chart-bar' => '📊',
+    'chart-line' => '📈',
+    'money' => '💰',
+    'dollar' => '💵',
+    'cart' => '🛒',
+    'shopping' => '🛍️',
+    'heart' => '❤️',
+    'star' => '⭐',
+    'fire' => '🔥',
+    'lightning' => '⚡',
+    'rocket' => '🚀',
+    'target' => '🎯',
+    'clock' => '🕐',
+    'calendar' => '📅',
+    'mail' => '📧',
+    'message' => '💬',
+    'file' => '📄',
+    'folder' => '📁',
+    'database' => '🗄️',
+    'server' => '🖥️',
+    'globe' => '🌍',
+    'location' => '📍',
+    'phone' => '📱',
+    'camera' => '📷',
+    'video' => '🎥',
+    'music' => '🎵',
+    'play' => '▶️',
+    'settings' => '⚙️',
+    'lock' => '🔒',
+    'key' => '🔑',
+    'shield' => '🛡️',
+    'warning' => '⚠️',
+    'error' => '❌',
+    'success' => '✅',
+    'info' => 'ℹ️',
+];
+
+// Convert icon name to emoji if mapped
+if (isset($icon_map[strtolower($icon)])) {
+    $icon = $icon_map[strtolower($icon)];
+}
+
+// Trend direction arrow
+$trend_arrow = '';
+$trend_class = '';
+if ($trend) {
+    switch ($trend['direction'] ?? 'flat') {
+        case 'up':
+            $trend_arrow = '↑';
+            $trend_class = 'trend-up';
+            break;
+        case 'down':
+            $trend_arrow = '↓';
+            $trend_class = 'trend-down';
+            break;
+        default:
+            $trend_arrow = '→';
+            $trend_class = 'trend-flat';
+    }
+}
+?>
+
+<div class="phoenix-widget phoenix-stats-card color-<?= htmlspecialchars($color) ?>"
+     id="<?= htmlspecialchars($widget_id) ?>"
+     data-widget="stats-card"
+     data-config='<?= htmlspecialchars(json_encode($config)) ?>'
+     <?= $animate ? 'data-animate="true"' : '' ?>>
+
+    <?php if ($link): ?>
+    <a href="<?= htmlspecialchars($link) ?>" class="stats-card-link">
+    <?php endif; ?>
+
+    <div class="stats-card-inner">
+        <!-- Header Row: Title + Icon -->
+        <div class="stats-card-header">
+            <span class="stats-card-title"><?= htmlspecialchars($title) ?></span>
+            <div class="stats-card-icon"><?= $icon ?></div>
+        </div>
+
+        <!-- Value Display -->
+        <div class="stats-card-value">
+            <?php if ($prefix): ?>
+            <span class="value-prefix"><?= htmlspecialchars($prefix) ?></span>
+            <?php endif; ?>
+
+            <span class="value-number" data-value="<?= htmlspecialchars($value) ?>">
+                <?= htmlspecialchars($value) ?>
+            </span>
+
+            <?php if ($suffix): ?>
+            <span class="value-suffix"><?= htmlspecialchars($suffix) ?></span>
+            <?php endif; ?>
+        </div>
+
+        <!-- Trend Indicator -->
+        <?php if ($trend): ?>
+        <div class="stats-card-trend <?= $trend_class ?>">
+            <span class="trend-arrow"><?= $trend_arrow ?></span>
+            <span class="trend-value"><?= htmlspecialchars($trend['value'] ?? '') ?></span>
+            <?php if (!empty($trend['period'])): ?>
+            <span class="trend-period"><?= htmlspecialchars($trend['period']) ?></span>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Glow Effect -->
+    <div class="stats-card-glow"></div>
+
+    <?php if ($link): ?>
+    </a>
+    <?php endif; ?>
+
+</div>

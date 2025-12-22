@@ -1,0 +1,105 @@
+{
+  "$schema": "../../schemas/widget.schema.json",
+  "name": "stats-card",
+  "version": "1.0.0",
+  "displayName": "Stats Card",
+  "description": "Displays a single statistic with icon, value, and optional trend indicator",
+  "category": "display",
+  "tags": ["stats", "metrics", "kpi", "numbers"],
+
+  "config": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "description": "Card title"
+    },
+    "value": {
+      "type": ["string", "number"],
+      "required": true,
+      "description": "Main value to display"
+    },
+    "icon": {
+      "type": "string",
+      "default": "chart-bar",
+      "description": "Icon name or emoji"
+    },
+    "color": {
+      "type": "string",
+      "enum": ["cyan", "purple", "pink", "green", "orange", "red", "blue", "yellow"],
+      "default": "cyan",
+      "description": "Accent color for the card"
+    },
+    "prefix": {
+      "type": "string",
+      "description": "Value prefix (e.g., $, #)"
+    },
+    "suffix": {
+      "type": "string",
+      "description": "Value suffix (e.g., %, users)"
+    },
+    "trend": {
+      "type": "object",
+      "properties": {
+        "direction": {
+          "type": "string",
+          "enum": ["up", "down", "flat"]
+        },
+        "value": {
+          "type": "string",
+          "description": "Trend text (e.g., '+12%')"
+        },
+        "period": {
+          "type": "string",
+          "description": "Time period (e.g., 'vs last week')"
+        }
+      }
+    },
+    "link": {
+      "type": "string",
+      "description": "URL when card is clicked"
+    },
+    "animate": {
+      "type": "boolean",
+      "default": true,
+      "description": "Animate value changes"
+    }
+  },
+
+  "data": {
+    "static": {
+      "description": "Static value provided in config"
+    },
+    "query": {
+      "type": "object",
+      "properties": {
+        "table": { "type": "string" },
+        "operation": { "type": "string", "enum": ["count", "sum", "avg", "min", "max"] },
+        "column": { "type": "string" },
+        "where": { "type": "object" }
+      }
+    },
+    "api": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "method": { "type": "string" },
+        "path": { "type": "string", "description": "JSON path to value" }
+      }
+    }
+  },
+
+  "refresh": {
+    "enabled": true,
+    "interval": 30,
+    "animation": "fade"
+  },
+
+  "slots": {
+    "compatible": ["stats", "main", "sidebar", "content"],
+    "size": {
+      "min": { "columns": 1 },
+      "max": { "columns": 2 },
+      "default": { "columns": 1 }
+    }
+  }
+}
