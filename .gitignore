@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Uploads (keep structure, ignore content)
+site/uploads/*
+!site/uploads/.gitkeep
+
+# Generated files
+generated/
+
+# Build artifacts
+dist/
+build/
+
+# Cache
+.cache/
+*.cache
+
+# Temporary files
+tmp/
+temp/
+
+# Docker volumes data
+mysql-data/
+
+# Windows reserved names
+nul

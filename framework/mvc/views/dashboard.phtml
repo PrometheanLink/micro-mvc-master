@@ -1,0 +1,2096 @@
+<?php
+    // Command Center Dashboard
+?>
+<style>
+    /* ============================================
+       COMMAND CENTER - FUTURISTIC DARK THEME
+       ============================================ */
+
+    :root {
+        --bg-primary: #0a0a0f;
+        --bg-secondary: #12121a;
+        --bg-card: rgba(20, 20, 35, 0.8);
+        --glass: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --accent-cyan: #00f5ff;
+        --accent-purple: #bf00ff;
+        --accent-pink: #ff0080;
+        --accent-green: #00ff88;
+        --accent-orange: #ff8800;
+        --accent-red: #ff3366;
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.6);
+        --text-muted: rgba(255, 255, 255, 0.3);
+        --glow-cyan: 0 0 30px rgba(0, 245, 255, 0.3);
+        --glow-purple: 0 0 30px rgba(191, 0, 255, 0.3);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: var(--bg-primary);
+        min-height: 100vh;
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+            linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: gridMove 20s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @keyframes gridMove {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+    }
+
+    /* Main container */
+    #command-center {
+        position: relative;
+        z-index: 1;
+        padding: 30px;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    /* Header */
+    .cc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 40px;
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        backdrop-filter: blur(20px);
+        margin-bottom: 25px;
+        box-shadow: var(--glow-cyan);
+        position: relative;
+        z-index: 100;
+    }
+
+    .cc-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .cc-title h1 {
+        font-size: 28px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
+
+    .cc-logo {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.5); }
+        50% { box-shadow: 0 0 40px rgba(0, 245, 255, 0.8), 0 0 60px rgba(191, 0, 255, 0.4); }
+    }
+
+    .cc-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid var(--accent-green);
+        border-radius: 50px;
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--accent-green);
+        border-radius: 50%;
+        animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+
+    .status-text {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent-green);
+    }
+
+    /* Clock */
+    .cc-clock {
+        text-align: right;
+    }
+
+    .clock-time {
+        font-size: 36px;
+        font-weight: 200;
+        font-family: 'Courier New', monospace;
+        color: var(--accent-cyan);
+        text-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+    }
+
+    .clock-date {
+        font-size: 12px;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    /* Grid layout */
+    .cc-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: auto;
+        gap: 25px;
+        width: 100%;
+    }
+
+    /* Cards */
+    .cc-card {
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        backdrop-filter: blur(20px);
+        padding: 30px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-height: 180px;
+    }
+
+    .cc-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+    }
+
+    .cc-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--glow-purple);
+        border-color: rgba(191, 0, 255, 0.3);
+    }
+
+    .cc-card.wide {
+        grid-column: span 2;
+    }
+
+    .cc-card.tall {
+        grid-row: span 2;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-secondary);
+    }
+
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 20px;
+    }
+
+    /* Stat cards */
+    .stat-value {
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    .stat-change.up {
+        background: rgba(0, 255, 136, 0.1);
+        color: var(--accent-green);
+    }
+
+    .stat-change.down {
+        background: rgba(255, 51, 102, 0.1);
+        color: var(--accent-red);
+    }
+
+    /* Progress bars */
+    .progress-container {
+        margin: 15px 0;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .progress-label {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    .progress-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent-cyan);
+    }
+
+    .progress-bar {
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        position: relative;
+    }
+
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .progress-fill.cyan { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple)); }
+    .progress-fill.green { background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan)); }
+    .progress-fill.orange { background: linear-gradient(90deg, var(--accent-orange), var(--accent-pink)); }
+    .progress-fill.pink { background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple)); }
+
+    /* Chart container */
+    .chart-container {
+        position: relative;
+        height: 250px;
+        margin-top: 20px;
+    }
+
+    .chart-bars {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: 100%;
+        gap: 8px;
+        padding-bottom: 25px;
+    }
+
+    .chart-bar-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+
+    .chart-bar {
+        width: 100%;
+        max-width: 30px;
+        background: linear-gradient(180deg, var(--accent-cyan), var(--accent-purple));
+        border-radius: 5px 5px 0 0;
+        transition: height 0.5s ease;
+        position: relative;
+    }
+
+    .chart-bar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent);
+        border-radius: 5px 5px 0 0;
+    }
+
+    .chart-label {
+        position: absolute;
+        bottom: 0;
+        font-size: 10px;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+
+    /* Activity feed */
+    .activity-list {
+        list-style: none;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--glass-border);
+        transition: all 0.3s ease;
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-item:hover {
+        background: rgba(255, 255, 255, 0.02);
+        margin: 0 -25px;
+        padding: 15px 25px;
+    }
+
+    .activity-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-user {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+
+    .activity-action {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    .activity-time {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    /* Alerts */
+    .alert-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .alert-item:hover {
+        transform: translateX(5px);
+    }
+
+    .alert-item.success {
+        background: rgba(0, 255, 136, 0.1);
+        border-left: 3px solid var(--accent-green);
+    }
+
+    .alert-item.info {
+        background: rgba(0, 245, 255, 0.1);
+        border-left: 3px solid var(--accent-cyan);
+    }
+
+    .alert-item.warning {
+        background: rgba(255, 136, 0, 0.1);
+        border-left: 3px solid var(--accent-orange);
+    }
+
+    .alert-item.error {
+        background: rgba(255, 51, 102, 0.1);
+        border-left: 3px solid var(--accent-red);
+    }
+
+    .alert-icon {
+        font-size: 20px;
+    }
+
+    .alert-message {
+        flex: 1;
+        font-size: 14px;
+    }
+
+    .alert-time {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    /* Hexagon decoration */
+    .hex-decoration {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        opacity: 0.1;
+        font-size: 100px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .cc-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .cc-card.wide {
+            grid-column: span 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .cc-grid {
+            grid-template-columns: 1fr;
+        }
+        .cc-header {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+        .cc-title h1 {
+            font-size: 20px;
+        }
+    }
+
+    /* Particles.js */
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+
+    .bg-grid {
+        transition: opacity 0.5s ease;
+    }
+
+    /* Glassmorphic Dropdown */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-trigger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+    }
+
+    .dropdown-trigger:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+    }
+
+    .dropdown-trigger .arrow {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 10px;
+    }
+
+    .dropdown.open .dropdown-trigger .arrow {
+        transform: rotate(180deg);
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        min-width: 280px;
+        background: rgba(15, 15, 25, 0.95);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 245, 255, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px) scale(0.95);
+        transform-origin: top right;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    .dropdown.open .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+    }
+
+    .dropdown-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--glass-border);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(90deg, rgba(0, 245, 255, 0.1), rgba(191, 0, 255, 0.05));
+        padding-left: 25px;
+    }
+
+    .dropdown-item-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+    .dropdown-item-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+        position: relative;
+        width: 48px;
+        height: 26px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 13px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toggle-switch.active {
+        background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    }
+
+    .toggle-switch::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .toggle-switch.active::after {
+        left: 25px;
+    }
+
+    /* Select Dropdown inside menu */
+    .dropdown-select {
+        width: 100%;
+        padding: 10px 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300f5ff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+    }
+
+    .dropdown-select:hover, .dropdown-select:focus {
+        border-color: var(--accent-cyan);
+        outline: none;
+        box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
+    }
+
+    .dropdown-select option {
+        background: #12121a;
+        color: var(--text-primary);
+    }
+
+    .dropdown-section {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .dropdown-section-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+    }
+
+    /* Slider */
+    .slider-container {
+        padding: 5px 0;
+    }
+
+    .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+        transition: all 0.3s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
+    }
+
+    .slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+    }
+
+    /* Media Hub Styles */
+    .media-dropzone {
+        border: 2px dashed var(--glass-border);
+        border-radius: 16px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .media-dropzone:hover, .media-dropzone.dragover {
+        border-color: var(--accent-cyan);
+        background: rgba(0, 245, 255, 0.05);
+        box-shadow: 0 0 30px rgba(0, 245, 255, 0.2);
+    }
+
+    .media-dropzone.dragover {
+        transform: scale(1.02);
+    }
+
+    .dropzone-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.6;
+    }
+
+    .dropzone-text {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+    }
+
+    .dropzone-hint {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .upload-progress {
+        margin-top: 20px;
+        display: none;
+    }
+
+    .upload-progress.active {
+        display: block;
+    }
+
+    .upload-filename {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Webcam & Screen Recorder */
+    .media-preview {
+        width: 100%;
+        border-radius: 12px;
+        background: #000;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+    }
+
+    .media-controls {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .media-btn {
+        flex: 1;
+        min-width: 80px;
+        padding: 12px 15px;
+        border: 1px solid var(--glass-border);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .media-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-cyan);
+    }
+
+    .media-btn.recording {
+        background: rgba(255, 51, 102, 0.2);
+        border-color: var(--accent-red);
+        animation: pulse-recording 1s infinite;
+    }
+
+    @keyframes pulse-recording {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.4); }
+        50% { box-shadow: 0 0 0 10px rgba(255, 51, 102, 0); }
+    }
+
+    .media-btn.primary {
+        background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+        border: none;
+    }
+
+    .media-btn.primary:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+    }
+
+    .media-btn.danger {
+        background: rgba(255, 51, 102, 0.1);
+        border-color: var(--accent-red);
+        color: var(--accent-red);
+    }
+
+    .rec-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent-red);
+        border-radius: 50%;
+        animation: blink 1s infinite;
+    }
+
+    /* Media Gallery */
+    .media-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+
+    .media-gallery::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .media-gallery::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+    }
+
+    .media-gallery::-webkit-scrollbar-thumb {
+        background: var(--accent-cyan);
+        border-radius: 3px;
+    }
+
+    .gallery-item {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .gallery-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+    }
+
+    .gallery-item img, .gallery-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .gallery-item .play-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 32px;
+        opacity: 0.8;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .gallery-item .delete-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(255, 51, 102, 0.8);
+        border: none;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gallery-item:hover .delete-btn {
+        opacity: 1;
+    }
+
+    .gallery-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        color: var(--text-muted);
+    }
+
+    /* Lightbox */
+    .lightbox {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .lightbox.active {
+        display: flex;
+    }
+
+    .lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 12px;
+        box-shadow: 0 0 50px rgba(0, 245, 255, 0.3);
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 40px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .lightbox-close:hover {
+        color: var(--accent-cyan);
+        transform: rotate(90deg);
+    }
+
+    /* Status messages */
+    .status-toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        padding: 15px 25px;
+        background: rgba(15, 15, 25, 0.95);
+        border: 1px solid var(--accent-green);
+        border-radius: 12px;
+        color: var(--accent-green);
+        font-size: 14px;
+        backdrop-filter: blur(10px);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 9999;
+    }
+
+    .status-toast.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .status-toast.error {
+        border-color: var(--accent-red);
+        color: var(--accent-red);
+    }
+
+    /* Hide default site styles for full immersion */
+    html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+    #main { background: transparent !important; padding: 0 !important; margin: 0 !important; max-width: 100% !important; width: 100% !important; }
+    .page { background: transparent !important; max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    #header { display: none !important; }
+    #footer { display: none !important; }
+    .content { padding: 0 !important; max-width: 100% !important; width: 100% !important; margin: 0 !important; }
+</style>
+
+<!-- Particles.js Container -->
+<div id="particles-js"></div>
+<div class="bg-grid"></div>
+
+<div id="command-center">
+    <!-- Header -->
+    <header class="cc-header">
+        <div class="cc-title">
+            <div class="cc-logo">&#x2B22;</div>
+            <h1>Command Center</h1>
+        </div>
+        <div class="cc-controls">
+            <!-- Settings Dropdown -->
+            <div class="dropdown" id="settings-dropdown">
+                <div class="dropdown-trigger" onclick="toggleDropdown('settings-dropdown')">
+                    <span>&#x2699;</span>
+                    <span>Settings</span>
+                    <span class="arrow">&#x25BC;</span>
+                </div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">Display Settings</div>
+                    <div class="dropdown-item" onclick="toggleSetting('particles')">
+                        <div class="dropdown-item-label">
+                            <div class="dropdown-item-icon">&#x2728;</div>
+                            <span>Particles Effect</span>
+                        </div>
+                        <div class="toggle-switch active" id="toggle-particles"></div>
+                    </div>
+                    <div class="dropdown-item" onclick="toggleSetting('grid')">
+                        <div class="dropdown-item-label">
+                            <div class="dropdown-item-icon">&#x2395;</div>
+                            <span>Grid Background</span>
+                        </div>
+                        <div class="toggle-switch active" id="toggle-grid"></div>
+                    </div>
+                    <div class="dropdown-item" onclick="toggleSetting('animations')">
+                        <div class="dropdown-item-label">
+                            <div class="dropdown-item-icon">&#x1F3AC;</div>
+                            <span>Animations</span>
+                        </div>
+                        <div class="toggle-switch active" id="toggle-animations"></div>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">Particle Density</div>
+                        <div class="slider-container">
+                            <input type="range" class="slider" id="particle-density" min="20" max="150" value="80" onchange="updateParticleDensity(this.value)">
+                        </div>
+                    </div>
+                    <div class="dropdown-section">
+                        <div class="dropdown-section-title">Refresh Rate</div>
+                        <select class="dropdown-select" id="refresh-rate" onchange="updateRefreshRate(this.value)">
+                            <option value="1000">1 second</option>
+                            <option value="3000" selected>3 seconds</option>
+                            <option value="5000">5 seconds</option>
+                            <option value="10000">10 seconds</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Dropdown -->
+            <div class="dropdown" id="theme-dropdown">
+                <div class="dropdown-trigger" onclick="toggleDropdown('theme-dropdown')">
+                    <span>&#x1F3A8;</span>
+                    <span>Theme</span>
+                    <span class="arrow">&#x25BC;</span>
+                </div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">Color Theme</div>
+                    <div class="dropdown-item" onclick="setTheme('cyber')">
+                        <div class="dropdown-item-label">
+                            <div class="dropdown-item-icon" style="background: linear-gradient(135deg, #00f5ff, #bf00ff);">&#x26A1;</div>
+                            <span>Cyber Neon</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-item" onclick="setTheme('matrix')">
+                        <div class="dropdown-item-label">
+                            <div class="dropdown-item-icon" style="background: linear-gradient(135deg, #00ff00, #003300);">&#x1F4BB;</div>
+                            <span>Matrix Green</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-item" onclick="setTheme('sunset')">
+                        <div class="dropdown-item-label">
+                            <div class="dropdown-item-icon" style="background: linear-gradient(135deg, #ff6b6b, #ffa500);">&#x1F305;</div>
+                            <span>Sunset Orange</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-item" onclick="setTheme('ocean')">
+                        <div class="dropdown-item-label">
+                            <div class="dropdown-item-icon" style="background: linear-gradient(135deg, #0077be, #00d4aa);">&#x1F30A;</div>
+                            <span>Ocean Blue</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span class="status-text">All Systems Operational</span>
+            </div>
+        </div>
+        <div class="cc-clock">
+            <div class="clock-time" id="live-time">00:00:00</div>
+            <div class="clock-date" id="live-date">Loading...</div>
+        </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="cc-grid">
+        <!-- CPU Usage -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">CPU Usage</span>
+                <div class="card-icon" style="background: rgba(0, 245, 255, 0.1); color: var(--accent-cyan);">&#x26A1;</div>
+            </div>
+            <div class="stat-value" style="color: var(--accent-cyan);" id="cpu-value">0%</div>
+            <div class="stat-label">Processing Power</div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill cyan" id="cpu-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">Memory</span>
+                <div class="card-icon" style="background: rgba(0, 255, 136, 0.1); color: var(--accent-green);">&#x1F4BE;</div>
+            </div>
+            <div class="stat-value" style="color: var(--accent-green);" id="memory-value">0%</div>
+            <div class="stat-label">RAM Utilization</div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill green" id="memory-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">Network</span>
+                <div class="card-icon" style="background: rgba(255, 136, 0, 0.1); color: var(--accent-orange);">&#x1F310;</div>
+            </div>
+            <div class="stat-value" style="color: var(--accent-orange);" id="network-value">0 Mb/s</div>
+            <div class="stat-label">Bandwidth</div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill orange" id="network-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Users -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">Active Users</span>
+                <div class="card-icon" style="background: rgba(191, 0, 255, 0.1); color: var(--accent-purple);">&#x1F465;</div>
+            </div>
+            <div class="stat-value" style="color: var(--accent-purple);" id="users-value">0</div>
+            <div class="stat-label">Online Now</div>
+            <div class="stat-change up" id="users-change">&#x2191; +12% from yesterday</div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="cc-card wide">
+            <div class="card-header">
+                <span class="card-title">Performance Metrics</span>
+                <div class="card-icon" style="background: rgba(0, 245, 255, 0.1); color: var(--accent-cyan);">&#x1F4C8;</div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bars" id="perf-chart">
+                    <!-- Bars will be generated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- System Resources -->
+        <div class="cc-card wide">
+            <div class="card-header">
+                <span class="card-title">System Resources</span>
+                <div class="card-icon" style="background: rgba(255, 0, 128, 0.1); color: var(--accent-pink);">&#x2699;</div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-label">Storage</span>
+                    <span class="progress-value" id="storage-value">65%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill pink" id="storage-bar" style="width: 65%;"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-label">Database Connections</span>
+                    <span class="progress-value">42%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill cyan" style="width: 42%;"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-label">Cache Hit Rate</span>
+                    <span class="progress-value">89%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill green" style="width: 89%;"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span class="progress-label">API Response Time</span>
+                    <span class="progress-value">23ms</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill orange" style="width: 15%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="cc-card tall">
+            <div class="card-header">
+                <span class="card-title">System Alerts</span>
+                <div class="card-icon" style="background: rgba(255, 136, 0, 0.1); color: var(--accent-orange);">&#x1F514;</div>
+            </div>
+            <div id="alerts-container">
+                <div class="alert-item success">
+                    <span class="alert-icon">&#x2705;</span>
+                    <span class="alert-message">All systems operational</span>
+                    <span class="alert-time">Now</span>
+                </div>
+                <div class="alert-item info">
+                    <span class="alert-icon">&#x2139;</span>
+                    <span class="alert-message">Backup completed</span>
+                    <span class="alert-time">15m ago</span>
+                </div>
+                <div class="alert-item warning">
+                    <span class="alert-icon">&#x26A0;</span>
+                    <span class="alert-message">High memory usage</span>
+                    <span class="alert-time">1h ago</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="cc-card tall">
+            <div class="card-header">
+                <span class="card-title">Activity Feed</span>
+                <div class="card-icon" style="background: rgba(0, 255, 136, 0.1); color: var(--accent-green);">&#x1F4DD;</div>
+            </div>
+            <ul class="activity-list" id="activity-feed">
+                <li class="activity-item">
+                    <div class="activity-avatar" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));">&#x1F916;</div>
+                    <div class="activity-content">
+                        <div class="activity-user">System</div>
+                        <div class="activity-action">Automated backup initiated</div>
+                    </div>
+                    <div class="activity-time">2m ago</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-avatar" style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));">&#x1F464;</div>
+                    <div class="activity-content">
+                        <div class="activity-user">Admin</div>
+                        <div class="activity-action">Configuration updated</div>
+                    </div>
+                    <div class="activity-time">15m ago</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-avatar" style="background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));">&#x1F50D;</div>
+                    <div class="activity-content">
+                        <div class="activity-user">Monitor</div>
+                        <div class="activity-action">Health check passed</div>
+                    </div>
+                    <div class="activity-time">30m ago</div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-avatar" style="background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));">&#x1F6E1;</div>
+                    <div class="activity-content">
+                        <div class="activity-user">Security</div>
+                        <div class="activity-action">Threat scan completed</div>
+                    </div>
+                    <div class="activity-time">1h ago</div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Server Stats -->
+        <div class="cc-card wide">
+            <div class="card-header">
+                <span class="card-title">Server Statistics</span>
+                <div class="card-icon" style="background: rgba(0, 245, 255, 0.1); color: var(--accent-cyan);">&#x1F5A5;</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 10px;">
+                <div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--accent-cyan);" id="requests-value">0</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--accent-green);">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--accent-purple);" id="load-value">0.00</div>
+                    <div class="stat-label">Server Load</div>
+                </div>
+                <div>
+                    <div style="font-size: 28px; font-weight: 700; color: var(--accent-orange);">23ms</div>
+                    <div class="stat-label">Avg Response</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Upload Hub -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">Media Upload</span>
+                <div class="card-icon" style="background: rgba(0, 245, 255, 0.1); color: var(--accent-cyan);">&#x1F4E4;</div>
+            </div>
+            <div class="media-dropzone" id="dropzone">
+                <div class="dropzone-icon">&#x1F4C1;</div>
+                <div class="dropzone-text">Drop files here or click to upload</div>
+                <div class="dropzone-hint">Images, Videos, Audio supported</div>
+                <input type="file" id="file-input" style="display: none;" accept="image/*,video/*,audio/*" multiple>
+            </div>
+            <div class="upload-progress" id="upload-progress">
+                <div class="upload-filename" id="upload-filename"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill cyan" id="upload-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Webcam -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">Live Camera</span>
+                <div class="card-icon" style="background: rgba(255, 0, 128, 0.1); color: var(--accent-pink);">&#x1F4F7;</div>
+            </div>
+            <video id="webcam-preview" class="media-preview" autoplay muted playsinline></video>
+            <div class="media-controls">
+                <button class="media-btn" id="webcam-toggle" onclick="toggleWebcam()">
+                    <span>&#x1F4F9;</span> Start Camera
+                </button>
+                <button class="media-btn" id="webcam-snapshot" onclick="takeSnapshot()" disabled>
+                    <span>&#x1F4F8;</span> Snapshot
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen Recorder -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">Screen Recorder</span>
+                <div class="card-icon" style="background: rgba(255, 136, 0, 0.1); color: var(--accent-orange);">&#x1F3AC;</div>
+            </div>
+            <video id="screen-preview" class="media-preview" autoplay muted></video>
+            <div class="media-controls">
+                <button class="media-btn" id="screen-toggle" onclick="toggleScreenRecording()">
+                    <span>&#x23FA;</span> Start Recording
+                </button>
+                <button class="media-btn danger" id="screen-stop" onclick="stopScreenRecording()" style="display: none;">
+                    <span class="rec-dot"></span> Stop
+                </button>
+            </div>
+        </div>
+
+        <!-- Webcam Recorder -->
+        <div class="cc-card">
+            <div class="card-header">
+                <span class="card-title">Webcam Recorder</span>
+                <div class="card-icon" style="background: rgba(191, 0, 255, 0.1); color: var(--accent-purple);">&#x1F3A5;</div>
+            </div>
+            <video id="webcam-record-preview" class="media-preview" autoplay muted playsinline></video>
+            <div class="media-controls">
+                <button class="media-btn" id="webcam-rec-start" onclick="startWebcamRecording()">
+                    <span>&#x23FA;</span> Record
+                </button>
+                <button class="media-btn danger" id="webcam-rec-stop" onclick="stopWebcamRecording()" style="display: none;">
+                    <span class="rec-dot"></span> Stop
+                </button>
+            </div>
+        </div>
+
+        <!-- Media Gallery -->
+        <div class="cc-card wide tall">
+            <div class="card-header">
+                <span class="card-title">Media Gallery</span>
+                <div class="card-icon" style="background: rgba(0, 255, 136, 0.1); color: var(--accent-green);">&#x1F5BC;</div>
+            </div>
+            <div class="media-gallery" id="media-gallery">
+                <div class="gallery-empty">No media yet. Upload some files!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" class="lightbox-content" style="display: none;">
+    <video id="lightbox-video" class="lightbox-content" controls style="display: none;"></video>
+</div>
+
+<!-- Toast Notification -->
+<div class="status-toast" id="toast"></div>
+
+<!-- Particles.js Library -->
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+// Particles.js Configuration
+particlesJS('particles-js', {
+    particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: ['#00f5ff', '#bf00ff', '#ff0080', '#00ff88'] },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5, random: true, anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false } },
+        size: { value: 3, random: true, anim: { enable: true, speed: 2, size_min: 0.1, sync: false } },
+        line_linked: { enable: true, distance: 150, color: '#00f5ff', opacity: 0.2, width: 1 },
+        move: { enable: true, speed: 1, direction: 'none', random: true, straight: false, out_mode: 'out', bounce: false }
+    },
+    interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'grab' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { grab: { distance: 140, line_linked: { opacity: 0.5 } }, push: { particles_nb: 4 } }
+    },
+    retina_detect: true
+});
+
+// Settings state
+let settings = {
+    particles: true,
+    grid: true,
+    animations: true,
+    refreshRate: 3000
+};
+
+let refreshInterval;
+
+// Dropdown functionality
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    const wasOpen = dropdown.classList.contains('open');
+
+    // Close all dropdowns
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+
+    // Toggle clicked dropdown
+    if (!wasOpen) {
+        dropdown.classList.add('open');
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+    }
+});
+
+// Toggle settings
+function toggleSetting(setting) {
+    settings[setting] = !settings[setting];
+    const toggle = document.getElementById('toggle-' + setting);
+    toggle.classList.toggle('active');
+
+    switch(setting) {
+        case 'particles':
+            document.getElementById('particles-js').style.opacity = settings.particles ? '1' : '0';
+            break;
+        case 'grid':
+            document.querySelector('.bg-grid').style.opacity = settings.grid ? '1' : '0';
+            break;
+        case 'animations':
+            document.body.style.setProperty('--animation-play-state', settings.animations ? 'running' : 'paused');
+            break;
+    }
+}
+
+// Update particle density
+function updateParticleDensity(value) {
+    if (window.pJSDom && window.pJSDom[0]) {
+        window.pJSDom[0].pJS.particles.number.value = parseInt(value);
+        window.pJSDom[0].pJS.fn.particlesRefresh();
+    }
+}
+
+// Update refresh rate
+function updateRefreshRate(value) {
+    settings.refreshRate = parseInt(value);
+    clearInterval(refreshInterval);
+    refreshInterval = setInterval(fetchStats, settings.refreshRate);
+}
+
+// Theme switching
+function setTheme(theme) {
+    const root = document.documentElement;
+    const themes = {
+        cyber: {
+            '--accent-cyan': '#00f5ff',
+            '--accent-purple': '#bf00ff',
+            '--accent-pink': '#ff0080',
+            '--accent-green': '#00ff88'
+        },
+        matrix: {
+            '--accent-cyan': '#00ff00',
+            '--accent-purple': '#00aa00',
+            '--accent-pink': '#33ff33',
+            '--accent-green': '#00ff00'
+        },
+        sunset: {
+            '--accent-cyan': '#ff6b6b',
+            '--accent-purple': '#ffa500',
+            '--accent-pink': '#ff4757',
+            '--accent-green': '#ffc048'
+        },
+        ocean: {
+            '--accent-cyan': '#0077be',
+            '--accent-purple': '#00d4aa',
+            '--accent-pink': '#00b4d8',
+            '--accent-green': '#00d4aa'
+        }
+    };
+
+    const colors = themes[theme];
+    Object.keys(colors).forEach(key => {
+        root.style.setProperty(key, colors[key]);
+    });
+
+    // Update particles colors
+    if (window.pJSDom && window.pJSDom[0]) {
+        window.pJSDom[0].pJS.particles.color.value = Object.values(colors);
+        window.pJSDom[0].pJS.particles.line_linked.color = colors['--accent-cyan'];
+        window.pJSDom[0].pJS.fn.particlesRefresh();
+    }
+
+    // Close dropdown
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+}
+
+(function() {
+    // Live Clock
+    function updateClock() {
+        const now = new Date();
+        const time = now.toLocaleTimeString('en-US', { hour12: false });
+        const date = now.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        document.getElementById('live-time').textContent = time;
+        document.getElementById('live-date').textContent = date;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Generate initial chart
+    function generateChart() {
+        const container = document.getElementById('perf-chart');
+        container.innerHTML = '';
+
+        for (let i = 0; i < 12; i++) {
+            const height = Math.floor(Math.random() * 60) + 20;
+            const time = new Date(Date.now() - (11 - i) * 60000);
+            const label = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'chart-bar-wrapper';
+            wrapper.style.position = 'relative';
+
+            const bar = document.createElement('div');
+            bar.className = 'chart-bar';
+            bar.style.height = height + '%';
+            bar.style.marginTop = 'auto';
+
+            const labelEl = document.createElement('span');
+            labelEl.className = 'chart-label';
+            labelEl.textContent = label;
+
+            wrapper.appendChild(bar);
+            wrapper.appendChild(labelEl);
+            container.appendChild(wrapper);
+        }
+    }
+
+    generateChart();
+
+    // Animate numbers
+    function animateValue(element, start, end, duration) {
+        const startTime = performance.now();
+        const suffix = element.textContent.includes('%') ? '%' :
+                       element.textContent.includes('Mb/s') ? ' Mb/s' : '';
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(start + (end - start) * easeOut);
+
+            element.textContent = current.toLocaleString() + suffix;
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    // Fetch live data via AJAX
+    function fetchStats() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        updateDashboard(response.data);
+                    }
+                } catch(e) {
+                    console.log('Updating with simulated data');
+                    updateDashboard({
+                        cpu: Math.floor(Math.random() * 70) + 15,
+                        memory: Math.floor(Math.random() * 40) + 30,
+                        network: Math.floor(Math.random() * 90) + 10,
+                        active_users: Math.floor(Math.random() * 450) + 50,
+                        requests: Math.floor(Math.random() * 40000) + 10000,
+                        server_load: (Math.random() * 3 + 1).toFixed(2)
+                    });
+                }
+            }
+        };
+
+        xhr.send('gate=command_center&action=get_stats');
+    }
+
+    function updateDashboard(data) {
+        // CPU
+        const cpuEl = document.getElementById('cpu-value');
+        animateValue(cpuEl, parseInt(cpuEl.textContent) || 0, data.cpu, 500);
+        document.getElementById('cpu-bar').style.width = data.cpu + '%';
+
+        // Memory
+        const memEl = document.getElementById('memory-value');
+        animateValue(memEl, parseInt(memEl.textContent) || 0, data.memory, 500);
+        document.getElementById('memory-bar').style.width = data.memory + '%';
+
+        // Network
+        const netEl = document.getElementById('network-value');
+        const currentNet = parseInt(netEl.textContent) || 0;
+        animateValue(netEl, currentNet, data.network, 500);
+        document.getElementById('network-bar').style.width = data.network + '%';
+
+        // Users
+        const usersEl = document.getElementById('users-value');
+        animateValue(usersEl, parseInt(usersEl.textContent.replace(/,/g, '')) || 0, data.active_users, 500);
+
+        // Requests
+        const reqEl = document.getElementById('requests-value');
+        animateValue(reqEl, parseInt(reqEl.textContent.replace(/,/g, '')) || 0, data.requests, 500);
+
+        // Server Load
+        document.getElementById('load-value').textContent = data.server_load;
+
+        // Update chart with new bar
+        const container = document.getElementById('perf-chart');
+        const bars = container.querySelectorAll('.chart-bar');
+        bars.forEach((bar, i) => {
+            const newHeight = Math.floor(Math.random() * 60) + 20;
+            bar.style.height = newHeight + '%';
+        });
+    }
+
+    // Initial fetch and polling
+    fetchStats();
+    refreshInterval = setInterval(fetchStats, 3000);
+
+    // Expose fetchStats globally for settings
+    window.fetchStats = fetchStats;
+
+    // Add subtle animation to cards on load
+    document.querySelectorAll('.cc-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.5s ease';
+
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Load gallery on start
+    setTimeout(loadGallery, 500);
+
+})();
+
+// ============================================
+// MEDIA HUB FUNCTIONALITY
+// ============================================
+
+// Toast notifications
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'status-toast' + (isError ? ' error' : '');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// File Upload
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('file-input');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+});
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+function handleFiles(files) {
+    Array.from(files).forEach(uploadFile);
+}
+
+function uploadFile(file) {
+    const progressEl = document.getElementById('upload-progress');
+    const filenameEl = document.getElementById('upload-filename');
+    const barEl = document.getElementById('upload-bar');
+
+    progressEl.classList.add('active');
+    filenameEl.textContent = file.name;
+    barEl.style.width = '0%';
+
+    const formData = new FormData();
+    formData.append('gate', 'media_hub');
+    formData.append('action', 'upload');
+    formData.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/', true);
+
+    xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+            const percent = (e.loaded / e.total) * 100;
+            barEl.style.width = percent + '%';
+        }
+    };
+
+    xhr.onload = () => {
+        setTimeout(() => progressEl.classList.remove('active'), 1000);
+        try {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                showToast('File uploaded successfully!');
+                loadGallery();
+            } else {
+                showToast(response.error || 'Upload failed', true);
+            }
+        } catch (e) {
+            showToast('Upload failed', true);
+        }
+    };
+
+    xhr.onerror = () => showToast('Upload failed', true);
+    xhr.send(formData);
+}
+
+// Gallery
+function loadGallery() {
+    const formData = new FormData();
+    formData.append('gate', 'media_hub');
+    formData.append('action', 'list');
+
+    fetch('/', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            const gallery = document.getElementById('media-gallery');
+            if (data.success && data.files.length > 0) {
+                gallery.innerHTML = data.files.map(file => `
+                    <div class="gallery-item" onclick="openLightbox('${file.url}', '${file.media_type}')">
+                        ${file.media_type === 'video'
+                            ? `<video src="${file.url}" muted></video><span class="play-overlay">&#x25B6;</span>`
+                            : `<img src="${file.url}" alt="${file.name}">`}
+                        <button class="delete-btn" onclick="event.stopPropagation(); deleteFile('${file.name}')">&times;</button>
+                    </div>
+                `).join('');
+            } else {
+                gallery.innerHTML = '<div class="gallery-empty">No media yet. Upload some files!</div>';
+            }
+        })
+        .catch(() => {});
+}
+
+function deleteFile(filename) {
+    if (!confirm('Delete this file?')) return;
+
+    const formData = new FormData();
+    formData.append('gate', 'media_hub');
+    formData.append('action', 'delete');
+    formData.append('filename', filename);
+
+    fetch('/', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('File deleted');
+                loadGallery();
+            }
+        });
+}
+
+// Lightbox
+function openLightbox(url, type) {
+    const lightbox = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    const video = document.getElementById('lightbox-video');
+
+    if (type === 'image') {
+        img.src = url;
+        img.style.display = 'block';
+        video.style.display = 'none';
+        video.pause();
+    } else {
+        video.src = url;
+        video.style.display = 'block';
+        img.style.display = 'none';
+    }
+
+    lightbox.classList.add('active');
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.getElementById('lightbox-video').pause();
+}
+
+// Webcam
+let webcamStream = null;
+let webcamActive = false;
+
+function toggleWebcam() {
+    if (webcamActive) {
+        stopWebcam();
+    } else {
+        startWebcam();
+    }
+}
+
+function startWebcam() {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(stream => {
+            webcamStream = stream;
+            document.getElementById('webcam-preview').srcObject = stream;
+            document.getElementById('webcam-toggle').innerHTML = '<span>&#x23F9;</span> Stop Camera';
+            document.getElementById('webcam-snapshot').disabled = false;
+            webcamActive = true;
+        })
+        .catch(err => showToast('Camera access denied', true));
+}
+
+function stopWebcam() {
+    if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        document.getElementById('webcam-preview').srcObject = null;
+    }
+    document.getElementById('webcam-toggle').innerHTML = '<span>&#x1F4F9;</span> Start Camera';
+    document.getElementById('webcam-snapshot').disabled = true;
+    webcamActive = false;
+}
+
+function takeSnapshot() {
+    const video = document.getElementById('webcam-preview');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+
+    const formData = new FormData();
+    formData.append('gate', 'media_hub');
+    formData.append('action', 'save_snapshot');
+    formData.append('data', canvas.toDataURL('image/png'));
+
+    fetch('/', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Snapshot saved!');
+                loadGallery();
+            }
+        });
+}
+
+// Screen Recording
+let screenStream = null;
+let screenRecorder = null;
+let screenChunks = [];
+
+function toggleScreenRecording() {
+    navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+        .then(stream => {
+            screenStream = stream;
+            document.getElementById('screen-preview').srcObject = stream;
+            document.getElementById('screen-toggle').style.display = 'none';
+            document.getElementById('screen-stop').style.display = 'flex';
+
+            screenRecorder = new MediaRecorder(stream);
+            screenChunks = [];
+
+            screenRecorder.ondataavailable = (e) => screenChunks.push(e.data);
+            screenRecorder.onstop = saveScreenRecording;
+            screenRecorder.start();
+
+            stream.getVideoTracks()[0].onended = stopScreenRecording;
+        })
+        .catch(err => showToast('Screen sharing denied', true));
+}
+
+function stopScreenRecording() {
+    if (screenRecorder && screenRecorder.state !== 'inactive') {
+        screenRecorder.stop();
+    }
+    if (screenStream) {
+        screenStream.getTracks().forEach(track => track.stop());
+        document.getElementById('screen-preview').srcObject = null;
+    }
+    document.getElementById('screen-toggle').style.display = 'flex';
+    document.getElementById('screen-stop').style.display = 'none';
+}
+
+function saveScreenRecording() {
+    const blob = new Blob(screenChunks, { type: 'video/webm' });
+    const reader = new FileReader();
+    reader.onload = () => {
+        const formData = new FormData();
+        formData.append('gate', 'media_hub');
+        formData.append('action', 'save_recording');
+        formData.append('data', reader.result);
+        formData.append('type', 'webm');
+
+        fetch('/', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Screen recording saved!');
+                    loadGallery();
+                }
+            });
+    };
+    reader.readAsDataURL(blob);
+}
+
+// Webcam Recording
+let webcamRecStream = null;
+let webcamRecorder = null;
+let webcamChunks = [];
+
+function startWebcamRecording() {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+            webcamRecStream = stream;
+            document.getElementById('webcam-record-preview').srcObject = stream;
+            document.getElementById('webcam-rec-start').style.display = 'none';
+            document.getElementById('webcam-rec-stop').style.display = 'flex';
+
+            webcamRecorder = new MediaRecorder(stream);
+            webcamChunks = [];
+
+            webcamRecorder.ondataavailable = (e) => webcamChunks.push(e.data);
+            webcamRecorder.onstop = saveWebcamRecording;
+            webcamRecorder.start();
+        })
+        .catch(err => showToast('Camera/mic access denied', true));
+}
+
+function stopWebcamRecording() {
+    if (webcamRecorder && webcamRecorder.state !== 'inactive') {
+        webcamRecorder.stop();
+    }
+    if (webcamRecStream) {
+        webcamRecStream.getTracks().forEach(track => track.stop());
+        document.getElementById('webcam-record-preview').srcObject = null;
+    }
+    document.getElementById('webcam-rec-start').style.display = 'flex';
+    document.getElementById('webcam-rec-stop').style.display = 'none';
+}
+
+function saveWebcamRecording() {
+    const blob = new Blob(webcamChunks, { type: 'video/webm' });
+    const reader = new FileReader();
+    reader.onload = () => {
+        const formData = new FormData();
+        formData.append('gate', 'media_hub');
+        formData.append('action', 'save_recording');
+        formData.append('data', reader.result);
+        formData.append('type', 'webm');
+
+        fetch('/', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Webcam recording saved!');
+                    loadGallery();
+                }
+            });
+    };
+    reader.readAsDataURL(blob);
+}
+
+// Keyboard shortcut: Escape to close lightbox
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+});
+</script>
