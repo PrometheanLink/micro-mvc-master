@@ -1,13 +1,16 @@
 {
   "name": "@phoenix/mcp-server",
   "version": "2.0.0",
-  "description": "PHOENIX MCP Server - AI-powered dashboard builder with Control Panel",
+  "description": "PHOENIX MCP Server - AI-powered platform builder for micro-MVC",
   "main": "server.js",
   "type": "module",
+  "bin": {
+    "phoenix-mcp": "./index.js"
+  },
   "scripts": {
     "launch": "node launch.js",
     "start": "node server.js",
-    "start:mcp": "node mcp-bridge.js",
+    "start:mcp": "node index.js",
     "dev": "node server.js",
     "setup": "npm install && node launch.js"
   },

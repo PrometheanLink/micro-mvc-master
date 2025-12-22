@@ -1,0 +1,83 @@
+{
+  "id": "article",
+  "name": "Article / Blog Post",
+  "description": "Long-form content with rich media, sidebar, and comments",
+  "category": "content",
+  "version": "1.0.0",
+  "author": "PHOENIX",
+
+  "slots": {
+    "hero": {
+      "description": "Hero image or video header",
+      "accepts": ["hero-image", "hero-video", "hero-gradient"],
+      "max": 1
+    },
+    "meta": {
+      "description": "Article metadata (author, date, tags)",
+      "accepts": ["author-card", "date-display", "tag-list", "read-time"],
+      "max": 1
+    },
+    "content": {
+      "description": "Main article content",
+      "accepts": ["text-block", "image-block", "video-embed", "code-block", "quote-block", "callout"],
+      "repeatable": true,
+      "max": 50
+    },
+    "sidebar": {
+      "description": "Related content, ToC, or ads",
+      "accepts": ["table-of-contents", "related-posts", "author-bio", "newsletter-signup", "ad-block"],
+      "position": "sidebar-right",
+      "max": 5
+    },
+    "share": {
+      "description": "Social sharing buttons",
+      "accepts": ["share-buttons", "like-button"],
+      "max": 1
+    },
+    "comments": {
+      "description": "Comments section",
+      "accepts": ["comment-section", "disqus-embed"],
+      "max": 1
+    },
+    "related": {
+      "description": "Related articles grid",
+      "accepts": ["article-card", "post-card"],
+      "repeatable": true,
+      "max": 6
+    }
+  },
+
+  "layout": {
+    "type": "sidebar-right",
+    "main": "740px",
+    "sidebar": "320px",
+    "gap": "60px",
+    "maxWidth": "1200px",
+    "centered": true
+  },
+
+  "features": {
+    "particles": false,
+    "glassmorphism": true,
+    "grid_background": false,
+    "reading_progress": true,
+    "sticky_toc": true,
+    "dark_mode_toggle": true,
+    "estimated_read_time": true
+  },
+
+  "themes": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+
+  "config": {
+    "title": { "type": "string", "default": "Article Title" },
+    "theme": { "type": "string", "enum": ["dark", "light", "cyber"], "default": "dark" },
+    "show_hero": { "type": "boolean", "default": true },
+    "show_author": { "type": "boolean", "default": true },
+    "show_date": { "type": "boolean", "default": true },
+    "show_toc": { "type": "boolean", "default": true },
+    "show_share": { "type": "boolean", "default": true },
+    "show_comments": { "type": "boolean", "default": true },
+    "show_related": { "type": "boolean", "default": true },
+    "font_size": { "type": "string", "enum": ["small", "medium", "large"], "default": "medium" }
+  }
+}

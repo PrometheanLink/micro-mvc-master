@@ -8,7 +8,16 @@
       "Bash(git add:*)",
       "Bash(git push)",
       "Bash(npm run build:*)",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(node server.js:*)",
+      "Bash(docker-compose:*)",
+      "Bash(curl:*)",
+      "Bash(node --check:*)",
+      "Bash(timeout /t 2 node index.js)",
+      "Bash(echo:*)",
+      "Bash(node index.js:*)",
+      "Bash(dir /b /a \"C:\\\\Users\\\\whieb\\\\.claude*\")",
+      "Bash(dir /b /a \"C:\\\\Users\\\\whieb\\\\AppData\\\\Roaming\\\\Claude\")"
     ]
   }
 }

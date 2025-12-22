@@ -535,12 +535,28 @@
             <!-- Tools Page -->
             <div id="page-tools" style="display: none;">
                 <h1 style="margin-bottom: 30px;">Tool Runner</h1>
+
+                <!-- Quick Actions -->
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="card-title">Available Tools</h2>
+                        <h2 class="card-title">Quick Actions</h2>
                     </div>
-                    <div class="grid grid-2" id="tools-grid">
-                        Loading...
+                    <div class="grid grid-3">
+                        <div class="widget-card" onclick="showCreateModal()">
+                            <div class="widget-icon">📊</div>
+                            <div class="widget-name">Create Dashboard</div>
+                            <div class="widget-desc">Create a new page with a template</div>
+                        </div>
+                        <div class="widget-card" onclick="showAddWidgetModal()">
+                            <div class="widget-icon">🧩</div>
+                            <div class="widget-name">Add Widget</div>
+                            <div class="widget-desc">Add a widget to an existing page</div>
+                        </div>
+                        <div class="widget-card" onclick="runTool('analyze-framework')">
+                            <div class="widget-icon">🔍</div>
+                            <div class="widget-name">Analyze Framework</div>
+                            <div class="widget-desc">Scan routes, templates, widgets</div>
+                        </div>
                     </div>
                 </div>
 
@@ -611,6 +627,63 @@
                 <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
                     <button type="button" class="btn btn-ghost" onclick="hideCreateModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Create Dashboard</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Widget Modal -->
+    <div class="modal" id="widget-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Widget</h2>
+                <button class="modal-close" onclick="hideAddWidgetModal()">×</button>
+            </div>
+
+            <form id="widget-form" onsubmit="addWidget(event)">
+                <div class="form-group">
+                    <label class="form-label">Target Page</label>
+                    <select class="input" name="page" id="widget-page-select" required>
+                        <option value="">Select a page...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Widget Type</label>
+                    <select class="input" name="widget" id="widget-type-select" required>
+                        <option value="stats-card">Stats Card</option>
+                        <option value="chart-bar">Bar Chart</option>
+                        <option value="progress-bar">Progress Bar</option>
+                        <option value="activity-feed">Activity Feed</option>
+                        <option value="data-table">Data Table</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Slot</label>
+                    <select class="input" name="slot" required>
+                        <option value="header">Header</option>
+                        <option value="stats">Stats</option>
+                        <option value="charts">Charts</option>
+                        <option value="main">Main Content</option>
+                        <option value="sidebar">Sidebar</option>
+                        <option value="footer">Footer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="input" name="title" placeholder="Widget title">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Value (for stats)</label>
+                    <input type="text" class="input" name="value" placeholder="1234">
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-ghost" onclick="hideAddWidgetModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Widget</button>
                 </div>
             </form>
         </div>
@@ -778,6 +851,54 @@
 
         function hideCreateModal() {
             document.getElementById('create-modal').classList.remove('active');
+        }
+
+        async function showAddWidgetModal() {
+            // Load pages into dropdown
+            const pages = await fetchAPI('/api/pages');
+            const select = document.getElementById('widget-page-select');
+            select.innerHTML = '<option value="">Select a page...</option>' +
+                pages.pages?.filter(p => p.isPhoenix).map(p =>
+                    `<option value="${p.route}">${p.route}</option>`
+                ).join('');
+
+            document.getElementById('widget-modal').classList.add('active');
+        }
+
+        function hideAddWidgetModal() {
+            document.getElementById('widget-modal').classList.remove('active');
+        }
+
+        async function addWidget(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const args = {
+                dashboard: form.page.value,
+                widget: form.widget.value,
+                slot: form.slot.value,
+                config: {
+                    title: form.title.value || 'Untitled',
+                    value: form.value.value || '0'
+                }
+            };
+
+            try {
+                const result = await postAPI('/api/tools/add-widget', { args });
+
+                if (result.success) {
+                    alert('Widget added!');
+                    hideAddWidgetModal();
+
+                    // Show output in console
+                    const output = document.getElementById('tool-output');
+                    output.innerHTML += `<div class="console-line console-success">${result.output.replace(/\n/g, '<br>')}</div>`;
+                } else {
+                    alert('Error: ' + (result.output || result.error));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
         }
 
         async function createDashboard(event) {

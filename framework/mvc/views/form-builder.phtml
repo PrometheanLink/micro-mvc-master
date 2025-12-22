@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($data['title'] ?? 'Form Builder') ?> - PrometheanLink</title>
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; overflow: hidden; background: var(--brand-bg); }
+
+        .form-builder-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header Bar */
+        .builder-header {
+            height: 60px;
+            background: var(--brand-surface);
+            border-bottom: 1px solid var(--brand-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+        .builder-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .builder-title h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .form-name-input {
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--brand-text);
+            font-size: 0.95rem;
+            width: 250px;
+        }
+        .form-name-input:focus {
+            border-color: var(--brand-primary);
+            outline: none;
+        }
+        .builder-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Main Content Area */
+        .builder-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Field Library Panel */
+        .field-library {
+            width: 280px;
+            background: var(--brand-surface);
+            border-right: 1px solid var(--brand-border);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .library-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .library-header h3 {
+            font-size: 0.85rem;
+            color: var(--brand-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 10px 0;
+        }
+        .library-search input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 6px;
+            color: var(--brand-text);
+            font-size: 0.9rem;
+        }
+        .library-search input:focus {
+            border-color: var(--brand-primary);
+            outline: none;
+        }
+        .field-category {
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .category-header {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .category-header:hover {
+            background: var(--brand-bg);
+        }
+        .category-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: var(--brand-text);
+            font-size: 0.9rem;
+        }
+        .category-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--brand-bg);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: var(--brand-primary);
+        }
+        .category-toggle {
+            color: var(--brand-text-secondary);
+            transition: transform 0.2s;
+        }
+        .field-category.open .category-toggle {
+            transform: rotate(180deg);
+        }
+        .category-fields {
+            display: none;
+            padding: 10px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .field-category.open .category-fields {
+            display: grid;
+        }
+        .field-type {
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            padding: 12px 10px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        .field-type:hover {
+            border-color: var(--brand-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.15);
+        }
+        .field-type:active {
+            cursor: grabbing;
+        }
+        .field-type-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--brand-surface);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 1rem;
+            color: var(--brand-primary);
+        }
+        .field-type-label {
+            font-size: 0.75rem;
+            color: var(--brand-text);
+            font-weight: 500;
+        }
+
+        /* Form Canvas */
+        .form-canvas-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: var(--brand-bg);
+        }
+        .canvas-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .canvas-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .form-canvas {
+            background: var(--brand-surface);
+            border: 2px dashed var(--brand-border);
+            border-radius: 12px;
+            min-height: 400px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        .form-canvas.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(0, 255, 136, 0.05);
+        }
+        .form-canvas.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brand-text-tertiary);
+            font-size: 1.1rem;
+        }
+        .canvas-field {
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+            position: relative;
+            padding: 20px;
+        }
+        .canvas-field:hover {
+            border-color: var(--brand-primary);
+        }
+        .canvas-field.selected {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+        }
+        .field-actions {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .canvas-field:hover .field-actions {
+            opacity: 1;
+        }
+        .field-action-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: var(--brand-surface);
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--brand-text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        .field-action-btn:hover {
+            background: var(--brand-primary);
+            color: var(--brand-bg);
+        }
+        .field-action-btn.delete:hover {
+            background: #ff4444;
+        }
+        .field-label {
+            font-weight: 500;
+            color: var(--brand-text);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .field-required {
+            color: #ff4444;
+        }
+        .field-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--brand-surface);
+            border: 1px solid var(--brand-border);
+            border-radius: 6px;
+            color: var(--brand-text);
+            font-size: 0.95rem;
+        }
+        .field-heading {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--brand-text);
+            margin: 0;
+        }
+        .field-paragraph {
+            color: var(--brand-text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+        .field-divider {
+            height: 1px;
+            background: var(--brand-border);
+            margin: 10px 0;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            width: 320px;
+            background: var(--brand-surface);
+            border-left: 1px solid var(--brand-border);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .settings-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .settings-header h3 {
+            font-size: 0.95rem;
+            color: var(--brand-text);
+            font-weight: 600;
+            margin: 0;
+        }
+        .settings-content {
+            padding: 20px;
+        }
+        .setting-group {
+            margin-bottom: 25px;
+        }
+        .setting-group h4 {
+            font-size: 0.8rem;
+            color: var(--brand-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 12px 0;
+        }
+        .setting-row {
+            margin-bottom: 15px;
+        }
+        .setting-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--brand-text);
+            margin-bottom: 6px;
+        }
+        .setting-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 6px;
+            color: var(--brand-text);
+            font-size: 0.9rem;
+        }
+        .setting-input:focus {
+            border-color: var(--brand-primary);
+            outline: none;
+        }
+        .setting-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .setting-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--brand-primary);
+        }
+        .setting-help {
+            font-size: 0.8rem;
+            color: var(--brand-text-tertiary);
+            margin-top: 5px;
+        }
+        .no-field-selected {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--brand-text-tertiary);
+        }
+        .no-field-selected .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Preview Mode */
+        .preview-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .preview-overlay.active {
+            display: flex;
+        }
+        .preview-container {
+            background: var(--brand-surface);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 40px;
+        }
+        .preview-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="phoenix-page theme-cyber">
+
+    <div class="form-builder-wrapper">
+        <!-- Header -->
+        <div class="builder-header">
+            <div class="builder-title">
+                <h1 class="gradient-text">PHOENIX Form Builder</h1>
+                <input type="text" class="form-name-input" value="Contact Form" placeholder="Form Name" id="formName">
+            </div>
+            <div class="builder-actions">
+                <button class="btn btn-secondary" onclick="previewForm()">Preview</button>
+                <button class="btn btn-secondary" onclick="exportForm()">Export JSON</button>
+                <button class="btn btn-primary" onclick="saveForm()">Save Form</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="builder-content">
+            <!-- Field Library -->
+            <div class="field-library">
+                <div class="library-header">
+                    <h3>Field Library</h3>
+                    <div class="library-search">
+                        <input type="text" placeholder="Search fields..." id="fieldSearch">
+                    </div>
+                </div>
+
+                <?php
+                $categories = $data['field_categories'] ?? [];
+                $fieldTypes = $data['field_types'] ?? [];
+                foreach ($categories as $index => $cat):
+                ?>
+                <div class="field-category <?= $index === 0 ? 'open' : '' ?>" data-category="<?= htmlspecialchars($cat['id']) ?>">
+                    <div class="category-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span class="category-name">
+                            <span class="category-icon"><?= htmlspecialchars($cat['icon']) ?></span>
+                            <?= htmlspecialchars($cat['name']) ?>
+                        </span>
+                        <span class="category-toggle">&#9660;</span>
+                    </div>
+                    <div class="category-fields">
+                        <?php foreach ($fieldTypes as $field): ?>
+                            <?php if (($field['category'] ?? '') === $cat['id']): ?>
+                            <div class="field-type"
+                                 draggable="true"
+                                 data-type="<?= htmlspecialchars($field['type']) ?>"
+                                 data-label="<?= htmlspecialchars($field['label']) ?>"
+                                 title="<?= htmlspecialchars($field['description'] ?? '') ?>">
+                                <div class="field-type-icon"><?= htmlspecialchars($field['icon']) ?></div>
+                                <div class="field-type-label"><?= htmlspecialchars($field['label']) ?></div>
+                            </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Form Canvas -->
+            <div class="form-canvas-wrapper">
+                <div class="canvas-toolbar">
+                    <div></div>
+                    <div class="canvas-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="clearCanvas()">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="form-canvas empty" id="formCanvas">
+                    Drag fields here to build your form
+                </div>
+            </div>
+
+            <!-- Settings Panel -->
+            <div class="settings-panel">
+                <div class="settings-header">
+                    <h3>Field Settings</h3>
+                </div>
+                <div class="settings-content" id="settingsContent">
+                    <div class="no-field-selected">
+                        <div class="icon">&#9881;</div>
+                        <p>Select a field to edit its settings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Overlay -->
+    <div class="preview-overlay" id="previewOverlay">
+        <button class="preview-close" onclick="closePreview()">&times;</button>
+        <div class="preview-container" id="previewContainer"></div>
+    </div>
+
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script>
+        // Form Builder State
+        const formBuilder = {
+            fields: [],
+            selectedField: null
+        };
+
+        // Initialize with demo form
+        const demoFields = [
+            {id: 'field_1', type: 'heading', content: 'Contact Us'},
+            {id: 'field_2', type: 'paragraph', content: 'Fill out the form below and we will get back to you within 24 hours.'},
+            {id: 'field_3', type: 'text', label: 'Your Name', placeholder: 'John Doe', required: true},
+            {id: 'field_4', type: 'email', label: 'Email Address', placeholder: 'john@example.com', required: true},
+            {id: 'field_5', type: 'select', label: 'Subject', options: ['General Inquiry', 'Support', 'Sales', 'Partnership'], required: true},
+            {id: 'field_6', type: 'textarea', label: 'Message', placeholder: 'How can we help you?', required: true, rows: 5}
+        ];
+        formBuilder.fields = demoFields;
+
+        // Render canvas
+        function renderCanvas() {
+            const canvas = document.getElementById('formCanvas');
+
+            if (formBuilder.fields.length === 0) {
+                canvas.classList.add('empty');
+                canvas.innerHTML = 'Drag fields here to build your form';
+                return;
+            }
+
+            canvas.classList.remove('empty');
+            canvas.innerHTML = formBuilder.fields.map((field, index) => renderField(field, index)).join('');
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderField(field, index) {
+            let content = '';
+            const required = field.required ? '<span class="field-required">*</span>' : '';
+
+            switch (field.type) {
+                case 'heading':
+                    content = '<h2 class="field-heading">' + escapeHtml(field.content || 'Section Heading') + '</h2>';
+                    break;
+                case 'paragraph':
+                    content = '<p class="field-paragraph">' + escapeHtml(field.content || 'Paragraph text...') + '</p>';
+                    break;
+                case 'divider':
+                    content = '<div class="field-divider"></div>';
+                    break;
+                case 'textarea':
+                    content = '<label class="field-label">' + escapeHtml(field.label || 'Text Area') + ' ' + required + '</label>' +
+                        '<textarea class="field-input" rows="' + (field.rows || 3) + '" placeholder="' + escapeHtml(field.placeholder || '') + '"></textarea>';
+                    break;
+                case 'select':
+                    var options = (field.options || ['Option 1', 'Option 2']).map(function(opt) {
+                        return '<option>' + escapeHtml(opt) + '</option>';
+                    }).join('');
+                    content = '<label class="field-label">' + escapeHtml(field.label || 'Dropdown') + ' ' + required + '</label>' +
+                        '<select class="field-input">' + options + '</select>';
+                    break;
+                case 'radio':
+                    var radios = (field.options || ['Option 1', 'Option 2']).map(function(opt, i) {
+                        return '<label style="display: flex; align-items: center; gap: 8px; margin: 5px 0;"><input type="radio" name="radio_' + field.id + '"> ' + escapeHtml(opt) + '</label>';
+                    }).join('');
+                    content = '<label class="field-label">' + escapeHtml(field.label || 'Radio Buttons') + ' ' + required + '</label>' + radios;
+                    break;
+                case 'checkbox':
+                    var checks = (field.options || ['Option 1', 'Option 2']).map(function(opt, i) {
+                        return '<label style="display: flex; align-items: center; gap: 8px; margin: 5px 0;"><input type="checkbox"> ' + escapeHtml(opt) + '</label>';
+                    }).join('');
+                    content = '<label class="field-label">' + escapeHtml(field.label || 'Checkboxes') + ' ' + required + '</label>' + checks;
+                    break;
+                default:
+                    content = '<label class="field-label">' + escapeHtml(field.label || field.type) + ' ' + required + '</label>' +
+                        '<input type="' + field.type + '" class="field-input" placeholder="' + escapeHtml(field.placeholder || '') + '">';
+            }
+
+            return '<div class="canvas-field" data-index="' + index + '" onclick="selectField(' + index + ')">' +
+                '<div class="field-actions">' +
+                    '<button class="field-action-btn" onclick="duplicateField(' + index + '); event.stopPropagation();" title="Duplicate">&#128203;</button>' +
+                    '<button class="field-action-btn delete" onclick="deleteField(' + index + '); event.stopPropagation();" title="Delete">&#128465;</button>' +
+                '</div>' +
+                content +
+            '</div>';
+        }
+
+        // Field operations
+        function selectField(index) {
+            formBuilder.selectedField = index;
+            document.querySelectorAll('.canvas-field').forEach(function(el, i) {
+                el.classList.toggle('selected', i === index);
+            });
+            renderSettings(formBuilder.fields[index]);
+        }
+
+        function deleteField(index) {
+            formBuilder.fields.splice(index, 1);
+            formBuilder.selectedField = null;
+            renderCanvas();
+            renderSettings(null);
+        }
+
+        function duplicateField(index) {
+            var field = JSON.parse(JSON.stringify(formBuilder.fields[index]));
+            field.id = 'field_' + Date.now();
+            formBuilder.fields.splice(index + 1, 0, field);
+            renderCanvas();
+        }
+
+        function clearCanvas() {
+            if (confirm('Are you sure you want to clear all fields?')) {
+                formBuilder.fields = [];
+                renderCanvas();
+                renderSettings(null);
+            }
+        }
+
+        // Settings panel
+        function renderSettings(field) {
+            var container = document.getElementById('settingsContent');
+
+            if (!field) {
+                container.innerHTML = '<div class="no-field-selected"><div class="icon">&#9881;</div><p>Select a field to edit its settings</p></div>';
+                return;
+            }
+
+            var html = '<div class="setting-group"><h4>Field Properties</h4>';
+
+            if (field.type === 'heading' || field.type === 'paragraph') {
+                html += '<div class="setting-row"><label class="setting-label">Content</label>' +
+                    '<textarea class="setting-input" rows="3" onchange="updateField(\'content\', this.value)">' + escapeHtml(field.content || '') + '</textarea></div>';
+            } else if (field.type !== 'divider') {
+                html += '<div class="setting-row"><label class="setting-label">Label</label>' +
+                    '<input type="text" class="setting-input" value="' + escapeHtml(field.label || '') + '" onchange="updateField(\'label\', this.value)"></div>';
+                html += '<div class="setting-row"><label class="setting-label">Placeholder</label>' +
+                    '<input type="text" class="setting-input" value="' + escapeHtml(field.placeholder || '') + '" onchange="updateField(\'placeholder\', this.value)"></div>';
+                html += '<div class="setting-row"><label class="setting-checkbox">' +
+                    '<input type="checkbox" ' + (field.required ? 'checked' : '') + ' onchange="updateField(\'required\', this.checked)"> Required field</label></div>';
+
+                if (field.type === 'select' || field.type === 'radio' || field.type === 'checkbox') {
+                    var options = (field.options || []).join('\n');
+                    html += '<div class="setting-row"><label class="setting-label">Options (one per line)</label>' +
+                        '<textarea class="setting-input" rows="4" onchange="updateField(\'options\', this.value.split(\'\\n\'))">' + escapeHtml(options) + '</textarea></div>';
+                }
+
+                if (field.type === 'textarea') {
+                    html += '<div class="setting-row"><label class="setting-label">Rows</label>' +
+                        '<input type="number" class="setting-input" value="' + (field.rows || 3) + '" min="2" max="20" onchange="updateField(\'rows\', parseInt(this.value))"></div>';
+                }
+            }
+
+            html += '<div class="setting-row"><label class="setting-label">Field ID</label>' +
+                '<input type="text" class="setting-input" value="' + field.id + '" readonly style="opacity: 0.6;">' +
+                '<p class="setting-help">Auto-generated unique identifier</p></div></div>';
+
+            container.innerHTML = html;
+        }
+
+        function updateField(property, value) {
+            if (formBuilder.selectedField === null) return;
+            formBuilder.fields[formBuilder.selectedField][property] = value;
+            renderCanvas();
+            selectField(formBuilder.selectedField);
+        }
+
+        // Drag and drop
+        document.querySelectorAll('.field-type').forEach(function(el) {
+            el.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('type', el.dataset.type);
+                e.dataTransfer.setData('label', el.dataset.label);
+            });
+        });
+
+        var canvas = document.getElementById('formCanvas');
+
+        canvas.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            canvas.classList.add('drag-over');
+        });
+
+        canvas.addEventListener('dragleave', function() {
+            canvas.classList.remove('drag-over');
+        });
+
+        canvas.addEventListener('drop', function(e) {
+            e.preventDefault();
+            canvas.classList.remove('drag-over');
+
+            var type = e.dataTransfer.getData('type');
+            var label = e.dataTransfer.getData('label');
+
+            if (type) {
+                var newField = {
+                    id: 'field_' + Date.now(),
+                    type: type,
+                    label: label
+                };
+
+                if (type === 'heading' || type === 'paragraph') {
+                    newField.content = type === 'heading' ? 'Section Heading' : 'Enter your text here...';
+                }
+
+                if (type === 'select' || type === 'radio' || type === 'checkbox') {
+                    newField.options = ['Option 1', 'Option 2', 'Option 3'];
+                }
+
+                formBuilder.fields.push(newField);
+                renderCanvas();
+            }
+        });
+
+        // Actions
+        function previewForm() {
+            var container = document.getElementById('previewContainer');
+            var html = '<h2 style="margin-bottom: 20px;">' + escapeHtml(document.getElementById('formName').value) + '</h2><form>';
+            formBuilder.fields.forEach(function(f, i) {
+                html += renderField(f, i);
+            });
+            html += '<button type="submit" class="btn btn-primary" style="margin-top: 20px;">Submit</button></form>';
+            container.innerHTML = html;
+            document.getElementById('previewOverlay').classList.add('active');
+        }
+
+        function closePreview() {
+            document.getElementById('previewOverlay').classList.remove('active');
+        }
+
+        function exportForm() {
+            var formData = {
+                name: document.getElementById('formName').value,
+                fields: formBuilder.fields
+            };
+            var blob = new Blob([JSON.stringify(formData, null, 2)], {type: 'application/json'});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = formData.name.toLowerCase().replace(/\s+/g, '-') + '.json';
+            a.click();
+        }
+
+        function saveForm() {
+            var formData = {
+                name: document.getElementById('formName').value,
+                fields: formBuilder.fields
+            };
+            console.log('Saving form:', formData);
+            alert('Form saved! (In production this would persist to storage)');
+        }
+
+        // Initialize
+        renderCanvas();
+    </script>
+</body>
+</html>

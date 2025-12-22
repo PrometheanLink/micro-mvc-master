@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($data['title']) ?> - PrometheanLink</title>
+
+    <!-- PHOENIX Core CSS (PrometheanLink Industrial Dark Theme) -->
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+
+    <style>
+        /* Control Panel Layout */
+        .control-panel {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--brand-panel);
+            border-right: 1px solid var(--brand-border);
+            padding: 24px;
+            position: relative;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-top: 8px;
+        }
+
+        .sidebar-orb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%,
+                rgba(254, 168, 47, 0.9),
+                rgba(249, 122, 22, 0.8)
+            );
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--brand-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            padding-left: 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--brand-text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--brand-muted);
+            color: var(--brand-text-primary);
+        }
+
+        .nav-item.active {
+            background: rgba(249, 122, 22, 0.15);
+            color: var(--brand-primary);
+            border-left: 3px solid var(--brand-primary);
+        }
+
+        .nav-icon { font-size: 1.2rem; }
+
+        /* Main Content */
+        .main-content {
+            padding: 32px;
+            overflow-y: auto;
+            background: linear-gradient(180deg,
+                #0a0a1a 0%,
+                #0d1424 50%,
+                #0F0F0F 100%
+            );
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--brand-text-primary);
+        }
+
+        .view-dashboard-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(249, 122, 22, 0.3);
+        }
+
+        .view-dashboard-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(249, 122, 22, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--phoenix-shadow);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--brand-text-primary);
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--brand-primary), var(--brand-accent));
+            border-radius: 2px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--brand-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--brand-muted);
+            border: 1px solid var(--brand-border);
+            border-radius: 12px;
+            color: var(--brand-text-primary);
+            font-size: 1rem;
+            font-family: var(--phoenix-font-family);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(249, 122, 22, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 0;
+        }
+
+        .form-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--brand-primary);
+            cursor: pointer;
+        }
+
+        .form-check label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Stats Editor */
+        .stats-editor {
+            display: grid;
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: var(--brand-muted);
+            border: 1px solid var(--brand-border);
+            border-radius: var(--phoenix-radius);
+            padding: 20px;
+            position: relative;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+            border-radius: 2px 2px 0 0;
+        }
+
+        .stat-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-item-title {
+            font-weight: 600;
+            color: var(--brand-text-primary);
+        }
+
+        .stat-item-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        .stat-item-grid .form-label {
+            font-size: 0.7rem;
+        }
+
+        .stat-item-grid .form-input,
+        .stat-item-grid .form-select {
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--phoenix-font-family);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            color: white;
+            box-shadow: 0 4px 14px rgba(249, 122, 22, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(249, 122, 22, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: var(--brand-muted);
+            color: var(--brand-text-primary);
+            border: 1px solid var(--brand-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--brand-border);
+        }
+
+        .btn-danger {
+            background: var(--brand-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-small {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Color Select */
+        .color-options {
+            display: flex;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .color-option:hover, .color-option.selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+        }
+
+        .color-option.selected {
+            border-color: white;
+        }
+
+        .color-option.orange { background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); }
+        .color-option.cyan { background: linear-gradient(135deg, #00d4ff, #67e8f9); }
+        .color-option.green { background: linear-gradient(135deg, #22c55e, #6EE7B7); }
+        .color-option.purple { background: linear-gradient(135deg, #7b2cbf, #a855f7); }
+        .color-option.pink { background: linear-gradient(135deg, #ec4899, #f472b6); }
+        .color-option.gold { background: linear-gradient(135deg, var(--brand-accent), #fcd083); }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 28px;
+            background: var(--brand-success);
+            color: #0F0F0F;
+            border-radius: 12px;
+            font-weight: 600;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 8px 30px rgba(110, 231, 183, 0.3);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: var(--brand-danger);
+            color: white;
+        }
+
+        /* Section Panels */
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .stat-item-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-item-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body class="phoenix-page theme-cyber">
+
+    <div class="control-panel">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-orb">🔥</div>
+                <span class="sidebar-title">PHOENIX</span>
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-label">Dashboard</div>
+                <div class="nav-item active" data-section="general">
+                    <span class="nav-icon">🎨</span>
+                    <span>General</span>
+                </div>
+                <div class="nav-item" data-section="stats">
+                    <span class="nav-icon">📊</span>
+                    <span>Stats Cards</span>
+                </div>
+                <div class="nav-item" data-section="chart">
+                    <span class="nav-icon">📈</span>
+                    <span>Chart</span>
+                </div>
+                <div class="nav-item" data-section="progress">
+                    <span class="nav-icon">📋</span>
+                    <span>Progress</span>
+                </div>
+                <div class="nav-item" data-section="activities">
+                    <span class="nav-icon">🔔</span>
+                    <span>Activity</span>
+                </div>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-label">Demo Pages</div>
+                <a href="/en/sneaker-store/" class="nav-item">
+                    <span class="nav-icon">👟</span>
+                    <span>Sneaker Store</span>
+                </a>
+                <a href="/en/demo-gallery/" class="nav-item">
+                    <span class="nav-icon">🖼️</span>
+                    <span>Gallery</span>
+                </a>
+                <a href="/en/demo-article/" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Article</span>
+                </a>
+                <a href="/en/demo-kanban/" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Kanban Board</span>
+                </a>
+                <a href="/en/demo-landing/" class="nav-item">
+                    <span class="nav-icon">🚀</span>
+                    <span>Landing Page</span>
+                </a>
+                <a href="/en/form-builder/" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span>Form Builder</span>
+                </a>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-label">Tools</div>
+                <div class="nav-item" onclick="exportConfig()">
+                    <span class="nav-icon">📤</span>
+                    <span>Export</span>
+                </div>
+                <div class="nav-item" onclick="document.getElementById('importFile').click()">
+                    <span class="nav-icon">📥</span>
+                    <span>Import</span>
+                </div>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importConfig(event)">
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1 class="content-title">Control Panel</h1>
+                <a href="/" class="view-dashboard-btn">
+                    <span>👁️</span>
+                    <span>View Dashboard</span>
+                </a>
+            </header>
+
+            <!-- General Settings Section -->
+            <div id="section-general" class="section-content active">
+                <div class="card">
+                    <h2 class="card-title">General Settings</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Dashboard Title</label>
+                            <input type="text" class="form-input" id="config-title"
+                                   value="<?= htmlspecialchars($data['config']['title'] ?? 'PHOENIX Dashboard') ?>">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Subtitle</label>
+                            <input type="text" class="form-input" id="config-subtitle"
+                                   value="<?= htmlspecialchars($data['config']['subtitle'] ?? 'Industrial Strength Digital Operations') ?>">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <select class="form-select" id="config-theme">
+                                <option value="cyber" <?= ($data['config']['theme'] ?? 'cyber') === 'cyber' ? 'selected' : '' ?>>Cyber (Default)</option>
+                                <option value="dark" <?= ($data['config']['theme'] ?? '') === 'dark' ? 'selected' : '' ?>>Dark</option>
+                                <option value="industrial" <?= ($data['config']['theme'] ?? '') === 'industrial' ? 'selected' : '' ?>>Industrial</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Effects</label>
+                            <div class="form-check">
+                                <input type="checkbox" id="config-particles"
+                                       <?= ($data['config']['show_particles'] ?? true) ? 'checked' : '' ?>>
+                                <label for="config-particles">Show Stars & Glow Effects</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveConfig()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div id="section-stats" class="section-content">
+                <div class="card">
+                    <h2 class="card-title">Stats Cards</h2>
+                    <div class="stats-editor" id="stats-editor">
+                        <?php
+                        $stats = $data['config']['stats'] ?? [];
+                        foreach ($stats as $i => $stat):
+                        ?>
+                        <div class="stat-item" data-index="<?= $i ?>">
+                            <div class="stat-item-header">
+                                <span class="stat-item-title"><?= htmlspecialchars($stat['title']) ?></span>
+                                <button class="btn btn-danger btn-small" onclick="removeStat(<?= $i ?>)">Remove</button>
+                            </div>
+                            <div class="stat-item-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Title</label>
+                                    <input type="text" class="form-input stat-title" value="<?= htmlspecialchars($stat['title']) ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Value</label>
+                                    <input type="number" class="form-input stat-value" value="<?= $stat['value'] ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Icon</label>
+                                    <select class="form-select stat-icon">
+                                        <option value="users" <?= ($stat['icon'] ?? '') === 'users' ? 'selected' : '' ?>>Users</option>
+                                        <option value="money" <?= ($stat['icon'] ?? '') === 'money' ? 'selected' : '' ?>>Money</option>
+                                        <option value="cart" <?= ($stat['icon'] ?? '') === 'cart' ? 'selected' : '' ?>>Cart</option>
+                                        <option value="target" <?= ($stat['icon'] ?? '') === 'target' ? 'selected' : '' ?>>Target</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Color</label>
+                                    <div class="color-options">
+                                        <div class="color-option orange <?= ($stat['color'] ?? '') === 'orange' ? 'selected' : '' ?>" data-color="orange"></div>
+                                        <div class="color-option green <?= ($stat['color'] ?? '') === 'green' ? 'selected' : '' ?>" data-color="green"></div>
+                                        <div class="color-option purple <?= ($stat['color'] ?? '') === 'purple' ? 'selected' : '' ?>" data-color="purple"></div>
+                                        <div class="color-option gold <?= ($stat['color'] ?? '') === 'gold' ? 'selected' : '' ?>" data-color="gold"></div>
+                                        <div class="color-option cyan <?= ($stat['color'] ?? '') === 'cyan' ? 'selected' : '' ?>" data-color="cyan"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="addStat()">+ Add Stat Card</button>
+                        <button class="btn btn-primary" onclick="saveConfig()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div id="section-chart" class="section-content">
+                <div class="card">
+                    <h2 class="card-title">Chart Settings</h2>
+                    <div class="form-group">
+                        <label class="form-label">Chart Title</label>
+                        <input type="text" class="form-input" id="chart-title"
+                               value="<?= htmlspecialchars($data['config']['chart']['title'] ?? 'Performance') ?>">
+                    </div>
+                    <p style="color: var(--brand-text-tertiary); margin-top: 20px; font-size: 0.9rem;">
+                        Advanced chart data editing coming soon. For now, edit the JSON config directly using Export/Import.
+                    </p>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveConfig()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="section-progress" class="section-content">
+                <div class="card">
+                    <h2 class="card-title">Progress Bars</h2>
+                    <p style="color: var(--brand-text-tertiary); font-size: 0.9rem;">
+                        Progress bar editing coming soon. Use Export/Import to edit the JSON config directly.
+                    </p>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveConfig()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activities Section -->
+            <div id="section-activities" class="section-content">
+                <div class="card">
+                    <h2 class="card-title">Activity Feed</h2>
+                    <p style="color: var(--brand-text-tertiary); font-size: 0.9rem;">
+                        Activity feed editing coming soon. Use Export/Import to edit the JSON config directly.
+                    </p>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="saveConfig()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Saved successfully!</div>
+
+    <script>
+        // Current config state
+        let currentConfig = <?= json_encode($data['config'] ?? []) ?>;
+
+        // Navigation
+        document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+            item.addEventListener('click', () => {
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+
+                // Update section
+                const section = item.dataset.section;
+                document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+                document.getElementById('section-' + section).classList.add('active');
+            });
+        });
+
+        // Color selection
+        document.querySelectorAll('.color-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                const parent = opt.closest('.stat-item');
+                parent.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+            });
+        });
+
+        // Build config from form
+        function buildConfig() {
+            const config = {
+                title: document.getElementById('config-title').value,
+                subtitle: document.getElementById('config-subtitle').value,
+                theme: document.getElementById('config-theme').value,
+                show_particles: document.getElementById('config-particles').checked,
+                stats: [],
+                chart: currentConfig.chart || {},
+                progress: currentConfig.progress || [],
+                activities: currentConfig.activities || []
+            };
+
+            // Update chart title
+            const chartTitle = document.getElementById('chart-title');
+            if (chartTitle) {
+                config.chart.title = chartTitle.value;
+            }
+
+            // Build stats from form
+            document.querySelectorAll('.stat-item').forEach(item => {
+                const stat = {
+                    title: item.querySelector('.stat-title').value,
+                    value: parseFloat(item.querySelector('.stat-value').value),
+                    icon: item.querySelector('.stat-icon').value,
+                    color: item.querySelector('.color-option.selected')?.dataset.color || 'orange'
+                };
+
+                // Preserve prefix/suffix/trend from current config if they exist
+                const index = parseInt(item.dataset.index);
+                if (currentConfig.stats && currentConfig.stats[index]) {
+                    if (currentConfig.stats[index].prefix) stat.prefix = currentConfig.stats[index].prefix;
+                    if (currentConfig.stats[index].suffix) stat.suffix = currentConfig.stats[index].suffix;
+                    if (currentConfig.stats[index].trend) stat.trend = currentConfig.stats[index].trend;
+                }
+
+                config.stats.push(stat);
+            });
+
+            return config;
+        }
+
+        // Save config to server
+        async function saveConfig() {
+            const config = buildConfig();
+
+            try {
+                const response = await fetch('/phoenix/api/save-config.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                if (response.ok) {
+                    currentConfig = config;
+                    showToast('Configuration saved!');
+                } else {
+                    showToast('Error saving configuration', 'error');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showToast('Error saving configuration', 'error');
+            }
+        }
+
+        // Add new stat card
+        function addStat() {
+            const editor = document.getElementById('stats-editor');
+            const index = editor.children.length;
+
+            const html = `
+                <div class="stat-item" data-index="${index}">
+                    <div class="stat-item-header">
+                        <span class="stat-item-title">New Stat</span>
+                        <button class="btn btn-danger btn-small" onclick="removeStat(${index})">Remove</button>
+                    </div>
+                    <div class="stat-item-grid">
+                        <div class="form-group">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-input stat-title" value="New Stat">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Value</label>
+                            <input type="number" class="form-input stat-value" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Icon</label>
+                            <select class="form-select stat-icon">
+                                <option value="users">Users</option>
+                                <option value="money">Money</option>
+                                <option value="cart">Cart</option>
+                                <option value="target">Target</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Color</label>
+                            <div class="color-options">
+                                <div class="color-option orange selected" data-color="orange"></div>
+                                <div class="color-option green" data-color="green"></div>
+                                <div class="color-option purple" data-color="purple"></div>
+                                <div class="color-option gold" data-color="gold"></div>
+                                <div class="color-option cyan" data-color="cyan"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            editor.insertAdjacentHTML('beforeend', html);
+
+            // Re-attach color listeners
+            editor.lastElementChild.querySelectorAll('.color-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    opt.parentElement.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                });
+            });
+        }
+
+        // Remove stat card
+        function removeStat(index) {
+            const items = document.querySelectorAll('.stat-item');
+            items[index]?.remove();
+        }
+
+        // Export config
+        function exportConfig() {
+            const config = buildConfig();
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prometheanlink-dashboard-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Config exported!');
+        }
+
+        // Import config
+        function importConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const config = JSON.parse(e.target.result);
+
+                    // Save to server
+                    const response = await fetch('/phoenix/api/save-config.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(config)
+                    });
+
+                    if (response.ok) {
+                        showToast('Config imported! Reloading...');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast('Error importing config', 'error');
+                    }
+                } catch (error) {
+                    showToast('Invalid config file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast' + (type === 'error' ? ' error' : '');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        console.log('🔥 PrometheanLink Control Panel loaded');
+    </script>
+
+</body>
+</html>

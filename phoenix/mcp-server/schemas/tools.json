@@ -1,0 +1,217 @@
+{
+  "tools": {
+    "phoenix_create_page": {
+      "name": "phoenix_create_page",
+      "description": "Create a new page with a template",
+      "category": "page-management",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name/title of the page"
+          },
+          "route": {
+            "type": "string",
+            "description": "URL path (lowercase, hyphens)"
+          },
+          "template": {
+            "type": "string",
+            "enum": ["dashboard", "catalog", "article", "gallery", "kanban", "landing"],
+            "description": "Template type"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description"
+          },
+          "theme": {
+            "type": "string",
+            "enum": ["cyber", "dark", "industrial"],
+            "default": "cyber"
+          },
+          "widgets": {
+            "type": "array",
+            "description": "Widgets to include"
+          }
+        },
+        "required": ["name", "route", "template"]
+      }
+    },
+    "phoenix_update_page": {
+      "name": "phoenix_update_page",
+      "description": "Update an existing page",
+      "category": "page-management",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string",
+            "description": "Page route to update"
+          },
+          "updates": {
+            "type": "object",
+            "description": "Updates to apply"
+          }
+        },
+        "required": ["route", "updates"]
+      }
+    },
+    "phoenix_list_pages": {
+      "name": "phoenix_list_pages",
+      "description": "List all pages",
+      "category": "page-management",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    "phoenix_get_page": {
+      "name": "phoenix_get_page",
+      "description": "Get page details",
+      "category": "page-management",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string"
+          }
+        },
+        "required": ["route"]
+      }
+    },
+    "phoenix_delete_page": {
+      "name": "phoenix_delete_page",
+      "description": "Delete a page",
+      "category": "page-management",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string"
+          }
+        },
+        "required": ["route"]
+      }
+    },
+    "phoenix_list_templates": {
+      "name": "phoenix_list_templates",
+      "description": "List available templates",
+      "category": "templates",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    "phoenix_list_widgets": {
+      "name": "phoenix_list_widgets",
+      "description": "List available widgets",
+      "category": "widgets",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Filter by category"
+          }
+        }
+      }
+    },
+    "phoenix_update_dashboard_config": {
+      "name": "phoenix_update_dashboard_config",
+      "description": "Update main dashboard configuration",
+      "category": "configuration",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "subtitle": { "type": "string" },
+          "theme": { "type": "string" },
+          "show_particles": { "type": "boolean" },
+          "stats": { "type": "array" },
+          "chart": { "type": "object" },
+          "progress": { "type": "array" },
+          "activities": { "type": "array" }
+        }
+      }
+    }
+  },
+  "templates": {
+    "dashboard": {
+      "name": "Dashboard",
+      "description": "Analytics and KPI dashboard",
+      "slots": ["stats-row", "chart-area", "sidebar", "activity-feed", "progress-section"]
+    },
+    "catalog": {
+      "name": "Product Catalog",
+      "description": "Grid layout for products or portfolios",
+      "slots": ["filters-sidebar", "product-grid", "pagination"]
+    },
+    "article": {
+      "name": "Article/Blog",
+      "description": "Long-form content with sidebar",
+      "slots": ["header-image", "content", "sidebar", "comments"]
+    },
+    "gallery": {
+      "name": "Media Gallery",
+      "description": "Photo/video grid with lightbox",
+      "slots": ["album-header", "media-grid", "lightbox"]
+    },
+    "kanban": {
+      "name": "Kanban Board",
+      "description": "Project management columns",
+      "slots": ["board-header", "columns", "card-modal"]
+    },
+    "landing": {
+      "name": "Landing Page",
+      "description": "Marketing page with sections",
+      "slots": ["hero", "features", "testimonials", "cta", "footer"]
+    }
+  },
+  "widgets": {
+    "stat-card": {
+      "name": "Stat Card",
+      "category": "data",
+      "description": "Single metric with trend indicator"
+    },
+    "chart-bar": {
+      "name": "Bar Chart",
+      "category": "data",
+      "description": "Vertical or horizontal bar chart"
+    },
+    "chart-line": {
+      "name": "Line Chart",
+      "category": "data",
+      "description": "Time series line chart"
+    },
+    "data-table": {
+      "name": "Data Table",
+      "category": "data",
+      "description": "Sortable data table"
+    },
+    "progress-bar": {
+      "name": "Progress Bar",
+      "category": "data",
+      "description": "Progress indicator"
+    },
+    "activity-feed": {
+      "name": "Activity Feed",
+      "category": "social",
+      "description": "Recent activity list"
+    },
+    "product-card": {
+      "name": "Product Card",
+      "category": "ecommerce",
+      "description": "Product with image and price"
+    },
+    "text-block": {
+      "name": "Text Block",
+      "category": "content",
+      "description": "Rich text content"
+    },
+    "image-block": {
+      "name": "Image Block",
+      "category": "content",
+      "description": "Image with caption"
+    }
+  }
+}

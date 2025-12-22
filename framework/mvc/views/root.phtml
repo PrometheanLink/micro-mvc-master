@@ -1,22 +1,622 @@
-<?php
-    // Load your extra extensions here...
-?>
-            <div id="root" class="page">
-                <div class="content">
-                    <?php UTIL::Load_Content('root', 'dynamic'); ?>
-                    <div class="controls">
-                        <br>
-                        <div class="control_item">
-                            <a id="index_button" class="button" href="test">
-                                <?=UTIL::Load_Content('go_to_button_text', 'static');?>
-                            </a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($data['title']) ?> - PrometheanLink</title>
+
+    <!-- PHOENIX Core CSS (PrometheanLink Industrial Dark Theme) -->
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+
+    <style>
+        /* Stars Background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* Horizon Glow */
+        .horizon-glow {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(180deg,
+                transparent 0%,
+                rgba(249, 115, 22, 0.05) 50%,
+                rgba(249, 115, 22, 0.1) 100%
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .dashboard-header {
+            text-align: center;
+            padding: 60px 30px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-orb {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%,
+                rgba(254, 168, 47, 0.9),
+                rgba(249, 122, 22, 0.8)
+            );
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.6),
+                        0 0 60px rgba(249, 115, 22, 0.4),
+                        0 0 90px rgba(249, 115, 22, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            animation: pulse 4s ease-in-out infinite, float 6s ease-in-out infinite;
+        }
+
+        .dashboard-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.1rem;
+            color: var(--brand-text-secondary);
+            margin: 0 0 24px 0;
+            font-weight: 500;
+        }
+
+        .admin-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px 0 rgba(249, 122, 22, 0.3);
+        }
+
+        .admin-link:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(249, 122, 22, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* Main Container */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+            color: var(--brand-text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--brand-primary), var(--brand-accent));
+            border-radius: 2px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--phoenix-gap);
+            margin-bottom: var(--phoenix-gap-lg);
+        }
+
+        .stat-card {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card.orange::before { background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent)); }
+        .stat-card.green::before { background: linear-gradient(90deg, #22c55e, #6EE7B7); }
+        .stat-card.purple::before { background: linear-gradient(90deg, #7b2cbf, #a855f7); }
+        .stat-card.pink::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
+        .stat-card.cyan::before { background: linear-gradient(90deg, #00d4ff, #67e8f9); }
+        .stat-card.gold::before { background: linear-gradient(90deg, var(--brand-accent), #fcd083); }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            font-size: 0.85rem;
+            color: var(--brand-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--brand-text-primary);
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .stat-trend.up { color: var(--brand-success); }
+        .stat-trend.down { color: var(--brand-danger); }
+
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--phoenix-gap);
+            margin-bottom: var(--phoenix-gap-lg);
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+            position: relative;
+        }
+
+        /* Corner brackets for chart */
+        .chart-card::before,
+        .chart-card::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+        }
+
+        .chart-card::before {
+            top: 12px;
+            left: 12px;
+            border-left: 2px solid rgba(249, 122, 22, 0.3);
+            border-top: 2px solid rgba(249, 122, 22, 0.3);
+            border-top-left-radius: 6px;
+        }
+
+        .chart-card::after {
+            bottom: 12px;
+            right: 12px;
+            border-right: 2px solid rgba(249, 122, 22, 0.3);
+            border-bottom: 2px solid rgba(249, 122, 22, 0.3);
+            border-bottom-right-radius: 6px;
+        }
+
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            padding-top: 20px;
+        }
+
+        .chart-bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-bars {
+            display: flex;
+            gap: 6px;
+            align-items: flex-end;
+            height: 200px;
+        }
+
+        .chart-bar {
+            width: 28px;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chart-bar:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.02);
+        }
+
+        .chart-bar.primary {
+            background: linear-gradient(180deg, var(--brand-primary), var(--brand-accent));
+        }
+
+        .chart-bar.secondary {
+            background: linear-gradient(180deg, #7b2cbf, #a855f7);
+        }
+
+        .chart-label {
+            font-size: 0.8rem;
+            color: var(--brand-text-tertiary);
+            font-weight: 500;
+        }
+
+        /* Activity Feed */
+        .activity-card {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 14px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--brand-border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .activity-icon {
+            font-size: 1.4rem;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--brand-muted);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .activity-content { flex: 1; }
+
+        .activity-text {
+            margin: 0 0 4px 0;
+            font-size: 0.9rem;
+            color: var(--brand-text-secondary);
+        }
+
+        .activity-text strong {
+            color: var(--brand-primary);
+            font-weight: 600;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        /* Progress Grid */
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--phoenix-gap);
+            margin-bottom: var(--phoenix-gap-lg);
+        }
+
+        .progress-card {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: var(--phoenix-radius);
+            padding: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .progress-value {
+            color: var(--brand-primary);
+            font-weight: 700;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: var(--brand-muted);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .progress-bar-fill.orange { background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent)); }
+        .progress-bar-fill.green { background: linear-gradient(90deg, #22c55e, #6EE7B7); }
+        .progress-bar-fill.purple { background: linear-gradient(90deg, #7b2cbf, #a855f7); }
+        .progress-bar-fill.cyan { background: linear-gradient(90deg, #00d4ff, #67e8f9); }
+
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--brand-text-tertiary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .footer-orb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid, .progress-grid { grid-template-columns: repeat(2, 1fr); }
+            .two-col { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid, .progress-grid { grid-template-columns: 1fr; }
+            .dashboard-title { font-size: 2rem; }
+            .dashboard-container { padding: 0 16px 40px; }
+        }
+    </style>
+</head>
+<body class="phoenix-page theme-cyber">
+
+    <!-- Stars Background -->
+    <?php if ($data['show_particles'] ?? true): ?>
+    <div class="stars-container" id="stars"></div>
+    <div class="horizon-glow"></div>
+    <?php endif; ?>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="logo-orb">🔥</div>
+        <h1 class="dashboard-title"><?= htmlspecialchars($data['title']) ?></h1>
+        <p class="dashboard-subtitle"><?= htmlspecialchars($data['subtitle'] ?? 'Industrial Strength Digital Operations') ?></p>
+        <a href="/en/admin/" class="admin-link">
+            <span>⚙️</span>
+            <span>Control Panel</span>
+        </a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+
+        <!-- Stats -->
+        <?php if (!empty($data['stats'])): ?>
+        <section class="stats-grid">
+            <?php foreach ($data['stats'] as $i => $stat):
+                $colors = ['orange', 'green', 'purple', 'gold'];
+                $color = $stat['color'] ?? $colors[$i % count($colors)];
+            ?>
+            <div class="stat-card <?= htmlspecialchars($color) ?>" style="animation: fadeIn 0.4s ease <?= $i * 0.1 ?>s forwards; opacity: 0;">
+                <div class="stat-header">
+                    <span class="stat-title"><?= htmlspecialchars($stat['title']) ?></span>
+                    <span class="stat-icon">
+                        <?php
+                        $icons = ['money' => '💰', 'cart' => '🛒', 'users' => '👥', 'target' => '🎯'];
+                        echo $icons[$stat['icon']] ?? '📊';
+                        ?>
+                    </span>
+                </div>
+                <div class="stat-value">
+                    <?= $stat['prefix'] ?? '' ?><?= number_format($stat['value']) ?><?= $stat['suffix'] ?? '' ?>
+                </div>
+                <?php if (isset($stat['trend'])): ?>
+                <div class="stat-trend <?= $stat['trend']['direction'] ?>">
+                    <?= $stat['trend']['direction'] === 'up' ? '↑' : '↓' ?>
+                    <?= $stat['trend']['value'] ?>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+        </section>
+        <?php endif; ?>
+
+        <!-- Chart + Activity -->
+        <section class="two-col">
+            <!-- Chart -->
+            <?php if (!empty($data['chart'])): ?>
+            <div class="chart-card" style="animation: fadeIn 0.5s ease 0.4s forwards; opacity: 0;">
+                <h2 class="section-title"><?= htmlspecialchars($data['chart']['title'] ?? 'Performance') ?></h2>
+                <div class="chart-container">
+                    <?php
+                    $maxValue = 0;
+                    foreach ($data['chart']['datasets'] as $ds) {
+                        $maxValue = max($maxValue, max($ds['data']));
+                    }
+                    ?>
+                    <?php foreach ($data['chart']['labels'] as $i => $label): ?>
+                    <div class="chart-bar-group">
+                        <div class="chart-bars">
+                            <?php foreach ($data['chart']['datasets'] as $di => $ds): ?>
+                            <div class="chart-bar <?= $di === 0 ? 'primary' : 'secondary' ?>" style="
+                                height: <?= ($ds['data'][$i] / $maxValue) * 100 ?>%;
+                            " title="<?= $ds['label'] ?>: <?= number_format($ds['data'][$i]) ?>"></div>
+                            <?php endforeach; ?>
                         </div>
+                        <span class="chart-label"><?= $label ?></span>
                     </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
+            <?php endif; ?>
 
-<script>
-    var utils = new vulcan();
+            <!-- Activity Feed -->
+            <?php if (!empty($data['activities'])): ?>
+            <div class="activity-card" style="animation: fadeIn 0.5s ease 0.5s forwards; opacity: 0;">
+                <h2 class="section-title">Recent Activity</h2>
+                <div class="activity-list">
+                    <?php foreach ($data['activities'] as $activity): ?>
+                    <div class="activity-item">
+                        <div class="activity-icon"><?= $activity['icon'] ?></div>
+                        <div class="activity-content">
+                            <p class="activity-text">
+                                <strong><?= htmlspecialchars($activity['user']) ?></strong>
+                                <?= htmlspecialchars($activity['action']) ?>
+                                <strong><?= htmlspecialchars($activity['target']) ?></strong>
+                            </p>
+                            <span class="activity-time"><?= $activity['time'] ?></span>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+        </section>
 
-    utils.system.require('/framework/mvc/views/assets/js', 'root');
-</script>
+        <!-- Progress Bars -->
+        <?php if (!empty($data['progress'])): ?>
+        <section class="progress-grid">
+            <?php foreach ($data['progress'] as $i => $progress):
+                $colors = ['orange', 'green', 'purple', 'cyan'];
+                $color = $progress['color'] ?? $colors[$i % count($colors)];
+            ?>
+            <div class="progress-card" style="animation: fadeIn 0.4s ease <?= 0.6 + $i * 0.1 ?>s forwards; opacity: 0;">
+                <div class="progress-header">
+                    <span class="progress-label"><?= htmlspecialchars($progress['label']) ?></span>
+                    <span class="progress-value"><?= $progress['value'] ?>%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill <?= $color ?>" data-width="<?= $progress['value'] ?>"></div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </section>
+        <?php endif; ?>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="footer-brand">
+            <div class="footer-orb"></div>
+            <span>PrometheanLink</span>
+        </div>
+        <p style="font-size: 0.85rem;">Industrial Strength Digital Operations</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script>
+        // Twinkling Stars
+        (function() {
+            const container = document.getElementById('stars');
+            if (!container) return;
+
+            const colors = ['#ffffff', '#ffeedd', '#ddeeff', '#fcd083'];
+
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                const size = Math.random() * 2.5 + 0.5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                star.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    border-radius: 50%;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 60}%;
+                    opacity: ${Math.random() * 0.7 + 0.3};
+                    animation: twinkle ${2 + Math.random() * 3}s ease-in-out infinite;
+                    animation-delay: ${Math.random() * 2}s;
+                `;
+                container.appendChild(star);
+            }
+        })();
+
+        // Animate progress bars on load
+        setTimeout(() => {
+            document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+                const width = bar.dataset.width;
+                bar.style.width = width + '%';
+            });
+        }, 800);
+
+        console.log('🔥 PrometheanLink Dashboard loaded');
+    </script>
+
+</body>
+</html>

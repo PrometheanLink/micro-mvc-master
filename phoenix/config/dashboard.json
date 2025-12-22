@@ -1,0 +1,147 @@
+{
+    "title": "PHOENIX Dashboard",
+    "subtitle": "AI-Powered Dashboard Builder",
+    "theme": "dark",
+    "show_particles": true,
+    "stats": [
+        {
+            "title": "Total Users",
+            "value": 12847,
+            "icon": "users",
+            "color": "cyan",
+            "prefix": "",
+            "suffix": "",
+            "trend": {
+                "direction": "up",
+                "value": "+24%"
+            }
+        },
+        {
+            "title": "Revenue",
+            "value": 84250,
+            "icon": "money",
+            "color": "green",
+            "prefix": "$",
+            "suffix": "",
+            "trend": {
+                "direction": "up",
+                "value": "+18%"
+            }
+        },
+        {
+            "title": "Orders",
+            "value": 3429,
+            "icon": "cart",
+            "color": "purple",
+            "prefix": "",
+            "suffix": "",
+            "trend": {
+                "direction": "up",
+                "value": "+12%"
+            }
+        },
+        {
+            "title": "Conversion",
+            "value": 4.8,
+            "icon": "target",
+            "color": "orange",
+            "prefix": "",
+            "suffix": "%",
+            "trend": {
+                "direction": "down",
+                "value": "-2%"
+            }
+        },
+        {
+            "title": "Crazy",
+            "value": 27,
+            "icon": "users",
+            "color": "green",
+            "prefix": "",
+            "suffix": "",
+            "trend": null
+        }
+    ],
+    "chart": {
+        "title": "Savings",
+        "labels": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun"
+        ],
+        "datasets": [
+            {
+                "label": "Sales",
+                "data": [
+                    12,
+                    19,
+                    15,
+                    25,
+                    22,
+                    30
+                ],
+                "color": "#00d4ff"
+            },
+            {
+                "label": "Orders",
+                "data": [
+                    8,
+                    15,
+                    12,
+                    18,
+                    16,
+                    24
+                ],
+                "color": "#7b2cbf"
+            }
+        ]
+    },
+    "progress": [
+        {
+            "label": "Storage",
+            "value": 72,
+            "color": "cyan"
+        },
+        {
+            "label": "Bandwidth",
+            "value": 45,
+            "color": "green"
+        },
+        {
+            "label": "CPU",
+            "value": 88,
+            "color": "orange"
+        },
+        {
+            "label": "Memory",
+            "value": 61,
+            "color": "purple"
+        }
+    ],
+    "activities": [
+        {
+            "user": "System",
+            "action": "Dashboard loaded",
+            "target": "PHOENIX",
+            "time": "Just now",
+            "icon": "🔥"
+        },
+        {
+            "user": "Admin",
+            "action": "Configuration updated",
+            "target": "Theme",
+            "time": "5 min ago",
+            "icon": "⚙️"
+        },
+        {
+            "user": "AI",
+            "action": "Generated widget",
+            "target": "Stats Card",
+            "time": "1 hour ago",
+            "icon": "🤖"
+        }
+    ]
+}

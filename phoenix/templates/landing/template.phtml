@@ -1,0 +1,276 @@
+<?php
+/**
+ * PHOENIX Landing Page Template
+ * Marketing page with sections
+ */
+$config = $data['config'] ?? [];
+$sections = $data['sections'] ?? [];
+$theme = $config['theme'] ?? 'dark';
+$navStyle = $config['nav_style'] ?? 'transparent';
+?>
+<div class="phoenix-template phoenix-landing theme-<?= $theme ?>">
+
+    <!-- Navigation -->
+    <?php if ($config['show_nav'] ?? true): ?>
+    <nav class="landing-nav nav-<?= $navStyle ?>" id="landingNav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-text"><?= htmlspecialchars($data['brand'] ?? 'PHOENIX') ?></span>
+            </a>
+            <ul class="nav-menu">
+                <?php foreach ($data['nav_items'] ?? [] as $item): ?>
+                <li><a href="<?= htmlspecialchars($item['url']) ?>"><?= htmlspecialchars($item['label']) ?></a></li>
+                <?php endforeach; ?>
+            </ul>
+            <div class="nav-actions">
+                <a href="<?= htmlspecialchars($config['primary_cta_url'] ?? '#') ?>" class="btn btn-primary">
+                    <?= htmlspecialchars($config['primary_cta_text'] ?? 'Get Started') ?>
+                </a>
+            </div>
+            <button class="nav-toggle" onclick="toggleMobileNav()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+    <?php endif; ?>
+
+    <!-- Hero Section -->
+    <section class="landing-hero" id="hero">
+        <?php if ($config['show_particles'] ?? true): ?>
+        <div class="hero-particles" id="heroParticles"></div>
+        <?php endif; ?>
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1 class="hero-title animate-fade-up">
+                <?= $data['hero']['title'] ?? 'Build Something <span class="gradient-text">Incredible</span>' ?>
+            </h1>
+            <p class="hero-subtitle animate-fade-up delay-1">
+                <?= htmlspecialchars($data['hero']['subtitle'] ?? 'The AI-powered platform that transforms ideas into reality.') ?>
+            </p>
+            <div class="hero-cta animate-fade-up delay-2">
+                <a href="<?= htmlspecialchars($data['hero']['cta_url'] ?? '#') ?>" class="btn btn-primary btn-lg">
+                    <?= htmlspecialchars($data['hero']['cta_text'] ?? 'Get Started Free') ?>
+                </a>
+                <a href="<?= htmlspecialchars($data['hero']['secondary_url'] ?? '#') ?>" class="btn btn-ghost btn-lg">
+                    <?= htmlspecialchars($data['hero']['secondary_text'] ?? 'Watch Demo') ?>
+                </a>
+            </div>
+            <?php if (!empty($data['hero']['image'])): ?>
+            <div class="hero-image animate-fade-up delay-3">
+                <img src="<?= htmlspecialchars($data['hero']['image']) ?>" alt="Product screenshot">
+            </div>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <?php if (!empty($data['features'])): ?>
+    <section class="landing-features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title"><?= htmlspecialchars($data['features']['title'] ?? 'Features') ?></h2>
+                <p class="section-subtitle"><?= htmlspecialchars($data['features']['subtitle'] ?? '') ?></p>
+            </div>
+            <div class="features-grid">
+                <?php foreach ($data['features']['items'] ?? [] as $feature): ?>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <?php if (!empty($feature['icon'])): ?>
+                        <span class="icon"><?= $feature['icon'] ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <h3><?= htmlspecialchars($feature['title']) ?></h3>
+                    <p><?= htmlspecialchars($feature['description']) ?></p>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- Stats Section -->
+    <?php if (!empty($data['stats'])): ?>
+    <section class="landing-stats" id="stats">
+        <div class="section-container">
+            <div class="stats-grid">
+                <?php foreach ($data['stats'] as $stat): ?>
+                <div class="stat-item">
+                    <span class="stat-value" data-count="<?= $stat['value'] ?>">0</span>
+                    <span class="stat-suffix"><?= htmlspecialchars($stat['suffix'] ?? '') ?></span>
+                    <span class="stat-label"><?= htmlspecialchars($stat['label']) ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- Showcase Section -->
+    <?php if (!empty($data['showcase'])): ?>
+    <section class="landing-showcase" id="showcase">
+        <div class="section-container">
+            <div class="showcase-content">
+                <h2><?= htmlspecialchars($data['showcase']['title'] ?? '') ?></h2>
+                <p><?= htmlspecialchars($data['showcase']['description'] ?? '') ?></p>
+                <?php if (!empty($data['showcase']['features'])): ?>
+                <ul class="showcase-list">
+                    <?php foreach ($data['showcase']['features'] as $item): ?>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <?= htmlspecialchars($item) ?>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php endif; ?>
+            </div>
+            <div class="showcase-image">
+                <?php if (!empty($data['showcase']['image'])): ?>
+                <img src="<?= htmlspecialchars($data['showcase']['image']) ?>" alt="Showcase">
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- Testimonials Section -->
+    <?php if (!empty($data['testimonials'])): ?>
+    <section class="landing-testimonials" id="testimonials">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title"><?= htmlspecialchars($data['testimonials']['title'] ?? 'What People Say') ?></h2>
+            </div>
+            <div class="testimonials-grid">
+                <?php foreach ($data['testimonials']['items'] ?? [] as $testimonial): ?>
+                <div class="testimonial-card card">
+                    <div class="testimonial-content">
+                        <p>"<?= htmlspecialchars($testimonial['quote']) ?>"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <?php if (!empty($testimonial['avatar'])): ?>
+                        <img src="<?= htmlspecialchars($testimonial['avatar']) ?>" alt="" class="author-avatar">
+                        <?php endif; ?>
+                        <div class="author-info">
+                            <strong><?= htmlspecialchars($testimonial['name']) ?></strong>
+                            <span><?= htmlspecialchars($testimonial['title'] ?? '') ?></span>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- Pricing Section -->
+    <?php if (!empty($data['pricing'])): ?>
+    <section class="landing-pricing" id="pricing">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title"><?= htmlspecialchars($data['pricing']['title'] ?? 'Pricing') ?></h2>
+                <p class="section-subtitle"><?= htmlspecialchars($data['pricing']['subtitle'] ?? '') ?></p>
+            </div>
+            <div class="pricing-grid">
+                <?php foreach ($data['pricing']['plans'] ?? [] as $plan): ?>
+                <div class="pricing-card card <?= ($plan['featured'] ?? false) ? 'featured' : '' ?>">
+                    <?php if ($plan['featured'] ?? false): ?>
+                    <span class="pricing-badge">Most Popular</span>
+                    <?php endif; ?>
+                    <h3 class="plan-name"><?= htmlspecialchars($plan['name']) ?></h3>
+                    <div class="plan-price">
+                        <span class="currency"><?= htmlspecialchars($plan['currency'] ?? '$') ?></span>
+                        <span class="amount"><?= htmlspecialchars($plan['price']) ?></span>
+                        <span class="period">/<?= htmlspecialchars($plan['period'] ?? 'month') ?></span>
+                    </div>
+                    <p class="plan-description"><?= htmlspecialchars($plan['description'] ?? '') ?></p>
+                    <ul class="plan-features">
+                        <?php foreach ($plan['features'] ?? [] as $feature): ?>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <?= htmlspecialchars($feature) ?>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <a href="<?= htmlspecialchars($plan['cta_url'] ?? '#') ?>" class="btn <?= ($plan['featured'] ?? false) ? 'btn-primary' : 'btn-ghost' ?> btn-block">
+                        <?= htmlspecialchars($plan['cta_text'] ?? 'Get Started') ?>
+                    </a>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- FAQ Section -->
+    <?php if (!empty($data['faq'])): ?>
+    <section class="landing-faq" id="faq">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title"><?= htmlspecialchars($data['faq']['title'] ?? 'FAQ') ?></h2>
+            </div>
+            <div class="faq-list">
+                <?php foreach ($data['faq']['items'] ?? [] as $index => $item): ?>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span><?= htmlspecialchars($item['question']) ?></span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p><?= htmlspecialchars($item['answer']) ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <!-- CTA Section -->
+    <section class="landing-cta" id="cta">
+        <div class="cta-bg"></div>
+        <div class="section-container">
+            <h2><?= htmlspecialchars($data['cta']['title'] ?? 'Ready to Get Started?') ?></h2>
+            <p><?= htmlspecialchars($data['cta']['subtitle'] ?? 'Join thousands of satisfied users today.') ?></p>
+            <div class="cta-buttons">
+                <a href="<?= htmlspecialchars($data['cta']['primary_url'] ?? '#') ?>" class="btn btn-primary btn-lg">
+                    <?= htmlspecialchars($data['cta']['primary_text'] ?? 'Start Free Trial') ?>
+                </a>
+                <a href="<?= htmlspecialchars($data['cta']['secondary_url'] ?? '#') ?>" class="btn btn-ghost btn-lg">
+                    <?= htmlspecialchars($data['cta']['secondary_text'] ?? 'Contact Sales') ?>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="section-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="logo-text"><?= htmlspecialchars($data['brand'] ?? 'PHOENIX') ?></span>
+                    <p><?= htmlspecialchars($data['footer']['tagline'] ?? '') ?></p>
+                </div>
+                <?php foreach ($data['footer']['columns'] ?? [] as $column): ?>
+                <div class="footer-column">
+                    <h4><?= htmlspecialchars($column['title']) ?></h4>
+                    <ul>
+                        <?php foreach ($column['links'] ?? [] as $link): ?>
+                        <li><a href="<?= htmlspecialchars($link['url']) ?>"><?= htmlspecialchars($link['label']) ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <?= date('Y') ?> <?= htmlspecialchars($data['brand'] ?? 'PHOENIX') ?>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script src="/phoenix/templates/landing/template.js"></script>

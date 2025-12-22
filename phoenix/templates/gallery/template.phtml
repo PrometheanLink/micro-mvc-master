@@ -1,0 +1,259 @@
+<?php
+/**
+ * PHOENIX Gallery Template
+ * Media gallery with masonry layout and lightbox
+ */
+$config = $data['config'] ?? [];
+$items = $data['items'] ?? [];
+$albums = $data['albums'] ?? [];
+$theme = $config['theme'] ?? 'dark';
+$layout = $config['layout'] ?? 'masonry';
+?>
+<div class="phoenix-template phoenix-gallery theme-<?= $theme ?>" data-layout="<?= $layout ?>">
+
+    <!-- Header -->
+    <header class="gallery-header">
+        <div class="header-content">
+            <h1><?= htmlspecialchars($config['title'] ?? 'Gallery') ?></h1>
+            <p class="item-count"><?= count($items) ?> items</p>
+        </div>
+        <div class="header-actions">
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="masonry" title="Masonry">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                </button>
+                <button class="view-btn" data-view="grid" title="Grid">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </button>
+            </div>
+            <?php if (!empty($albums)): ?>
+            <select class="form-select album-select">
+                <option value="">All Albums</option>
+                <?php foreach ($albums as $album): ?>
+                <option value="<?= htmlspecialchars($album['id']) ?>"><?= htmlspecialchars($album['name']) ?></option>
+                <?php endforeach; ?>
+            </select>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <!-- Gallery Grid -->
+    <div class="gallery-grid" id="galleryGrid">
+        <?php foreach ($items as $index => $item): ?>
+        <div class="gallery-item" data-index="<?= $index ?>" data-type="<?= $item['type'] ?? 'image' ?>">
+            <div class="item-media">
+                <?php if (($item['type'] ?? 'image') === 'video'): ?>
+                <div class="video-wrapper">
+                    <img src="<?= htmlspecialchars($item['thumbnail'] ?? $item['src']) ?>"
+                         alt="<?= htmlspecialchars($item['caption'] ?? '') ?>"
+                         loading="lazy">
+                    <div class="video-play">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </div>
+                </div>
+                <?php else: ?>
+                <img src="<?= htmlspecialchars($item['thumbnail'] ?? $item['src']) ?>"
+                     data-full="<?= htmlspecialchars($item['src']) ?>"
+                     alt="<?= htmlspecialchars($item['caption'] ?? '') ?>"
+                     loading="lazy">
+                <?php endif; ?>
+
+                <div class="item-overlay">
+                    <button class="overlay-btn zoom-btn" title="View">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                    </button>
+                    <?php if ($config['enable_share'] ?? true): ?>
+                    <button class="overlay-btn share-btn" title="Share">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                    </button>
+                    <?php endif; ?>
+                    <?php if ($config['enable_download'] ?? false): ?>
+                    <a href="<?= htmlspecialchars($item['src']) ?>" download class="overlay-btn download-btn" title="Download">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <?php if (($config['show_captions'] ?? true) && !empty($item['caption'])): ?>
+            <div class="item-caption">
+                <p><?= htmlspecialchars($item['caption']) ?></p>
+            </div>
+            <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
+
+        <?php if (empty($items)): ?>
+        <div class="empty-state">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <h3>No media found</h3>
+            <p>Upload some images or videos to get started</p>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" hidden>
+        <div class="lightbox-backdrop"></div>
+        <div class="lightbox-content">
+            <button class="lightbox-close" aria-label="Close">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <button class="lightbox-nav lightbox-prev" aria-label="Previous">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="lightbox-media">
+                <img src="" alt="" id="lightboxImage">
+                <video controls id="lightboxVideo" hidden></video>
+            </div>
+
+            <button class="lightbox-nav lightbox-next" aria-label="Next">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
+            <div class="lightbox-info">
+                <p class="lightbox-caption"></p>
+                <span class="lightbox-counter"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+class PhoenixLightbox {
+    constructor() {
+        this.lightbox = document.getElementById('lightbox');
+        this.image = document.getElementById('lightboxImage');
+        this.video = document.getElementById('lightboxVideo');
+        this.caption = this.lightbox.querySelector('.lightbox-caption');
+        this.counter = this.lightbox.querySelector('.lightbox-counter');
+        this.items = [];
+        this.currentIndex = 0;
+        this.init();
+    }
+
+    init() {
+        this.items = Array.from(document.querySelectorAll('.gallery-item'));
+
+        // Click to open
+        this.items.forEach((item, index) => {
+            item.addEventListener('click', () => this.open(index));
+        });
+
+        // Controls
+        this.lightbox.querySelector('.lightbox-close').addEventListener('click', () => this.close());
+        this.lightbox.querySelector('.lightbox-backdrop').addEventListener('click', () => this.close());
+        this.lightbox.querySelector('.lightbox-prev').addEventListener('click', () => this.prev());
+        this.lightbox.querySelector('.lightbox-next').addEventListener('click', () => this.next());
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!this.isOpen()) return;
+            if (e.key === 'Escape') this.close();
+            if (e.key === 'ArrowLeft') this.prev();
+            if (e.key === 'ArrowRight') this.next();
+        });
+    }
+
+    open(index) {
+        this.currentIndex = index;
+        this.show();
+        this.lightbox.hidden = false;
+        document.body.style.overflow = 'hidden';
+    }
+
+    close() {
+        this.lightbox.hidden = true;
+        document.body.style.overflow = '';
+        this.video.pause();
+    }
+
+    prev() {
+        this.currentIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
+        this.show();
+    }
+
+    next() {
+        this.currentIndex = (this.currentIndex + 1) % this.items.length;
+        this.show();
+    }
+
+    show() {
+        const item = this.items[this.currentIndex];
+        const type = item.dataset.type;
+        const img = item.querySelector('img');
+
+        if (type === 'video') {
+            this.image.hidden = true;
+            this.video.hidden = false;
+            this.video.src = img.dataset.full || img.src;
+        } else {
+            this.video.hidden = true;
+            this.image.hidden = false;
+            this.image.src = img.dataset.full || img.src;
+            this.image.alt = img.alt;
+        }
+
+        const captionText = item.querySelector('.item-caption p')?.textContent || '';
+        this.caption.textContent = captionText;
+        this.counter.textContent = `${this.currentIndex + 1} / ${this.items.length}`;
+    }
+
+    isOpen() {
+        return !this.lightbox.hidden;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new PhoenixLightbox();
+
+    // View toggle
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelector('.phoenix-gallery').dataset.layout = btn.dataset.view;
+        });
+    });
+});
+</script>

@@ -1,3 +1,52 @@
+<?php
+    // PHOENIX Route Detection - Bypass micro-MVC layout for PHOENIX pages
+    $this_route = MVC::Get_Route('this');
+    $phoenix_routes = ['phoenix-demo', 'dashboard', 'root', 'admin', 'sales-dashboard', 'sneaker-store', 'demo-gallery', 'demo-article', 'demo-kanban', 'demo-landing']; // Add PHOENIX routes here
+
+    // Check if this is a PHOENIX route OR if the view file contains PHOENIX marker
+    $is_phoenix = false;
+    if ($this_route !== false) {
+        // Check explicit list
+        if (in_array($this_route, $phoenix_routes) || strpos($this_route, 'phoenix') !== false || strpos($this_route, 'dashboard') !== false) {
+            $is_phoenix = true;
+        }
+        // Also check if model returns phoenix flag
+        $model_file = 'framework/mvc/models/' . $this_route . '.php';
+        if (file_exists($model_file)) {
+            require_once($model_file);
+            $class_name = str_replace('-', '', ucwords($this_route, '-')) . '_Model';
+            if (class_exists($class_name) && method_exists($class_name, 'Get_Data')) {
+                $data = call_user_func([$class_name, 'Get_Data']);
+                if (isset($data['phoenix']) && $data['phoenix'] === true) {
+                    $is_phoenix = true;
+                }
+            }
+        }
+    }
+
+    // PHOENIX pages bypass the micro-MVC wrapper
+    if ($is_phoenix) {
+        // Load model data if not already loaded
+        if (!isset($data)) {
+            $model_file = 'framework/mvc/models/' . $this_route . '.php';
+            if (file_exists($model_file)) {
+                require_once($model_file);
+                $class_name = str_replace('-', '', ucwords($this_route, '-')) . '_Model';
+                if (class_exists($class_name) && method_exists($class_name, 'Get_Data')) {
+                    $data = call_user_func([$class_name, 'Get_Data']);
+                }
+            }
+        }
+
+        $view_file = 'framework/mvc/views/' . $this_route . '.phtml';
+        if (file_exists($view_file)) {
+            require($view_file);
+        } else {
+            require('framework/errors/404.phtml');
+        }
+        exit();
+    }
+?>
 <!DOCTYPE html>
 <html lang="<?=LANG::Get('this'); ?>">
     <head>
@@ -15,11 +64,11 @@
         <div id="main">
         <?php
             UTIL::Load_Section('header');
-            
+
             // Include the JS Compactor to optimize and load all JS extensions on reload (Optional - Use for speed at release)
             require('site/php/js_compactor.php');
-            
-            $this_route = MVC::Get_Route('this');
+
+            // $this_route already set above
             
             if ($this_route === false)
                 require('framework/errors/404.phtml');

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($data['title']) ?> - PrometheanLink</title>
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <style>
+        .kanban-header {
+            padding: 25px 40px;
+            background: var(--brand-surface);
+            border-bottom: 1px solid var(--brand-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .kanban-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-text);
+        }
+        .kanban-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .kanban-board {
+            display: flex;
+            gap: 20px;
+            padding: 30px;
+            overflow-x: auto;
+            min-height: calc(100vh - 100px);
+            align-items: flex-start;
+        }
+        .kanban-column {
+            min-width: 300px;
+            max-width: 300px;
+            background: var(--brand-surface);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .column-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .column-title {
+            font-weight: 600;
+            color: var(--brand-text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .column-count {
+            background: var(--brand-bg);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: var(--brand-text-secondary);
+        }
+        .column-add {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            color: var(--brand-text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .column-add:hover {
+            background: var(--brand-primary);
+            color: var(--brand-bg);
+        }
+        .column-cards {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .kanban-card {
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+        .kanban-card:hover {
+            border-color: var(--brand-primary);
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+        }
+        .kanban-card.dragging {
+            opacity: 0.5;
+            transform: rotate(3deg);
+        }
+        .card-labels {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .card-label {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .card-label.blue { background: rgba(0, 136, 255, 0.2); color: #0088ff; }
+        .card-label.green { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+        .card-label.red { background: rgba(255, 68, 68, 0.2); color: #ff4444; }
+        .card-label.yellow { background: rgba(255, 200, 0, 0.2); color: #ffc800; }
+        .card-title {
+            font-weight: 600;
+            color: var(--brand-text);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .card-description {
+            color: var(--brand-text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--brand-text-tertiary);
+        }
+        .card-meta-left {
+            display: flex;
+            gap: 12px;
+        }
+        .card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .card-assignees {
+            display: flex;
+        }
+        .card-assignee {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--brand-bg);
+            margin-left: -8px;
+        }
+        .card-assignee:first-child { margin-left: 0; }
+        .card-due {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .card-due.overdue { background: rgba(255, 68, 68, 0.2); color: #ff4444; }
+        .card-due.soon { background: rgba(255, 200, 0, 0.2); color: #ffc800; }
+        .card-checklist {
+            background: var(--brand-surface);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .add-card-btn {
+            padding: 12px;
+            background: transparent;
+            border: 2px dashed var(--brand-border);
+            border-radius: 8px;
+            color: var(--brand-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .add-card-btn:hover {
+            border-color: var(--brand-primary);
+            color: var(--brand-primary);
+        }
+    </style>
+</head>
+<body class="phoenix-page theme-cyber">
+
+    <div class="kanban-header">
+        <h1 class="kanban-title"><?= htmlspecialchars($data['title']) ?></h1>
+        <div class="kanban-actions">
+            <button class="btn btn-secondary">Filter</button>
+            <button class="btn btn-primary">+ Add Column</button>
+        </div>
+    </div>
+
+    <div class="kanban-board">
+        <?php foreach ($data['columns'] ?? [] as $column): ?>
+        <div class="kanban-column" data-column-id="<?= htmlspecialchars($column['id']) ?>">
+            <div class="column-header">
+                <span class="column-title">
+                    <?= htmlspecialchars($column['title']) ?>
+                    <?php if (!empty($data['config']['show_card_count'])): ?>
+                        <span class="column-count"><?= count($column['cards'] ?? []) ?></span>
+                    <?php endif; ?>
+                </span>
+                <button class="column-add">+</button>
+            </div>
+
+            <div class="column-cards">
+                <?php foreach ($column['cards'] ?? [] as $card): ?>
+                <div class="kanban-card" draggable="true" data-card-id="<?= htmlspecialchars($card['id']) ?>">
+                    <?php if (!empty($card['labels'])): ?>
+                    <div class="card-labels">
+                        <?php foreach ($card['labels'] as $label): ?>
+                            <span class="card-label <?= htmlspecialchars($label['color'] ?? '') ?>"><?= htmlspecialchars($label['text']) ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="card-title"><?= htmlspecialchars($card['title']) ?></div>
+
+                    <?php if (!empty($card['description'])): ?>
+                        <div class="card-description"><?= htmlspecialchars($card['description']) ?></div>
+                    <?php endif; ?>
+
+                    <div class="card-meta">
+                        <div class="card-meta-left">
+                            <?php if (!empty($card['due_date'])): ?>
+                                <?php
+                                    $dueDate = strtotime($card['due_date']);
+                                    $today = time();
+                                    $dueClass = ($dueDate < $today) ? 'overdue' : (($dueDate - $today < 86400 * 3) ? 'soon' : '');
+                                ?>
+                                <span class="card-due <?= $dueClass ?>"><?= date('M j', $dueDate) ?></span>
+                            <?php endif; ?>
+
+                            <?php if (!empty($card['checklist'])): ?>
+                                <span class="card-checklist"><?= $card['checklist']['done'] ?>/<?= $card['checklist']['total'] ?></span>
+                            <?php endif; ?>
+
+                            <?php if (!empty($card['comments'])): ?>
+                                <span class="card-meta-item">&#128172; <?= $card['comments'] ?></span>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if (!empty($card['assignees'])): ?>
+                        <div class="card-assignees">
+                            <?php foreach ($card['assignees'] as $assignee): ?>
+                                <img src="<?= htmlspecialchars($assignee['avatar']) ?>" alt="<?= htmlspecialchars($assignee['name']) ?>" class="card-assignee" title="<?= htmlspecialchars($assignee['name']) ?>">
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+
+                <button class="add-card-btn">+ Add Card</button>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script>
+        // Drag and drop functionality
+        const cards = document.querySelectorAll('.kanban-card');
+        const columns = document.querySelectorAll('.column-cards');
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', () => {
+                card.classList.add('dragging');
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+            });
+        });
+
+        columns.forEach(column => {
+            column.addEventListener('dragover', e => {
+                e.preventDefault();
+                const dragging = document.querySelector('.dragging');
+                const afterElement = getDragAfterElement(column, e.clientY);
+                if (afterElement == null) {
+                    column.insertBefore(dragging, column.querySelector('.add-card-btn'));
+                } else {
+                    column.insertBefore(dragging, afterElement);
+                }
+            });
+        });
+
+        function getDragAfterElement(column, y) {
+            const cards = [...column.querySelectorAll('.kanban-card:not(.dragging)')];
+            return cards.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+    </script>
+</body>
+</html>

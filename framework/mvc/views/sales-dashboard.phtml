@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($data['title']) ?> - PHOENIX</title>
+
+    <!-- PHOENIX Core CSS -->
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+
+    <style>
+        /* Dashboard Layout */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--phoenix-accent-primary), var(--phoenix-accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .dashboard-date {
+            color: var(--phoenix-text-secondary);
+        }
+
+        /* Grid Layouts */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--phoenix-gap);
+            margin-bottom: var(--phoenix-gap-lg);
+        }
+
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--phoenix-gap);
+            margin-bottom: var(--phoenix-gap-lg);
+        }
+
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--phoenix-gap);
+            margin-bottom: var(--phoenix-gap-lg);
+        }
+
+        /* Stats Card */
+        .stat-card {
+            background: var(--phoenix-card-bg);
+            border: 1px solid var(--phoenix-border-color);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--stat-color, var(--phoenix-accent-primary));
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--phoenix-text-secondary);
+            margin: 0;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--phoenix-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .stat-trend.up { color: var(--phoenix-success); }
+        .stat-trend.down { color: var(--phoenix-danger); }
+
+        .stat-trend .period {
+            color: var(--phoenix-text-muted);
+        }
+
+        /* Color variants */
+        .stat-card.cyan { --stat-color: #00d4ff; }
+        .stat-card.purple { --stat-color: #7b2cbf; }
+        .stat-card.green { --stat-color: #22c55e; }
+        .stat-card.orange { --stat-color: #f59e0b; }
+        .stat-card.pink { --stat-color: #ec4899; }
+
+        /* Chart Card */
+        .chart-card {
+            background: var(--phoenix-card-bg);
+            border: 1px solid var(--phoenix-border-color);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+        }
+
+        .chart-container {
+            height: 250px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 20px 0;
+        }
+
+        .chart-bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-bars {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 200px;
+        }
+
+        .chart-bar {
+            width: 24px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+            transform: scaleY(1.02);
+        }
+
+        .chart-label {
+            font-size: 0.8rem;
+            color: var(--phoenix-text-secondary);
+        }
+
+        /* Activity Feed */
+        .activity-card {
+            background: var(--phoenix-card-bg);
+            border: 1px solid var(--phoenix-border-color);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+        }
+
+        .activity-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--phoenix-border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .activity-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--phoenix-bg-tertiary);
+            border-radius: 50%;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            margin: 0 0 4px 0;
+            font-size: 0.9rem;
+        }
+
+        .activity-text strong {
+            color: var(--phoenix-accent-primary);
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--phoenix-text-muted);
+        }
+
+        /* Progress Bars */
+        .progress-card {
+            background: var(--phoenix-card-bg);
+            border: 1px solid var(--phoenix-border-color);
+            border-radius: var(--phoenix-radius);
+            padding: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-label {
+            font-weight: 500;
+        }
+
+        .progress-value {
+            font-weight: 600;
+            color: var(--phoenix-accent-primary);
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: var(--phoenix-bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .progress-bar-fill.cyan { background: linear-gradient(90deg, #00d4ff, #00a8cc); }
+        .progress-bar-fill.green { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .progress-bar-fill.purple { background: linear-gradient(90deg, #7b2cbf, #5b21b6); }
+        .progress-bar-fill.orange { background: linear-gradient(90deg, #f59e0b, #d97706); }
+
+        .progress-target {
+            font-size: 0.8rem;
+            color: var(--phoenix-text-muted);
+            margin-top: 8px;
+        }
+
+        /* Data Table */
+        .table-card {
+            background: var(--phoenix-card-bg);
+            border: 1px solid var(--phoenix-border-color);
+            border-radius: var(--phoenix-radius);
+            padding: 24px;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--phoenix-border-color);
+        }
+
+        .data-table th {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--phoenix-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table tr:hover td {
+            background: var(--phoenix-bg-tertiary);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .two-col-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .progress-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="phoenix-page theme-<?= htmlspecialchars($data['theme'] ?? 'dark') ?>">
+
+    <div class="dashboard-container">
+
+        <!-- Header -->
+        <header class="dashboard-header">
+            <h1 class="dashboard-title"><?= htmlspecialchars($data['title']) ?></h1>
+            <div class="dashboard-date"><?= date('l, F j, Y') ?></div>
+        </header>
+
+        <!-- Stats Row -->
+        <section class="stats-grid">
+            <?php foreach ($data['stats'] as $stat): ?>
+            <div class="stat-card <?= htmlspecialchars($stat['color']) ?>">
+                <div class="stat-header">
+                    <h3 class="stat-title"><?= htmlspecialchars($stat['title']) ?></h3>
+                    <span class="stat-icon">
+                        <?php
+                        $icons = ['money' => '💰', 'cart' => '🛒', 'users' => '👥', 'target' => '🎯'];
+                        echo $icons[$stat['icon']] ?? '📊';
+                        ?>
+                    </span>
+                </div>
+                <div class="stat-value">
+                    <?= $stat['prefix'] ?? '' ?><?= number_format($stat['value']) ?><?= $stat['suffix'] ?? '' ?>
+                </div>
+                <?php if (isset($stat['trend'])): ?>
+                <div class="stat-trend <?= $stat['trend']['direction'] ?>">
+                    <span><?= $stat['trend']['direction'] === 'up' ? '↑' : '↓' ?> <?= $stat['trend']['value'] ?></span>
+                    <span class="period"><?= $stat['trend']['period'] ?></span>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+        </section>
+
+        <!-- Chart + Activity Row -->
+        <section class="two-col-grid">
+            <!-- Chart -->
+            <div class="chart-card">
+                <h2 class="chart-title"><?= htmlspecialchars($data['chart']['title']) ?></h2>
+                <div class="chart-container">
+                    <?php
+                    $maxValue = 0;
+                    foreach ($data['chart']['datasets'] as $dataset) {
+                        $maxValue = max($maxValue, max($dataset['data']));
+                    }
+                    ?>
+                    <?php foreach ($data['chart']['labels'] as $i => $label): ?>
+                    <div class="chart-bar-group">
+                        <div class="chart-bars">
+                            <?php foreach ($data['chart']['datasets'] as $dataset): ?>
+                            <div class="chart-bar" style="
+                                height: <?= ($dataset['data'][$i] / $maxValue) * 100 ?>%;
+                                background: <?= $dataset['color'] ?>;
+                            " title="<?= $dataset['label'] ?>: $<?= number_format($dataset['data'][$i]) ?>"></div>
+                            <?php endforeach; ?>
+                        </div>
+                        <span class="chart-label"><?= $label ?></span>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="activity-card">
+                <h2 class="activity-title">Recent Activity</h2>
+                <div class="activity-list">
+                    <?php foreach ($data['activities'] as $activity): ?>
+                    <div class="activity-item">
+                        <div class="activity-icon"><?= $activity['icon'] ?></div>
+                        <div class="activity-content">
+                            <p class="activity-text">
+                                <strong><?= htmlspecialchars($activity['user']) ?></strong>
+                                <?= htmlspecialchars($activity['action']) ?>
+                                <strong><?= htmlspecialchars($activity['target']) ?></strong>
+                            </p>
+                            <span class="activity-time"><?= $activity['time'] ?></span>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Bars -->
+        <section class="progress-grid">
+            <?php foreach ($data['progress'] as $progress): ?>
+            <div class="progress-card">
+                <div class="progress-header">
+                    <span class="progress-label"><?= htmlspecialchars($progress['label']) ?></span>
+                    <span class="progress-value"><?= $progress['value'] ?>%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill <?= $progress['color'] ?>" style="width: <?= $progress['value'] ?>%"></div>
+                </div>
+                <div class="progress-target">Target: <?= $progress['target'] ?></div>
+            </div>
+            <?php endforeach; ?>
+        </section>
+
+        <!-- Top Customers Table -->
+        <section class="table-card">
+            <h2 class="table-title">Top Customers</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Revenue</th>
+                        <th>Orders</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($data['customers'] as $customer): ?>
+                    <tr>
+                        <td><?= $customer['rank'] ?></td>
+                        <td><?= htmlspecialchars($customer['name']) ?></td>
+                        <td>$<?= number_format($customer['revenue']) ?></td>
+                        <td><?= $customer['orders'] ?></td>
+                        <td>
+                            <span class="status-badge <?= strtolower($customer['status']) ?>">
+                                <?= $customer['status'] ?>
+                            </span>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </section>
+
+    </div>
+
+    <!-- PHOENIX Core JS -->
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script>
+        console.log('🔥 Sales Dashboard loaded');
+
+        // Animate progress bars on load
+        document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => bar.style.width = width, 100);
+        });
+
+        // Animate stat values
+        document.querySelectorAll('.stat-value').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                el.style.transition = 'all 0.5s ease';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, 200);
+        });
+    </script>
+
+</body>
+</html>

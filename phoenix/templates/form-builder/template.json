@@ -1,0 +1,113 @@
+{
+    "name": "form-builder",
+    "title": "Form Builder",
+    "description": "Drag-and-drop form creation with field library, canvas, and settings panels",
+    "version": "1.0.0",
+    "author": "PrometheanLink",
+    "category": "tools",
+    "icon": "form",
+    "preview": "/phoenix/templates/form-builder/preview.png",
+    "widgets": [
+        "field-library",
+        "form-canvas",
+        "field-settings"
+    ],
+    "config": {
+        "theme": "cyber",
+        "auto_save": true,
+        "save_interval": 30000,
+        "preview_mode": true
+    },
+    "field_types": [
+        {
+            "type": "text",
+            "label": "Text Input",
+            "icon": "T",
+            "category": "basic"
+        },
+        {
+            "type": "email",
+            "label": "Email",
+            "icon": "@",
+            "category": "basic"
+        },
+        {
+            "type": "password",
+            "label": "Password",
+            "icon": "*",
+            "category": "basic"
+        },
+        {
+            "type": "number",
+            "label": "Number",
+            "icon": "#",
+            "category": "basic"
+        },
+        {
+            "type": "textarea",
+            "label": "Text Area",
+            "icon": "P",
+            "category": "basic"
+        },
+        {
+            "type": "select",
+            "label": "Dropdown",
+            "icon": "V",
+            "category": "choice"
+        },
+        {
+            "type": "radio",
+            "label": "Radio Buttons",
+            "icon": "O",
+            "category": "choice"
+        },
+        {
+            "type": "checkbox",
+            "label": "Checkboxes",
+            "icon": "X",
+            "category": "choice"
+        },
+        {
+            "type": "date",
+            "label": "Date Picker",
+            "icon": "D",
+            "category": "advanced"
+        },
+        {
+            "type": "time",
+            "label": "Time Picker",
+            "icon": "C",
+            "category": "advanced"
+        },
+        {
+            "type": "file",
+            "label": "File Upload",
+            "icon": "F",
+            "category": "advanced"
+        },
+        {
+            "type": "hidden",
+            "label": "Hidden Field",
+            "icon": "H",
+            "category": "advanced"
+        },
+        {
+            "type": "heading",
+            "label": "Section Heading",
+            "icon": "H1",
+            "category": "layout"
+        },
+        {
+            "type": "paragraph",
+            "label": "Paragraph Text",
+            "icon": "P",
+            "category": "layout"
+        },
+        {
+            "type": "divider",
+            "label": "Divider",
+            "icon": "-",
+            "category": "layout"
+        }
+    ]
+}

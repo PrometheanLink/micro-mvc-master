@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "phoenix": {
+      "command": "node",
+      "args": ["phoenix/mcp-server/index.js"],
+      "env": {
+        "FRAMEWORK_PATH": "C:\\Users\\whieb\\OneDrive\\Documents\\Level 5 - tribe\\PrometheanLink LLC\\Internal Projects\\probotek-mvc\\micro-MVC-master"
+      }
+    }
+  }
+}

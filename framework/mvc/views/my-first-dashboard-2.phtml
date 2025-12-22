@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($data['title']) ?> - PHOENIX</title>
+
+    <!-- PHOENIX Core -->
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <link rel="stylesheet" href="/phoenix/templates/dashboard/template.css">
+</head>
+<body class="phoenix-page theme-cyber">
+
+    <?php
+    // Load template
+    $config = $data['config'];
+    $slots = [];
+    include dirname(dirname(__DIR__)) . '/phoenix/templates/dashboard/template.phtml';
+    ?>
+
+    <!-- PHOENIX Core JS -->
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script src="/phoenix/templates/dashboard/template.js"></script>
+
+</body>
+</html>

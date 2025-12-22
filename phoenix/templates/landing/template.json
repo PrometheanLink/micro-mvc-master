@@ -1,0 +1,90 @@
+{
+  "id": "landing",
+  "name": "Landing Page",
+  "description": "Marketing page with hero, features, testimonials, and call-to-action sections",
+  "category": "marketing",
+  "version": "1.0.0",
+  "author": "PHOENIX",
+
+  "slots": {
+    "hero": {
+      "description": "Hero section with headline and CTA",
+      "accepts": ["hero-section", "video-hero", "animated-hero"],
+      "max": 1
+    },
+    "features": {
+      "description": "Feature highlights grid",
+      "accepts": ["feature-card", "icon-box"],
+      "repeatable": true,
+      "max": 12
+    },
+    "showcase": {
+      "description": "Product/service showcase",
+      "accepts": ["image-showcase", "video-showcase", "demo-embed"],
+      "max": 1
+    },
+    "stats": {
+      "description": "Statistics/metrics section",
+      "accepts": ["stat-counter", "metric-card"],
+      "repeatable": true,
+      "max": 6
+    },
+    "testimonials": {
+      "description": "Customer testimonials",
+      "accepts": ["testimonial-card", "review-card"],
+      "repeatable": true,
+      "max": 10
+    },
+    "pricing": {
+      "description": "Pricing plans",
+      "accepts": ["pricing-card"],
+      "repeatable": true,
+      "max": 4
+    },
+    "faq": {
+      "description": "FAQ accordion",
+      "accepts": ["faq-item", "accordion-item"],
+      "repeatable": true,
+      "max": 20
+    },
+    "cta": {
+      "description": "Final call-to-action",
+      "accepts": ["cta-section", "newsletter-signup"],
+      "max": 1
+    },
+    "footer": {
+      "description": "Page footer",
+      "accepts": ["page-footer"],
+      "max": 1
+    }
+  },
+
+  "layout": {
+    "type": "sections",
+    "fullWidth": true,
+    "sectionGap": "0"
+  },
+
+  "features": {
+    "particles": true,
+    "glassmorphism": true,
+    "grid_background": true,
+    "smooth_scroll": true,
+    "parallax": true,
+    "animations": true,
+    "sticky_nav": true
+  },
+
+  "themes": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+
+  "config": {
+    "title": { "type": "string", "default": "Welcome" },
+    "theme": { "type": "string", "enum": ["dark", "light", "cyber"], "default": "dark" },
+    "show_nav": { "type": "boolean", "default": true },
+    "nav_style": { "type": "string", "enum": ["solid", "transparent", "floating"], "default": "transparent" },
+    "show_particles": { "type": "boolean", "default": true },
+    "enable_animations": { "type": "boolean", "default": true },
+    "primary_cta_text": { "type": "string", "default": "Get Started" },
+    "primary_cta_url": { "type": "string", "default": "#" }
+  }
+}

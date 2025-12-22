@@ -1,0 +1,73 @@
+{
+  "id": "catalog",
+  "name": "Product Catalog",
+  "description": "E-commerce product grid with filters, search, and cart integration",
+  "category": "ecommerce",
+  "version": "1.0.0",
+  "author": "PHOENIX",
+
+  "slots": {
+    "header": {
+      "description": "Page header with title and cart summary",
+      "accepts": ["page-header", "breadcrumb", "cart-mini"],
+      "max": 2
+    },
+    "toolbar": {
+      "description": "Search, filters, and view controls",
+      "accepts": ["search-box", "filter-dropdown", "view-toggle", "sort-dropdown", "price-range"],
+      "max": 1
+    },
+    "filters": {
+      "description": "Sidebar filter panel",
+      "accepts": ["filter-panel", "category-tree", "price-range", "checkbox-group"],
+      "position": "sidebar-left",
+      "max": 5
+    },
+    "products": {
+      "description": "Product card grid",
+      "accepts": ["product-card"],
+      "repeatable": true,
+      "max": 100
+    },
+    "footer": {
+      "description": "Pagination and results count",
+      "accepts": ["pagination", "load-more", "results-count"],
+      "max": 2
+    }
+  },
+
+  "layout": {
+    "type": "sidebar-left",
+    "sidebar": "280px",
+    "main": "1fr",
+    "gap": "30px",
+    "responsive": {
+      "tablet": { "sidebar": "hidden", "filterDrawer": true },
+      "mobile": { "columns": 1, "sidebar": "hidden" }
+    }
+  },
+
+  "features": {
+    "particles": true,
+    "glassmorphism": true,
+    "grid_background": true,
+    "quick_view": true,
+    "add_to_cart": true,
+    "wishlist": true,
+    "compare": false
+  },
+
+  "themes": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+
+  "config": {
+    "title": { "type": "string", "default": "Products" },
+    "theme": { "type": "string", "enum": ["dark", "light", "cyber"], "default": "dark" },
+    "columns": { "type": "number", "default": 3, "min": 2, "max": 5 },
+    "items_per_page": { "type": "number", "default": 12 },
+    "show_filters": { "type": "boolean", "default": true },
+    "show_search": { "type": "boolean", "default": true },
+    "show_sort": { "type": "boolean", "default": true },
+    "currency": { "type": "string", "default": "$" },
+    "card_style": { "type": "string", "enum": ["minimal", "detailed", "hover"], "default": "detailed" }
+  }
+}

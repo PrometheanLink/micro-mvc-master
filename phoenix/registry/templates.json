@@ -1,0 +1,61 @@
+{
+    "version": "1.0.0",
+    "templates": [
+        {
+            "name": "dashboard",
+            "title": "Dashboard",
+            "description": "Admin dashboard with stats, charts, and activity widgets",
+            "category": "admin",
+            "demo_page": "/en/admin/"
+        },
+        {
+            "name": "catalog",
+            "title": "Product Catalog",
+            "description": "E-commerce product grid with filters, cart, and product cards",
+            "category": "commerce",
+            "demo_page": "/en/sneaker-store/"
+        },
+        {
+            "name": "article",
+            "title": "Article",
+            "description": "Blog post with reading progress, table of contents, author bio, and related articles",
+            "category": "content",
+            "demo_page": "/en/demo-article/"
+        },
+        {
+            "name": "gallery",
+            "title": "Gallery",
+            "description": "Photo gallery with masonry layout, lightbox, and album filters",
+            "category": "content",
+            "demo_page": "/en/demo-gallery/"
+        },
+        {
+            "name": "kanban",
+            "title": "Kanban Board",
+            "description": "Project management with drag-drop columns, cards, and task tracking",
+            "category": "tools",
+            "demo_page": "/en/demo-kanban/"
+        },
+        {
+            "name": "landing",
+            "title": "Landing Page",
+            "description": "Marketing page with hero, features, pricing, testimonials, and FAQ sections",
+            "category": "marketing",
+            "demo_page": "/en/demo-landing/"
+        },
+        {
+            "name": "form-builder",
+            "title": "Form Builder",
+            "description": "Drag-and-drop form creation with field library, canvas, and settings panels",
+            "category": "tools",
+            "demo_page": "/en/form-builder/"
+        }
+    ],
+    "categories": [
+        {"id": "admin", "name": "Admin & Dashboard", "icon": "grid"},
+        {"id": "commerce", "name": "E-Commerce", "icon": "cart"},
+        {"id": "content", "name": "Content & Media", "icon": "file"},
+        {"id": "tools", "name": "Tools & Builders", "icon": "tool"},
+        {"id": "marketing", "name": "Marketing", "icon": "megaphone"}
+    ]
+}

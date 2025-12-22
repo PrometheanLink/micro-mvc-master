@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($data['title']) ?> - PrometheanLink</title>
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <style>
+        * { scroll-behavior: smooth; }
+
+        .landing-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: <?= ($data['config']['nav_style'] ?? '') === 'transparent' ? 'transparent' : 'var(--brand-surface)' ?>;
+            transition: background 0.3s;
+        }
+        .landing-nav.scrolled { background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); }
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--brand-text-secondary); text-decoration: none; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--brand-primary); }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 40px 80px;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), rgba(0, 136, 255, 0.05));
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1), transparent 70%);
+            transform: translate(-50%, -50%);
+        }
+        .hero-content {
+            max-width: 700px;
+            position: relative;
+            z-index: 1;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--brand-text);
+            margin-bottom: 25px;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--brand-text-secondary);
+            margin-bottom: 35px;
+            line-height: 1.7;
+        }
+        .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+        .hero-image {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45%;
+            max-width: 600px;
+            border-radius: 12px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+        @media (max-width: 1000px) {
+            .hero-image { display: none; }
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            padding: 40px;
+            background: var(--brand-surface);
+            border-top: 1px solid var(--brand-border);
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .stat-item { text-align: center; }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--brand-text-secondary); font-size: 0.9rem; margin-top: 5px; }
+
+        .section { padding: 100px 40px; }
+        .section-header { text-align: center; max-width: 600px; margin: 0 auto 60px; }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 15px; }
+        .section-header p { color: var(--brand-text-secondary); font-size: 1.1rem; }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: var(--brand-surface);
+            border: 1px solid var(--brand-border);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            border-color: var(--brand-primary);
+            transform: translateY(-5px);
+        }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 20px; }
+        .feature-card h3 { color: var(--brand-text); margin-bottom: 12px; }
+        .feature-card p { color: var(--brand-text-secondary); line-height: 1.6; }
+
+        .showcase {
+            background: var(--brand-surface);
+        }
+        .showcase-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+        @media (max-width: 900px) {
+            .showcase-content { grid-template-columns: 1fr; }
+        }
+        .showcase-text h2 { font-size: 2rem; margin-bottom: 20px; }
+        .showcase-text p { color: var(--brand-text-secondary); margin-bottom: 25px; line-height: 1.7; }
+        .showcase-features { list-style: none; padding: 0; }
+        .showcase-features li {
+            padding: 10px 0;
+            color: var(--brand-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .showcase-features li::before {
+            content: '✓';
+            color: var(--brand-primary);
+            font-weight: bold;
+        }
+        .showcase-image {
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .testimonials { background: var(--brand-bg); }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .testimonial-card {
+            background: var(--brand-surface);
+            border-radius: 12px;
+            padding: 30px;
+        }
+        .testimonial-quote {
+            color: var(--brand-text);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .testimonial-author img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .testimonial-name { font-weight: 600; color: var(--brand-text); }
+        .testimonial-title { font-size: 0.85rem; color: var(--brand-text-secondary); }
+
+        .pricing { background: var(--brand-surface); }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .pricing-card {
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .pricing-card.featured {
+            border-color: var(--brand-primary);
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.15);
+        }
+        .pricing-name { font-size: 1.2rem; color: var(--brand-text-secondary); margin-bottom: 15px; }
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--brand-text);
+            margin-bottom: 5px;
+        }
+        .pricing-price .currency { font-size: 1.5rem; vertical-align: top; }
+        .pricing-period { color: var(--brand-text-tertiary); margin-bottom: 25px; }
+        .pricing-features { list-style: none; padding: 0; margin-bottom: 30px; text-align: left; }
+        .pricing-features li {
+            padding: 10px 0;
+            color: var(--brand-text-secondary);
+            border-bottom: 1px solid var(--brand-border);
+        }
+        .pricing-features li:last-child { border: none; }
+
+        .faq { background: var(--brand-bg); }
+        .faq-list { max-width: 800px; margin: 0 auto; }
+        .faq-item {
+            background: var(--brand-surface);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--brand-text);
+            font-weight: 600;
+        }
+        .faq-question::after { content: '+'; font-size: 1.5rem; color: var(--brand-primary); }
+        .faq-item.open .faq-question::after { content: '−'; }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+        .faq-item.open .faq-answer { max-height: 500px; }
+        .faq-answer p {
+            padding: 0 25px 25px;
+            color: var(--brand-text-secondary);
+            line-height: 1.7;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 136, 255, 0.1));
+            text-align: center;
+            padding: 100px 40px;
+        }
+        .cta-section h2 { font-size: 2.5rem; margin-bottom: 15px; }
+        .cta-section p { color: var(--brand-text-secondary); font-size: 1.2rem; margin-bottom: 35px; }
+        .cta-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+
+        .landing-footer {
+            background: var(--brand-surface);
+            padding: 60px 40px 30px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+        @media (max-width: 800px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .footer-brand { font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; }
+        .footer-tagline { color: var(--brand-text-secondary); }
+        .footer-col h4 { color: var(--brand-text); margin-bottom: 20px; }
+        .footer-col a { display: block; color: var(--brand-text-secondary); text-decoration: none; padding: 5px 0; }
+        .footer-col a:hover { color: var(--brand-primary); }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid var(--brand-border);
+            color: var(--brand-text-tertiary);
+        }
+    </style>
+</head>
+<body class="phoenix-page theme-cyber">
+
+    <?php if (!empty($data['config']['show_nav'])): ?>
+    <nav class="landing-nav">
+        <div class="nav-brand"><?= htmlspecialchars($data['brand'] ?? 'PHOENIX') ?></div>
+        <div class="nav-links">
+            <?php foreach ($data['nav_items'] ?? [] as $item): ?>
+                <a href="<?= htmlspecialchars($item['url']) ?>"><?= htmlspecialchars($item['label']) ?></a>
+            <?php endforeach; ?>
+        </div>
+    </nav>
+    <?php endif; ?>
+
+    <?php if (!empty($data['hero'])): ?>
+    <section class="hero">
+        <div class="hero-content">
+            <h1><?= $data['hero']['title'] ?></h1>
+            <p><?= htmlspecialchars($data['hero']['subtitle']) ?></p>
+            <div class="hero-buttons">
+                <a href="<?= htmlspecialchars($data['hero']['cta_url']) ?>" class="btn btn-primary btn-lg"><?= htmlspecialchars($data['hero']['cta_text']) ?></a>
+                <?php if (!empty($data['hero']['secondary_text'])): ?>
+                    <a href="<?= htmlspecialchars($data['hero']['secondary_url']) ?>" class="btn btn-secondary btn-lg"><?= htmlspecialchars($data['hero']['secondary_text']) ?></a>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php if (!empty($data['hero']['image'])): ?>
+            <img src="<?= htmlspecialchars($data['hero']['image']) ?>" alt="" class="hero-image">
+        <?php endif; ?>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($data['stats'])): ?>
+    <div class="stats-bar">
+        <?php foreach ($data['stats'] as $stat): ?>
+        <div class="stat-item">
+            <div class="stat-value"><?= $stat['value'] ?><?= $stat['suffix'] ?? '' ?></div>
+            <div class="stat-label"><?= htmlspecialchars($stat['label']) ?></div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($data['features'])): ?>
+    <section class="section" id="features">
+        <div class="section-header">
+            <h2 class="gradient-text"><?= htmlspecialchars($data['features']['title']) ?></h2>
+            <p><?= htmlspecialchars($data['features']['subtitle']) ?></p>
+        </div>
+        <div class="features-grid">
+            <?php foreach ($data['features']['items'] ?? [] as $feature): ?>
+            <div class="feature-card">
+                <div class="feature-icon"><?= $feature['icon'] ?></div>
+                <h3><?= htmlspecialchars($feature['title']) ?></h3>
+                <p><?= htmlspecialchars($feature['description']) ?></p>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($data['showcase'])): ?>
+    <section class="section showcase" id="templates">
+        <div class="showcase-content">
+            <div class="showcase-text">
+                <h2 class="gradient-text"><?= htmlspecialchars($data['showcase']['title']) ?></h2>
+                <p><?= htmlspecialchars($data['showcase']['description']) ?></p>
+                <ul class="showcase-features">
+                    <?php foreach ($data['showcase']['features'] ?? [] as $f): ?>
+                        <li><?= htmlspecialchars($f) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php if (!empty($data['showcase']['image'])): ?>
+                <img src="<?= htmlspecialchars($data['showcase']['image']) ?>" alt="" class="showcase-image">
+            <?php endif; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($data['testimonials'])): ?>
+    <section class="section testimonials">
+        <div class="section-header">
+            <h2 class="gradient-text"><?= htmlspecialchars($data['testimonials']['title']) ?></h2>
+        </div>
+        <div class="testimonials-grid">
+            <?php foreach ($data['testimonials']['items'] ?? [] as $t): ?>
+            <div class="testimonial-card">
+                <p class="testimonial-quote">"<?= htmlspecialchars($t['quote']) ?>"</p>
+                <div class="testimonial-author">
+                    <?php if (!empty($t['avatar'])): ?>
+                        <img src="<?= htmlspecialchars($t['avatar']) ?>" alt="">
+                    <?php endif; ?>
+                    <div>
+                        <div class="testimonial-name"><?= htmlspecialchars($t['name']) ?></div>
+                        <div class="testimonial-title"><?= htmlspecialchars($t['title']) ?></div>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($data['pricing'])): ?>
+    <section class="section pricing" id="pricing">
+        <div class="section-header">
+            <h2 class="gradient-text"><?= htmlspecialchars($data['pricing']['title']) ?></h2>
+            <p><?= htmlspecialchars($data['pricing']['subtitle']) ?></p>
+        </div>
+        <div class="pricing-grid">
+            <?php foreach ($data['pricing']['plans'] ?? [] as $plan): ?>
+            <div class="pricing-card <?= !empty($plan['featured']) ? 'featured' : '' ?>">
+                <div class="pricing-name"><?= htmlspecialchars($plan['name']) ?></div>
+                <div class="pricing-price">
+                    <?php if (!empty($plan['currency'])): ?><span class="currency"><?= $plan['currency'] ?></span><?php endif; ?>
+                    <?= $plan['price'] ?>
+                </div>
+                <?php if (!empty($plan['period'])): ?>
+                    <div class="pricing-period"><?= $plan['period'] ?></div>
+                <?php endif; ?>
+                <ul class="pricing-features">
+                    <?php foreach ($plan['features'] ?? [] as $f): ?>
+                        <li><?= htmlspecialchars($f) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <a href="<?= htmlspecialchars($plan['cta_url']) ?>" class="btn <?= !empty($plan['featured']) ? 'btn-primary' : 'btn-secondary' ?> btn-block">
+                    <?= htmlspecialchars($plan['cta_text']) ?>
+                </a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($data['faq'])): ?>
+    <section class="section faq" id="faq">
+        <div class="section-header">
+            <h2 class="gradient-text"><?= htmlspecialchars($data['faq']['title']) ?></h2>
+        </div>
+        <div class="faq-list">
+            <?php foreach ($data['faq']['items'] ?? [] as $item): ?>
+            <div class="faq-item">
+                <div class="faq-question"><?= htmlspecialchars($item['question']) ?></div>
+                <div class="faq-answer"><p><?= htmlspecialchars($item['answer']) ?></p></div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($data['cta'])): ?>
+    <section class="cta-section">
+        <h2 class="gradient-text"><?= htmlspecialchars($data['cta']['title']) ?></h2>
+        <p><?= htmlspecialchars($data['cta']['subtitle']) ?></p>
+        <div class="cta-buttons">
+            <a href="<?= htmlspecialchars($data['cta']['primary_url']) ?>" class="btn btn-primary btn-lg"><?= htmlspecialchars($data['cta']['primary_text']) ?></a>
+            <a href="<?= htmlspecialchars($data['cta']['secondary_url']) ?>" class="btn btn-secondary btn-lg"><?= htmlspecialchars($data['cta']['secondary_text']) ?></a>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($data['footer'])): ?>
+    <footer class="landing-footer">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand gradient-text"><?= htmlspecialchars($data['brand'] ?? 'PHOENIX') ?></div>
+                <p class="footer-tagline"><?= htmlspecialchars($data['footer']['tagline']) ?></p>
+            </div>
+            <?php foreach ($data['footer']['columns'] ?? [] as $col): ?>
+            <div class="footer-col">
+                <h4><?= htmlspecialchars($col['title']) ?></h4>
+                <?php foreach ($col['links'] ?? [] as $link): ?>
+                    <a href="<?= htmlspecialchars($link['url']) ?>"><?= htmlspecialchars($link['label']) ?></a>
+                <?php endforeach; ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <div class="footer-bottom">
+            &copy; <?= date('Y') ?> PrometheanLink LLC. Built with PHOENIX.
+        </div>
+    </footer>
+    <?php endif; ?>
+
+    <script src="/phoenix/assets/js/phoenix-core.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('.landing-nav');
+            if (nav) {
+                nav.classList.toggle('scrolled', window.scrollY > 50);
+            }
+        });
+
+        // FAQ accordion
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', function() {
+                this.parentElement.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

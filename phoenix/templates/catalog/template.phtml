@@ -1,0 +1,187 @@
+<?php
+/**
+ * PHOENIX Catalog Template
+ * E-commerce product grid with filters and cart
+ */
+$config = $data['config'] ?? [];
+$products = $data['products'] ?? [];
+$filters = $data['filters'] ?? [];
+$theme = $config['theme'] ?? 'dark';
+?>
+<div class="phoenix-template phoenix-catalog theme-<?= $theme ?>">
+
+    <!-- Toolbar -->
+    <div class="catalog-toolbar">
+        <div class="toolbar-left">
+            <button class="btn btn-ghost filter-toggle" onclick="toggleFilters()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
+                Filters
+            </button>
+            <span class="results-count"><?= count($products) ?> products</span>
+        </div>
+        <div class="toolbar-right">
+            <div class="search-box">
+                <input type="text" placeholder="Search products..." class="form-input">
+            </div>
+            <select class="form-select sort-select">
+                <option>Sort by: Featured</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+                <option>Newest</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="catalog-layout">
+        <!-- Filter Sidebar -->
+        <aside class="catalog-filters" id="filterSidebar">
+            <div class="filter-header">
+                <h3>Filters</h3>
+                <button class="btn btn-text" onclick="clearFilters()">Clear All</button>
+            </div>
+
+            <?php foreach ($filters as $filter): ?>
+            <div class="filter-group">
+                <h4><?= htmlspecialchars($filter['label']) ?></h4>
+                <?php foreach ($filter['options'] as $option): ?>
+                <label class="filter-option">
+                    <input type="checkbox" value="<?= htmlspecialchars($option['value']) ?>">
+                    <span><?= htmlspecialchars($option['label']) ?></span>
+                    <?php if (isset($option['count'])): ?>
+                    <span class="count">(<?= $option['count'] ?>)</span>
+                    <?php endif; ?>
+                </label>
+                <?php endforeach; ?>
+            </div>
+            <?php endforeach; ?>
+
+            <!-- Price Range -->
+            <div class="filter-group">
+                <h4>Price Range</h4>
+                <div class="price-inputs">
+                    <input type="number" placeholder="Min" class="form-input">
+                    <span>to</span>
+                    <input type="number" placeholder="Max" class="form-input">
+                </div>
+            </div>
+        </aside>
+
+        <!-- Product Grid -->
+        <main class="catalog-grid">
+            <?php foreach ($products as $product): ?>
+            <div class="product-card" data-id="<?= htmlspecialchars($product['id'] ?? '') ?>">
+                <div class="product-image">
+                    <?php if (!empty($product['image'])): ?>
+                    <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                    <?php else: ?>
+                    <div class="placeholder-image">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($product['badge'])): ?>
+                    <span class="product-badge badge-<?= $product['badge']['type'] ?? 'default' ?>">
+                        <?= htmlspecialchars($product['badge']['text']) ?>
+                    </span>
+                    <?php endif; ?>
+
+                    <div class="product-actions">
+                        <button class="action-btn" title="Quick View" onclick="quickView('<?= $product['id'] ?>')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                        <button class="action-btn" title="Add to Wishlist">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-info">
+                    <h3 class="product-name"><?= htmlspecialchars($product['name']) ?></h3>
+
+                    <?php if (!empty($product['rating'])): ?>
+                    <div class="product-rating">
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <span class="star <?= $i <= $product['rating'] ? 'filled' : '' ?>">★</span>
+                        <?php endfor; ?>
+                        <span class="rating-count">(<?= $product['review_count'] ?? 0 ?>)</span>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="product-price">
+                        <?php if (!empty($product['sale_price'])): ?>
+                        <span class="price-sale"><?= $config['currency'] ?? '$' ?><?= number_format($product['sale_price'], 2) ?></span>
+                        <span class="price-original"><?= $config['currency'] ?? '$' ?><?= number_format($product['price'], 2) ?></span>
+                        <?php else: ?>
+                        <span class="price-current"><?= $config['currency'] ?? '$' ?><?= number_format($product['price'] ?? 0, 2) ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <button class="btn btn-primary add-to-cart" onclick="addToCart('<?= $product['id'] ?>')">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            <?php endforeach; ?>
+
+            <?php if (empty($products)): ?>
+            <div class="empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <h3>No products found</h3>
+                <p>Try adjusting your filters or search terms</p>
+            </div>
+            <?php endif; ?>
+        </main>
+    </div>
+
+    <!-- Pagination -->
+    <?php if (!empty($data['pagination'])): ?>
+    <nav class="catalog-pagination">
+        <button class="btn btn-ghost" <?= ($data['pagination']['page'] <= 1) ? 'disabled' : '' ?>>
+            Previous
+        </button>
+        <span class="page-info">
+            Page <?= $data['pagination']['page'] ?> of <?= $data['pagination']['total_pages'] ?>
+        </span>
+        <button class="btn btn-ghost" <?= ($data['pagination']['page'] >= $data['pagination']['total_pages']) ? 'disabled' : '' ?>>
+            Next
+        </button>
+    </nav>
+    <?php endif; ?>
+</div>
+
+<script>
+function toggleFilters() {
+    document.getElementById('filterSidebar').classList.toggle('open');
+}
+
+function clearFilters() {
+    document.querySelectorAll('.catalog-filters input').forEach(input => {
+        if (input.type === 'checkbox') input.checked = false;
+        else input.value = '';
+    });
+}
+
+function addToCart(productId) {
+    console.log('Add to cart:', productId);
+    // Implement cart logic
+}
+
+function quickView(productId) {
+    console.log('Quick view:', productId);
+    // Implement quick view modal
+}
+</script>

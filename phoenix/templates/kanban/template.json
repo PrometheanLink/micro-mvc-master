@@ -1,0 +1,66 @@
+{
+  "id": "kanban",
+  "name": "Kanban Board",
+  "description": "Drag-and-drop project management board with columns and cards",
+  "category": "productivity",
+  "version": "1.0.0",
+  "author": "PHOENIX",
+
+  "slots": {
+    "header": {
+      "description": "Board header with title and controls",
+      "accepts": ["page-header", "breadcrumb"],
+      "max": 1
+    },
+    "toolbar": {
+      "description": "Filter, search, and view options",
+      "accepts": ["search-box", "filter-dropdown", "user-filter", "date-filter"],
+      "max": 1
+    },
+    "columns": {
+      "description": "Kanban columns",
+      "accepts": ["kanban-column"],
+      "repeatable": true,
+      "min": 1,
+      "max": 10
+    },
+    "modal": {
+      "description": "Card detail/edit modal",
+      "accepts": ["card-modal", "form-modal"],
+      "max": 1
+    }
+  },
+
+  "layout": {
+    "type": "horizontal-scroll",
+    "columnWidth": "320px",
+    "gap": "20px",
+    "padding": "20px"
+  },
+
+  "features": {
+    "particles": true,
+    "glassmorphism": true,
+    "grid_background": true,
+    "drag_drop": true,
+    "card_modal": true,
+    "column_collapse": true,
+    "swimlanes": false,
+    "wip_limits": true
+  },
+
+  "themes": ["dark", "light", "cyber", "matrix", "sunset", "ocean"],
+
+  "config": {
+    "title": { "type": "string", "default": "Project Board" },
+    "theme": { "type": "string", "enum": ["dark", "light", "cyber"], "default": "dark" },
+    "show_card_count": { "type": "boolean", "default": true },
+    "show_wip_limits": { "type": "boolean", "default": false },
+    "enable_swimlanes": { "type": "boolean", "default": false },
+    "card_size": { "type": "string", "enum": ["compact", "normal", "detailed"], "default": "normal" },
+    "default_columns": {
+      "type": "array",
+      "default": ["Backlog", "To Do", "In Progress", "Review", "Done"]
+    }
+  }
+}
