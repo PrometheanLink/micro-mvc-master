@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHOENIX Control Panel</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --text-primary: #ffffff;
+            --text-secondary: #8888aa;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #7b2cbf;
+            --accent-gradient: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            --border-color: rgba(255,255,255,0.1);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 73px);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        /* Nav */
+        .nav-section {
+            margin-bottom: 30px;
+        }
+
+        .nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* Stats */
+        .stat-card {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .table tr:hover td {
+            background: var(--bg-tertiary);
+        }
+
+        /* Status badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        /* Inputs */
+        .input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            width: 500px;
+            max-width: 90%;
+            padding: 30px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Console */
+        .console {
+            background: #0d0d0d;
+            border-radius: var(--radius);
+            padding: 16px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .console-line {
+            margin-bottom: 4px;
+        }
+
+        .console-success { color: var(--success); }
+        .console-error { color: var(--danger); }
+        .console-info { color: var(--accent-primary); }
+
+        /* Widgets Grid */
+        .widget-card {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .widget-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+
+        .widget-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .widget-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .widget-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .layout { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">🔥</span>
+            <span class="logo-text">PHOENIX Control Panel</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-ghost" onclick="refreshAll()">🔄 Refresh</button>
+            <button class="btn btn-primary" onclick="showCreateModal()">+ Create Dashboard</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="nav-section">
+                <div class="nav-title">Navigation</div>
+                <div class="nav-item active" data-page="dashboard">
+                    <span>📊</span> Dashboard
+                </div>
+                <div class="nav-item" data-page="pages">
+                    <span>📄</span> Pages
+                </div>
+                <div class="nav-item" data-page="templates">
+                    <span>📐</span> Templates
+                </div>
+                <div class="nav-item" data-page="widgets">
+                    <span>🧩</span> Widgets
+                </div>
+            </nav>
+
+            <nav class="nav-section">
+                <div class="nav-title">Tools</div>
+                <div class="nav-item" data-page="tools">
+                    <span>🛠️</span> Tool Runner
+                </div>
+                <div class="nav-item" data-page="console">
+                    <span>💻</span> Console
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main" id="main-content">
+            <!-- Dashboard Page (default) -->
+            <div id="page-dashboard">
+                <h1 style="margin-bottom: 30px;">Dashboard</h1>
+
+                <div class="grid grid-4" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-pages">-</div>
+                        <div class="stat-label">Pages</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-templates">-</div>
+                        <div class="stat-label">Templates</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-widgets">-</div>
+                        <div class="stat-label">Widgets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-tools">-</div>
+                        <div class="stat-label">Tools</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Pages</h2>
+                        <button class="btn btn-ghost" onclick="showPage('pages')">View All →</button>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Route</th>
+                                <th>URL</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pages-table">
+                            <tr><td colspan="4">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pages Page -->
+            <div id="page-pages" style="display: none;">
+                <h1 style="margin-bottom: 30px;">Pages</h1>
+                <div class="card">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Route</th>
+                                <th>URL</th>
+                                <th>Model</th>
+                                <th>View</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-pages-table">
+                            <tr><td colspan="5">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Templates Page -->
+            <div id="page-templates" style="display: none;">
+                <h1 style="margin-bottom: 30px;">Templates</h1>
+                <div class="grid grid-3" id="templates-grid">
+                    Loading...
+                </div>
+            </div>
+
+            <!-- Widgets Page -->
+            <div id="page-widgets" style="display: none;">
+                <h1 style="margin-bottom: 30px;">Widgets</h1>
+                <div class="grid grid-4" id="widgets-grid">
+                    Loading...
+                </div>
+            </div>
+
+            <!-- Tools Page -->
+            <div id="page-tools" style="display: none;">
+                <h1 style="margin-bottom: 30px;">Tool Runner</h1>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Available Tools</h2>
+                    </div>
+                    <div class="grid grid-2" id="tools-grid">
+                        Loading...
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Output</h2>
+                        <button class="btn btn-ghost" onclick="clearConsole()">Clear</button>
+                    </div>
+                    <div class="console" id="tool-output">
+                        <div class="console-line console-info">Ready to run tools...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Console Page -->
+            <div id="page-console" style="display: none;">
+                <h1 style="margin-bottom: 30px;">Console</h1>
+                <div class="card">
+                    <div class="console" id="main-console" style="height: 500px;">
+                        <div class="console-line console-info">🔥 PHOENIX Console</div>
+                        <div class="console-line">Ready for commands...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Dashboard Modal -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Dashboard</h2>
+                <button class="modal-close" onclick="hideCreateModal()">×</button>
+            </div>
+
+            <form id="create-form" onsubmit="createDashboard(event)">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="input" name="name" placeholder="My Dashboard" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Route</label>
+                    <input type="text" class="input" name="route" placeholder="my-dashboard" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Template</label>
+                    <select class="input" name="template" id="template-select">
+                        <option value="dashboard">Dashboard</option>
+                        <option value="data-table">Data Table</option>
+                        <option value="form-page">Form Page</option>
+                        <option value="cards-grid">Cards Grid</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Theme</label>
+                    <select class="input" name="theme">
+                        <option value="dark">Dark</option>
+                        <option value="cyber">Cyber</option>
+                        <option value="matrix">Matrix</option>
+                        <option value="sunset">Sunset</option>
+                        <option value="ocean">Ocean</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-ghost" onclick="hideCreateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Dashboard</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                showPage(page);
+            });
+        });
+
+        function showPage(page) {
+            // Hide all pages
+            document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
+
+            // Show selected page
+            document.getElementById('page-' + page).style.display = 'block';
+
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.page === page);
+            });
+        }
+
+        // API calls
+        async function fetchAPI(endpoint) {
+            const response = await fetch(API_BASE + endpoint);
+            return response.json();
+        }
+
+        async function postAPI(endpoint, data) {
+            const response = await fetch(API_BASE + endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            return response.json();
+        }
+
+        // Load data
+        async function loadDashboard() {
+            const [pages, templates, widgets, tools] = await Promise.all([
+                fetchAPI('/api/pages'),
+                fetchAPI('/api/templates'),
+                fetchAPI('/api/widgets'),
+                fetchAPI('/api/tools')
+            ]);
+
+            // Stats
+            document.getElementById('stat-pages').textContent = pages.pages?.length || 0;
+            document.getElementById('stat-templates').textContent = templates.templates?.length || 0;
+            document.getElementById('stat-widgets').textContent = widgets.widgets?.length || 0;
+            document.getElementById('stat-tools').textContent = tools.tools?.length || 0;
+
+            // Pages table
+            const pagesTable = document.getElementById('pages-table');
+            pagesTable.innerHTML = pages.pages?.slice(0, 5).map(page => `
+                <tr>
+                    <td>${page.route}</td>
+                    <td><a href="${page.url}" target="_blank" style="color: var(--accent-primary);">${page.url}</a></td>
+                    <td><span class="badge ${page.isPhoenix ? 'badge-success' : 'badge-warning'}">${page.isPhoenix ? 'PHOENIX' : 'Legacy'}</span></td>
+                    <td>
+                        <button class="btn btn-ghost" onclick="window.open('${page.url}', '_blank')">🔗 Open</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="4">No pages found</td></tr>';
+        }
+
+        async function loadPages() {
+            const pages = await fetchAPI('/api/pages');
+
+            document.getElementById('all-pages-table').innerHTML = pages.pages?.map(page => `
+                <tr>
+                    <td>${page.route}</td>
+                    <td><a href="${page.url}" target="_blank" style="color: var(--accent-primary);">${page.url}</a></td>
+                    <td>${page.hasModel ? '✅' : '❌'}</td>
+                    <td>${page.hasView ? '✅' : '❌'}</td>
+                    <td>
+                        <button class="btn btn-ghost" onclick="window.open('${page.url}', '_blank')">🔗</button>
+                        <button class="btn btn-ghost" onclick="deletePage('${page.route}')">🗑️</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="5">No pages found</td></tr>';
+        }
+
+        async function loadTemplates() {
+            const data = await fetchAPI('/api/templates');
+
+            document.getElementById('templates-grid').innerHTML = data.templates?.map(template => `
+                <div class="widget-card">
+                    <div class="widget-icon">📐</div>
+                    <div class="widget-name">${template.id}</div>
+                    <div class="widget-desc">${template.description || 'No description'}</div>
+                    <div style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary);">
+                        Slots: ${Object.keys(template.slots || {}).length}
+                    </div>
+                </div>
+            `).join('') || 'No templates found';
+        }
+
+        async function loadWidgets() {
+            const data = await fetchAPI('/api/widgets');
+
+            const icons = {
+                'stats-card': '📊',
+                'chart-bar': '📈',
+                'progress-bar': '📉',
+                'activity-feed': '📋',
+                'data-table': '📑'
+            };
+
+            document.getElementById('widgets-grid').innerHTML = data.widgets?.map(widget => `
+                <div class="widget-card">
+                    <div class="widget-icon">${icons[widget.id] || '🧩'}</div>
+                    <div class="widget-name">${widget.id}</div>
+                    <div class="widget-desc">${widget.description || 'No description'}</div>
+                </div>
+            `).join('') || 'No widgets found';
+        }
+
+        async function loadTools() {
+            const data = await fetchAPI('/api/tools');
+
+            document.getElementById('tools-grid').innerHTML = data.tools?.map(tool => `
+                <div class="widget-card" onclick="runTool('${tool.name}')">
+                    <div class="widget-icon">🛠️</div>
+                    <div class="widget-name">${tool.name}</div>
+                    <div class="widget-desc">${tool.description}</div>
+                </div>
+            `).join('') || 'No tools found';
+        }
+
+        // Actions
+        async function runTool(toolName) {
+            const output = document.getElementById('tool-output');
+            output.innerHTML += `<div class="console-line console-info">Running ${toolName}...</div>`;
+
+            try {
+                const result = await postAPI(`/api/tools/${toolName}`, {});
+
+                if (result.success) {
+                    output.innerHTML += `<div class="console-line console-success">${result.output.replace(/\n/g, '<br>')}</div>`;
+                } else {
+                    output.innerHTML += `<div class="console-line console-error">${result.output || result.error}</div>`;
+                }
+            } catch (error) {
+                output.innerHTML += `<div class="console-line console-error">Error: ${error.message}</div>`;
+            }
+
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearConsole() {
+            document.getElementById('tool-output').innerHTML = '<div class="console-line console-info">Console cleared.</div>';
+        }
+
+        function showCreateModal() {
+            document.getElementById('create-modal').classList.add('active');
+        }
+
+        function hideCreateModal() {
+            document.getElementById('create-modal').classList.remove('active');
+        }
+
+        async function createDashboard(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const data = {
+                title: form.name.value,
+                route: form.route.value,
+                template: form.template.value,
+                theme: form.theme.value
+            };
+
+            try {
+                const result = await postAPI('/api/pages', data);
+
+                if (result.success) {
+                    alert('Dashboard created! URL: ' + result.url);
+                    hideCreateModal();
+                    refreshAll();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function deletePage(route) {
+            if (!confirm(`Delete page "${route}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/pages/${route}`, { method: 'DELETE' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Page deleted');
+                    refreshAll();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function refreshAll() {
+            await Promise.all([
+                loadDashboard(),
+                loadPages(),
+                loadTemplates(),
+                loadWidgets(),
+                loadTools()
+            ]);
+        }
+
+        // Initial load
+        refreshAll();
+    </script>
+
+</body>
+</html>
