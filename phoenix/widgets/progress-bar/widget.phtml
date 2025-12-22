@@ -1,0 +1,42 @@
+<?php
+/**
+ * PHOENIX Widget: Progress Bar
+ */
+$label = $config['label'] ?? '';
+$value = $config['value'] ?? 0;
+$max = $config['max'] ?? 100;
+$color = $config['color'] ?? 'cyan';
+$showPercentage = $config['showPercentage'] ?? true;
+$showValue = $config['showValue'] ?? false;
+$striped = $config['striped'] ?? false;
+$animated = $config['animated'] ?? true;
+$size = $config['size'] ?? 'md';
+
+$percentage = min(100, max(0, ($value / $max) * 100));
+?>
+
+<div class="phoenix-widget phoenix-progress-bar size-<?= $size ?> color-<?= $color ?> <?= $striped ? 'striped' : '' ?> <?= $animated ? 'animated' : '' ?>"
+     id="<?= htmlspecialchars($widget_id) ?>"
+     data-widget="progress-bar"
+     data-config='<?= htmlspecialchars(json_encode($config)) ?>'>
+
+    <?php if ($label): ?>
+    <div class="progress-header">
+        <span class="progress-label"><?= htmlspecialchars($label) ?></span>
+        <?php if ($showPercentage): ?>
+        <span class="progress-percentage"><?= round($percentage) ?>%</span>
+        <?php elseif ($showValue): ?>
+        <span class="progress-value"><?= $value ?> / <?= $max ?></span>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
+    <div class="progress-track">
+        <div class="progress-fill" style="width: <?= $percentage ?>%;" data-value="<?= $percentage ?>">
+            <?php if (!$label && $showPercentage): ?>
+            <span class="progress-text"><?= round($percentage) ?>%</span>
+            <?php endif; ?>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,352 @@
+/**
+ * PHOENIX Core Styles
+ *
+ * Base styles, CSS variables, and utilities for the PHOENIX system.
+ * This file should be included on all PHOENIX-powered pages.
+ */
+
+/* ============================================
+   CSS RESET & BASE
+   ============================================ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   CSS CUSTOM PROPERTIES
+   ============================================ */
+
+:root {
+    /* Colors - Dark Theme (Default) */
+    --phoenix-bg-primary: #0a0a0f;
+    --phoenix-bg-secondary: #12121a;
+    --phoenix-bg-card: rgba(20, 20, 30, 0.8);
+    --phoenix-bg-hover: rgba(30, 30, 45, 0.9);
+
+    --phoenix-text-primary: #ffffff;
+    --phoenix-text-secondary: rgba(255, 255, 255, 0.7);
+    --phoenix-text-muted: rgba(255, 255, 255, 0.5);
+
+    --phoenix-accent-primary: #00d4ff;
+    --phoenix-accent-secondary: #7b2cbf;
+    --phoenix-accent-tertiary: #ff006e;
+
+    --phoenix-glow-primary: rgba(0, 212, 255, 0.3);
+    --phoenix-glow-secondary: rgba(123, 44, 191, 0.3);
+
+    --phoenix-border-color: rgba(255, 255, 255, 0.1);
+    --phoenix-border-glow: rgba(0, 212, 255, 0.5);
+
+    --phoenix-success: #00ff88;
+    --phoenix-warning: #ffaa00;
+    --phoenix-danger: #ff4444;
+    --phoenix-info: #00d4ff;
+
+    /* Spacing */
+    --phoenix-gap: 25px;
+    --phoenix-gap-sm: 15px;
+    --phoenix-gap-lg: 35px;
+
+    /* Border Radius */
+    --phoenix-radius: 16px;
+    --phoenix-radius-sm: 8px;
+    --phoenix-radius-lg: 24px;
+
+    /* Shadows */
+    --phoenix-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    --phoenix-shadow-glow: 0 0 30px var(--phoenix-glow-primary);
+
+    /* Transitions */
+    --phoenix-transition: 0.3s ease;
+    --phoenix-transition-fast: 0.15s ease;
+
+    /* Typography */
+    --phoenix-font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --phoenix-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Z-Index Layers */
+    --phoenix-z-base: 1;
+    --phoenix-z-dropdown: 100;
+    --phoenix-z-modal: 1000;
+    --phoenix-z-tooltip: 1100;
+    --phoenix-z-notification: 1200;
+}
+
+/* Map to shorthand variables for widgets */
+.phoenix-page,
+.phoenix-template,
+.phoenix-widget {
+    --bg-primary: var(--phoenix-bg-primary);
+    --bg-secondary: var(--phoenix-bg-secondary);
+    --bg-card: var(--phoenix-bg-card);
+    --bg-hover: var(--phoenix-bg-hover);
+
+    --text-primary: var(--phoenix-text-primary);
+    --text-secondary: var(--phoenix-text-secondary);
+    --text-muted: var(--phoenix-text-muted);
+
+    --accent-primary: var(--phoenix-accent-primary);
+    --accent-secondary: var(--phoenix-accent-secondary);
+
+    --glow-primary: var(--phoenix-glow-primary);
+    --glow-secondary: var(--phoenix-glow-secondary);
+
+    --border-color: var(--phoenix-border-color);
+    --border-glow: var(--phoenix-border-glow);
+
+    --success: var(--phoenix-success);
+    --warning: var(--phoenix-warning);
+    --danger: var(--phoenix-danger);
+
+    --gap: var(--phoenix-gap);
+    --radius: var(--phoenix-radius);
+}
+
+/* ============================================
+   PHOENIX PAGE BASE
+   ============================================ */
+
+.phoenix-page {
+    min-height: 100vh;
+    background: var(--phoenix-bg-primary);
+    color: var(--phoenix-text-primary);
+    font-family: var(--phoenix-font-family);
+    line-height: 1.6;
+}
+
+/* ============================================
+   THEME VARIATIONS
+   ============================================ */
+
+/* Light Theme */
+.phoenix-page.theme-light,
+.phoenix-template.theme-light {
+    --phoenix-bg-primary: #f5f7fa;
+    --phoenix-bg-secondary: #ffffff;
+    --phoenix-bg-card: rgba(255, 255, 255, 0.9);
+    --phoenix-bg-hover: rgba(245, 247, 250, 0.95);
+
+    --phoenix-text-primary: #1a1a2e;
+    --phoenix-text-secondary: rgba(26, 26, 46, 0.7);
+    --phoenix-text-muted: rgba(26, 26, 46, 0.5);
+
+    --phoenix-border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Cyber Theme */
+.phoenix-page.theme-cyber,
+.phoenix-template.theme-cyber {
+    --phoenix-accent-primary: #00d4ff;
+    --phoenix-accent-secondary: #7b2cbf;
+    --phoenix-glow-primary: rgba(0, 212, 255, 0.3);
+}
+
+/* Matrix Theme */
+.phoenix-page.theme-matrix,
+.phoenix-template.theme-matrix {
+    --phoenix-accent-primary: #00ff00;
+    --phoenix-accent-secondary: #003300;
+    --phoenix-glow-primary: rgba(0, 255, 0, 0.3);
+    --phoenix-bg-card: rgba(0, 20, 0, 0.8);
+}
+
+/* Sunset Theme */
+.phoenix-page.theme-sunset,
+.phoenix-template.theme-sunset {
+    --phoenix-accent-primary: #ff6b35;
+    --phoenix-accent-secondary: #f7931e;
+    --phoenix-glow-primary: rgba(255, 107, 53, 0.3);
+}
+
+/* Ocean Theme */
+.phoenix-page.theme-ocean,
+.phoenix-template.theme-ocean {
+    --phoenix-accent-primary: #0077b6;
+    --phoenix-accent-secondary: #00b4d8;
+    --phoenix-glow-primary: rgba(0, 119, 182, 0.3);
+    --phoenix-bg-primary: #03045e;
+    --phoenix-bg-secondary: #023e8a;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Glassmorphism */
+.phoenix-glass {
+    background: var(--phoenix-bg-card);
+    border: 1px solid var(--phoenix-border-color);
+    border-radius: var(--phoenix-radius);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Glow Effect */
+.phoenix-glow {
+    box-shadow: var(--phoenix-shadow-glow);
+}
+
+.phoenix-glow:hover {
+    box-shadow: 0 0 50px var(--phoenix-glow-primary);
+}
+
+/* Gradient Text */
+.phoenix-gradient-text {
+    background: linear-gradient(135deg, var(--phoenix-accent-primary), var(--phoenix-accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Flex Utilities */
+.phoenix-flex { display: flex; }
+.phoenix-flex-center { display: flex; align-items: center; justify-content: center; }
+.phoenix-flex-between { display: flex; align-items: center; justify-content: space-between; }
+.phoenix-flex-col { display: flex; flex-direction: column; }
+
+/* Grid Utilities */
+.phoenix-grid { display: grid; gap: var(--phoenix-gap); }
+.phoenix-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.phoenix-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.phoenix-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Spacing */
+.phoenix-p-0 { padding: 0; }
+.phoenix-p-1 { padding: 8px; }
+.phoenix-p-2 { padding: 16px; }
+.phoenix-p-3 { padding: 24px; }
+.phoenix-p-4 { padding: 32px; }
+
+.phoenix-m-0 { margin: 0; }
+.phoenix-m-1 { margin: 8px; }
+.phoenix-m-2 { margin: 16px; }
+.phoenix-m-3 { margin: 24px; }
+.phoenix-m-4 { margin: 32px; }
+
+.phoenix-mb-1 { margin-bottom: 8px; }
+.phoenix-mb-2 { margin-bottom: 16px; }
+.phoenix-mb-3 { margin-bottom: 24px; }
+
+/* Text */
+.phoenix-text-center { text-align: center; }
+.phoenix-text-right { text-align: right; }
+.phoenix-text-muted { color: var(--phoenix-text-muted); }
+.phoenix-text-sm { font-size: 0.875rem; }
+.phoenix-text-lg { font-size: 1.125rem; }
+.phoenix-text-xl { font-size: 1.5rem; }
+.phoenix-font-bold { font-weight: 700; }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes phoenix-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes phoenix-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes phoenix-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes phoenix-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes phoenix-glow-pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px var(--phoenix-glow-primary);
+    }
+    50% {
+        box-shadow: 0 0 40px var(--phoenix-glow-primary), 0 0 60px var(--phoenix-glow-secondary);
+    }
+}
+
+.phoenix-animate-fade-in { animation: phoenix-fade-in 0.5s ease forwards; }
+.phoenix-animate-slide-in { animation: phoenix-slide-in 0.5s ease forwards; }
+.phoenix-animate-scale-in { animation: phoenix-scale-in 0.3s ease forwards; }
+.phoenix-animate-pulse { animation: phoenix-pulse 2s ease-in-out infinite; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1200px) {
+    :root {
+        --phoenix-gap: 20px;
+    }
+
+    .phoenix-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --phoenix-gap: 15px;
+        --phoenix-radius: 12px;
+    }
+
+    .phoenix-grid-2,
+    .phoenix-grid-3,
+    .phoenix-grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+.phoenix-page ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.phoenix-page ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.phoenix-page ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.phoenix-page ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}

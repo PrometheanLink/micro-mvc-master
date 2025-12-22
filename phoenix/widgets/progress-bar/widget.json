@@ -1,0 +1,57 @@
+{
+  "name": "progress-bar",
+  "version": "1.0.0",
+  "displayName": "Progress Bar",
+  "description": "Horizontal progress indicator with label and percentage",
+  "category": "display",
+  "tags": ["progress", "bar", "percentage", "loading"],
+
+  "config": {
+    "label": {
+      "type": "string",
+      "description": "Progress label"
+    },
+    "value": {
+      "type": "number",
+      "required": true,
+      "description": "Current value (0-100)"
+    },
+    "max": {
+      "type": "number",
+      "default": 100
+    },
+    "color": {
+      "type": "string",
+      "enum": ["cyan", "purple", "pink", "green", "orange", "red", "blue", "yellow", "gradient"],
+      "default": "cyan"
+    },
+    "showPercentage": {
+      "type": "boolean",
+      "default": true
+    },
+    "showValue": {
+      "type": "boolean",
+      "default": false
+    },
+    "striped": {
+      "type": "boolean",
+      "default": false
+    },
+    "animated": {
+      "type": "boolean",
+      "default": true
+    },
+    "size": {
+      "type": "string",
+      "enum": ["sm", "md", "lg"],
+      "default": "md"
+    }
+  },
+
+  "slots": {
+    "compatible": ["stats", "main", "sidebar", "content"],
+    "size": {
+      "default": { "columns": 1 }
+    }
+  }
+}

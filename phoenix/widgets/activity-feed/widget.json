@@ -1,0 +1,59 @@
+{
+  "name": "activity-feed",
+  "version": "1.0.0",
+  "displayName": "Activity Feed",
+  "description": "List of recent activities with avatars and timestamps",
+  "category": "display",
+  "tags": ["activity", "feed", "timeline", "events"],
+
+  "config": {
+    "title": {
+      "type": "string",
+      "default": "Recent Activity"
+    },
+    "items": {
+      "type": "array",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "user": { "type": "string" },
+          "avatar": { "type": "string" },
+          "action": { "type": "string" },
+          "target": { "type": "string" },
+          "time": { "type": "string" },
+          "icon": { "type": "string" },
+          "color": { "type": "string" }
+        }
+      }
+    },
+    "maxItems": {
+      "type": "number",
+      "default": 10
+    },
+    "showAvatars": {
+      "type": "boolean",
+      "default": true
+    },
+    "showTimestamps": {
+      "type": "boolean",
+      "default": true
+    },
+    "compact": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+
+  "refresh": {
+    "enabled": true,
+    "interval": 30
+  },
+
+  "slots": {
+    "compatible": ["sidebar", "main", "content"],
+    "size": {
+      "default": { "columns": 1 }
+    }
+  }
+}

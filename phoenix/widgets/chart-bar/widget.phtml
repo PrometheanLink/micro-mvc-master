@@ -1,0 +1,45 @@
+<?php
+/**
+ * PHOENIX Widget: Bar Chart
+ */
+$title = $config['title'] ?? '';
+$labels = $config['labels'] ?? [];
+$datasets = $config['datasets'] ?? [];
+$stacked = $config['stacked'] ?? false;
+$horizontal = $config['horizontal'] ?? false;
+$showLegend = $config['showLegend'] ?? true;
+$height = $config['height'] ?? 300;
+
+// Default colors
+$defaultColors = ['#00d4ff', '#7b2cbf', '#ff006e', '#00ff88', '#ff6b35', '#ffd60a'];
+?>
+
+<div class="phoenix-widget phoenix-chart-bar"
+     id="<?= htmlspecialchars($widget_id) ?>"
+     data-widget="chart-bar"
+     data-config='<?= htmlspecialchars(json_encode($config)) ?>'>
+
+    <div class="chart-container">
+        <?php if ($title): ?>
+        <div class="chart-header">
+            <h3 class="chart-title"><?= htmlspecialchars($title) ?></h3>
+        </div>
+        <?php endif; ?>
+
+        <div class="chart-body" style="height: <?= $height ?>px;">
+            <canvas id="<?= $widget_id ?>-canvas"></canvas>
+        </div>
+
+        <?php if ($showLegend && count($datasets) > 1): ?>
+        <div class="chart-legend">
+            <?php foreach ($datasets as $i => $dataset): ?>
+            <div class="legend-item">
+                <span class="legend-color" style="background: <?= $dataset['color'] ?? $defaultColors[$i % count($defaultColors)] ?>"></span>
+                <span class="legend-label"><?= htmlspecialchars($dataset['label'] ?? "Dataset $i") ?></span>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+    </div>
+
+</div>

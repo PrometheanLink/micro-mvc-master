@@ -1,0 +1,77 @@
+<?php
+/**
+ * PHOENIX Widget: Activity Feed
+ */
+$title = $config['title'] ?? 'Recent Activity';
+$items = $config['items'] ?? [];
+$maxItems = $config['maxItems'] ?? 10;
+$showAvatars = $config['showAvatars'] ?? true;
+$showTimestamps = $config['showTimestamps'] ?? true;
+$compact = $config['compact'] ?? false;
+
+// Limit items
+$items = array_slice($items, 0, $maxItems);
+
+// Default action icons
+$actionIcons = [
+    'created' => '✨',
+    'updated' => '📝',
+    'deleted' => '🗑️',
+    'commented' => '💬',
+    'liked' => '❤️',
+    'shared' => '🔗',
+    'uploaded' => '📤',
+    'downloaded' => '📥',
+    'logged_in' => '🔐',
+    'registered' => '👤',
+];
+?>
+
+<div class="phoenix-widget phoenix-activity-feed <?= $compact ? 'compact' : '' ?>"
+     id="<?= htmlspecialchars($widget_id) ?>"
+     data-widget="activity-feed"
+     data-config='<?= htmlspecialchars(json_encode($config)) ?>'>
+
+    <div class="feed-header">
+        <h3 class="feed-title"><?= htmlspecialchars($title) ?></h3>
+        <span class="feed-count"><?= count($items) ?> items</span>
+    </div>
+
+    <div class="feed-list">
+        <?php if (empty($items)): ?>
+        <div class="feed-empty">No recent activity</div>
+        <?php else: ?>
+            <?php foreach ($items as $item): ?>
+            <div class="feed-item">
+                <?php if ($showAvatars): ?>
+                <div class="feed-avatar">
+                    <?php if (!empty($item['avatar'])): ?>
+                    <img src="<?= htmlspecialchars($item['avatar']) ?>" alt="">
+                    <?php else: ?>
+                    <span class="avatar-placeholder"><?= strtoupper(substr($item['user'] ?? '?', 0, 1)) ?></span>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+
+                <div class="feed-content">
+                    <div class="feed-text">
+                        <span class="feed-user"><?= htmlspecialchars($item['user'] ?? 'Someone') ?></span>
+                        <span class="feed-action"><?= htmlspecialchars($item['action'] ?? 'did something') ?></span>
+                        <?php if (!empty($item['target'])): ?>
+                        <span class="feed-target"><?= htmlspecialchars($item['target']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if ($showTimestamps && !empty($item['time'])): ?>
+                    <div class="feed-time"><?= htmlspecialchars($item['time']) ?></div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="feed-icon" style="<?= !empty($item['color']) ? "color: {$item['color']}" : '' ?>">
+                    <?= $item['icon'] ?? $actionIcons[$item['action']] ?? '📌' ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+
+</div>

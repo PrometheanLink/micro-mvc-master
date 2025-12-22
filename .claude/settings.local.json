@@ -5,7 +5,9 @@
       "Bash(where:*)",
       "Bash(cmd.exe /c start \"\" \"C:\\\\Program Files\\\\Docker\\\\Docker\\\\Docker Desktop.exe\")",
       "Bash(git commit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push)",
+      "Bash(npm run build:*)"
     ]
   }
 }

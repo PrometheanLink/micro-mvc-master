@@ -1,0 +1,109 @@
+/**
+ * PHOENIX Progress Bar Widget Styles
+ */
+
+.phoenix-progress-bar {
+    padding: 16px 20px;
+    background: var(--bg-card, rgba(20, 20, 30, 0.8));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    border-radius: var(--radius, 16px);
+    backdrop-filter: blur(20px);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.progress-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary, #fff);
+}
+
+.progress-percentage,
+.progress-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bar-color, var(--accent-primary));
+}
+
+.progress-track {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--bar-color, var(--accent-primary));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    min-width: 30px;
+}
+
+.progress-text {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--bg-primary, #0a0a0f);
+}
+
+/* Sizes */
+.phoenix-progress-bar.size-sm .progress-track { height: 4px; }
+.phoenix-progress-bar.size-md .progress-track { height: 8px; }
+.phoenix-progress-bar.size-lg .progress-track { height: 16px; }
+
+.phoenix-progress-bar.size-lg .progress-text { font-size: 0.75rem; }
+
+/* Colors */
+.phoenix-progress-bar.color-cyan { --bar-color: #00d4ff; }
+.phoenix-progress-bar.color-purple { --bar-color: #7b2cbf; }
+.phoenix-progress-bar.color-pink { --bar-color: #ff006e; }
+.phoenix-progress-bar.color-green { --bar-color: #00ff88; }
+.phoenix-progress-bar.color-orange { --bar-color: #ff6b35; }
+.phoenix-progress-bar.color-red { --bar-color: #ff4444; }
+.phoenix-progress-bar.color-blue { --bar-color: #0077b6; }
+.phoenix-progress-bar.color-yellow { --bar-color: #ffd60a; }
+
+.phoenix-progress-bar.color-gradient .progress-fill {
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf, #ff006e);
+}
+
+/* Striped */
+.phoenix-progress-bar.striped .progress-fill {
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 20px 20px;
+}
+
+/* Animated */
+.phoenix-progress-bar.animated.striped .progress-fill {
+    animation: progress-stripe 1s linear infinite;
+}
+
+@keyframes progress-stripe {
+    from { background-position: 20px 0; }
+    to { background-position: 0 0; }
+}
+
+/* Glow effect on hover */
+.phoenix-progress-bar:hover .progress-fill {
+    box-shadow: 0 0 20px var(--bar-color);
+}

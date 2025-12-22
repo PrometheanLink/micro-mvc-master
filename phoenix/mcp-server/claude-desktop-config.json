@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "phoenix-builder": {
+      "command": "node",
+      "args": ["dist/server.js"],
+      "cwd": "${PHOENIX_PATH}/mcp-server",
+      "env": {
+        "PHOENIX_PATH": "${PHOENIX_PATH}",
+        "FRAMEWORK_PATH": "${FRAMEWORK_PATH}"
+      }
+    }
+  }
+}

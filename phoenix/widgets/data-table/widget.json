@@ -1,0 +1,92 @@
+{
+  "name": "data-table",
+  "version": "1.0.0",
+  "displayName": "Data Table",
+  "description": "Sortable, filterable data table with pagination",
+  "category": "data",
+  "tags": ["table", "data", "grid", "list", "crud"],
+
+  "config": {
+    "title": {
+      "type": "string",
+      "description": "Table title"
+    },
+    "columns": {
+      "type": "array",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "label": { "type": "string" },
+          "sortable": { "type": "boolean", "default": true },
+          "searchable": { "type": "boolean", "default": true },
+          "width": { "type": "string" },
+          "align": { "type": "string", "enum": ["left", "center", "right"] },
+          "format": { "type": "string", "enum": ["text", "number", "currency", "date", "badge", "avatar"] }
+        }
+      }
+    },
+    "data": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "sortable": {
+      "type": "boolean",
+      "default": true
+    },
+    "searchable": {
+      "type": "boolean",
+      "default": true
+    },
+    "pagination": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "perPage": { "type": "number", "default": 10 },
+        "options": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+    "selectable": {
+      "type": "boolean",
+      "default": false
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string" },
+          "icon": { "type": "string" },
+          "action": { "type": "string" },
+          "color": { "type": "string" }
+        }
+      }
+    },
+    "emptyMessage": {
+      "type": "string",
+      "default": "No data available"
+    }
+  },
+
+  "data": {
+    "query": {
+      "type": "object",
+      "properties": {
+        "table": { "type": "string" },
+        "columns": { "type": "array" },
+        "where": { "type": "object" },
+        "orderBy": { "type": "string" },
+        "limit": { "type": "number" }
+      }
+    }
+  },
+
+  "slots": {
+    "compatible": ["main", "content"],
+    "size": {
+      "min": { "columns": 2 },
+      "default": { "columns": 4 }
+    }
+  }
+}

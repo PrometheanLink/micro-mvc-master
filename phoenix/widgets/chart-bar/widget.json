@@ -1,0 +1,62 @@
+{
+  "name": "chart-bar",
+  "version": "1.0.0",
+  "displayName": "Bar Chart",
+  "description": "Interactive bar chart with multiple datasets and animations",
+  "category": "display",
+  "tags": ["chart", "bar", "data", "visualization"],
+
+  "config": {
+    "title": {
+      "type": "string",
+      "description": "Chart title"
+    },
+    "labels": {
+      "type": "array",
+      "items": { "type": "string" },
+      "required": true,
+      "description": "X-axis labels"
+    },
+    "datasets": {
+      "type": "array",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string" },
+          "data": { "type": "array", "items": { "type": "number" } },
+          "color": { "type": "string" }
+        }
+      }
+    },
+    "stacked": {
+      "type": "boolean",
+      "default": false
+    },
+    "horizontal": {
+      "type": "boolean",
+      "default": false
+    },
+    "showLegend": {
+      "type": "boolean",
+      "default": true
+    },
+    "showGrid": {
+      "type": "boolean",
+      "default": true
+    },
+    "height": {
+      "type": "number",
+      "default": 300
+    }
+  },
+
+  "slots": {
+    "compatible": ["charts", "main", "content"],
+    "size": {
+      "min": { "columns": 1 },
+      "max": { "columns": 4 },
+      "default": { "columns": 2 }
+    }
+  }
+}

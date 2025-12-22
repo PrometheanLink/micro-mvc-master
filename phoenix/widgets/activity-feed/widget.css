@@ -1,0 +1,152 @@
+/**
+ * PHOENIX Activity Feed Widget Styles
+ */
+
+.phoenix-activity-feed {
+    background: var(--bg-card, rgba(20, 20, 30, 0.8));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    border-radius: var(--radius, 16px);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.feed-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+    margin: 0;
+}
+
+.feed-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.feed-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.feed-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.feed-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.feed-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.feed-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.feed-item:last-child {
+    border-bottom: none;
+}
+
+.feed-avatar {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+}
+
+.feed-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.feed-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.feed-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+.feed-user {
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+}
+
+.feed-action {
+    margin: 0 4px;
+}
+
+.feed-target {
+    color: var(--accent-primary, #00d4ff);
+    font-weight: 500;
+}
+
+.feed-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.feed-icon {
+    flex-shrink: 0;
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.feed-empty {
+    padding: 40px 24px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Compact mode */
+.phoenix-activity-feed.compact .feed-item {
+    padding: 10px 20px;
+}
+
+.phoenix-activity-feed.compact .feed-avatar {
+    width: 32px;
+    height: 32px;
+}
+
+.phoenix-activity-feed.compact .feed-text {
+    font-size: 0.85rem;
+}

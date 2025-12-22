@@ -1,0 +1,150 @@
+<?php
+/**
+ * PHOENIX Widget: Data Table
+ */
+$title = $config['title'] ?? '';
+$columns = $config['columns'] ?? [];
+$data = $config['data'] ?? [];
+$sortable = $config['sortable'] ?? true;
+$searchable = $config['searchable'] ?? true;
+$pagination = $config['pagination'] ?? ['enabled' => true, 'perPage' => 10];
+$selectable = $config['selectable'] ?? false;
+$actions = $config['actions'] ?? [];
+$emptyMessage = $config['emptyMessage'] ?? 'No data available';
+?>
+
+<div class="phoenix-widget phoenix-data-table"
+     id="<?= htmlspecialchars($widget_id) ?>"
+     data-widget="data-table"
+     data-config='<?= htmlspecialchars(json_encode($config)) ?>'>
+
+    <div class="table-container">
+        <!-- Header -->
+        <div class="table-header">
+            <?php if ($title): ?>
+            <h3 class="table-title"><?= htmlspecialchars($title) ?></h3>
+            <?php endif; ?>
+
+            <div class="table-controls">
+                <?php if ($searchable): ?>
+                <div class="table-search">
+                    <input type="text" placeholder="Search..." class="search-input">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <?php endif; ?>
+
+                <?php if (!empty($actions)): ?>
+                <div class="table-actions">
+                    <?php foreach ($actions as $action): ?>
+                    <button class="action-btn" data-action="<?= htmlspecialchars($action['action'] ?? '') ?>">
+                        <?= $action['icon'] ?? '' ?> <?= htmlspecialchars($action['label'] ?? '') ?>
+                    </button>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <?php if ($selectable): ?>
+                        <th class="col-select">
+                            <input type="checkbox" class="select-all">
+                        </th>
+                        <?php endif; ?>
+
+                        <?php foreach ($columns as $col): ?>
+                        <th class="<?= $sortable && ($col['sortable'] ?? true) ? 'sortable' : '' ?>"
+                            data-key="<?= htmlspecialchars($col['key'] ?? '') ?>"
+                            style="<?= !empty($col['width']) ? "width: {$col['width']}" : '' ?>; text-align: <?= $col['align'] ?? 'left' ?>;">
+                            <?= htmlspecialchars($col['label'] ?? $col['key'] ?? '') ?>
+                            <?php if ($sortable && ($col['sortable'] ?? true)): ?>
+                            <span class="sort-icon">↕</span>
+                            <?php endif; ?>
+                        </th>
+                        <?php endforeach; ?>
+
+                        <?php if (!empty($actions)): ?>
+                        <th class="col-actions">Actions</th>
+                        <?php endif; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($data)): ?>
+                    <tr class="empty-row">
+                        <td colspan="<?= count($columns) + ($selectable ? 1 : 0) + (!empty($actions) ? 1 : 0) ?>">
+                            <?= htmlspecialchars($emptyMessage) ?>
+                        </td>
+                    </tr>
+                    <?php else: ?>
+                        <?php foreach ($data as $row): ?>
+                        <tr>
+                            <?php if ($selectable): ?>
+                            <td class="col-select">
+                                <input type="checkbox" class="select-row">
+                            </td>
+                            <?php endif; ?>
+
+                            <?php foreach ($columns as $col): ?>
+                            <td style="text-align: <?= $col['align'] ?? 'left' ?>;">
+                                <?php
+                                $value = $row[$col['key']] ?? '';
+                                $format = $col['format'] ?? 'text';
+
+                                switch ($format) {
+                                    case 'currency':
+                                        echo '$' . number_format((float)$value, 2);
+                                        break;
+                                    case 'number':
+                                        echo number_format((float)$value);
+                                        break;
+                                    case 'badge':
+                                        echo '<span class="badge">' . htmlspecialchars($value) . '</span>';
+                                        break;
+                                    case 'avatar':
+                                        echo '<img src="' . htmlspecialchars($value) . '" class="row-avatar" alt="">';
+                                        break;
+                                    default:
+                                        echo htmlspecialchars($value);
+                                }
+                                ?>
+                            </td>
+                            <?php endforeach; ?>
+
+                            <?php if (!empty($actions)): ?>
+                            <td class="col-actions">
+                                <div class="row-actions">
+                                    <button class="row-action-btn" title="Edit">✏️</button>
+                                    <button class="row-action-btn" title="Delete">🗑️</button>
+                                </div>
+                            </td>
+                            <?php endif; ?>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <?php if ($pagination['enabled'] ?? true): ?>
+        <div class="table-pagination">
+            <div class="pagination-info">
+                Showing <span class="page-start">1</span> to <span class="page-end"><?= min($pagination['perPage'] ?? 10, count($data)) ?></span>
+                of <span class="total-rows"><?= count($data) ?></span> entries
+            </div>
+            <div class="pagination-controls">
+                <button class="page-btn" data-page="prev">←</button>
+                <span class="page-numbers">
+                    <button class="page-btn active">1</button>
+                </span>
+                <button class="page-btn" data-page="next">→</button>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+
+</div>
