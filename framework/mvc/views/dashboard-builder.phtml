@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Builder - PHOENIX</title>
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <style>
+        :root {
+            --builder-sidebar: 280px;
+            --builder-toolbar: 56px;
+            --grid-gap: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: linear-gradient(180deg, #0a0a1a 0%, #0d1424 50%, #0F0F0F 100%);
+            color: var(--brand-text-primary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main Layout */
+        .builder-layout {
+            display: grid;
+            grid-template-columns: var(--builder-sidebar) 1fr var(--builder-sidebar);
+            grid-template-rows: var(--builder-toolbar) 1fr;
+            height: 100vh;
+        }
+
+        /* Toolbar */
+        .builder-toolbar {
+            grid-column: 1 / -1;
+            background: rgba(15, 15, 20, 0.95);
+            border-bottom: 1px solid var(--brand-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .toolbar-left, .toolbar-center, .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toolbar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .toolbar-btn {
+            padding: 8px 16px;
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            color: var(--brand-text-primary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--brand-muted);
+            border-color: var(--brand-primary);
+        }
+
+        .toolbar-btn.primary {
+            background: linear-gradient(135deg, var(--brand-primary), #ea580c);
+            border: none;
+            color: white;
+        }
+
+        .toolbar-btn.primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .dashboard-name {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--brand-text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+            width: 200px;
+        }
+
+        .dashboard-name:hover, .dashboard-name:focus {
+            border-color: var(--brand-border);
+            background: var(--brand-panel);
+            outline: none;
+        }
+
+        /* Widget Palette (Left Sidebar) */
+        .widget-palette {
+            background: rgba(15, 15, 20, 0.8);
+            border-right: 1px solid var(--brand-border);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .palette-section {
+            margin-bottom: 24px;
+        }
+
+        .palette-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--brand-text-tertiary);
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .widget-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .widget-item:hover {
+            border-color: var(--brand-primary);
+            background: rgba(249, 115, 22, 0.1);
+            transform: translateX(4px);
+        }
+
+        .widget-item:active {
+            cursor: grabbing;
+        }
+
+        .widget-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .widget-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--brand-muted);
+            border-radius: 8px;
+        }
+
+        .widget-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .widget-info p {
+            font-size: 0.75rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        /* Canvas */
+        .builder-canvas {
+            background: rgba(10, 10, 15, 0.5);
+            padding: 24px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .canvas-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: var(--grid-gap);
+            min-height: calc(100vh - var(--builder-toolbar) - 48px);
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: calc(100% / 12) 80px;
+            border-radius: 12px;
+            padding: var(--grid-gap);
+        }
+
+        .grid-cell {
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            min-height: 80px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .grid-cell:hover {
+            border-color: rgba(249, 115, 22, 0.3);
+            background: rgba(249, 115, 22, 0.05);
+        }
+
+        .grid-cell.drag-over {
+            border-color: var(--brand-primary);
+            background: rgba(249, 115, 22, 0.15);
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+        }
+
+        .grid-cell.has-widget {
+            border: none;
+            background: transparent;
+        }
+
+        /* Placed Widgets */
+        .placed-widget {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 12px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .placed-widget:hover {
+            border-color: var(--brand-primary);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .placed-widget.selected {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+        }
+
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--brand-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .widget-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .widget-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .placed-widget:hover .widget-actions {
+            opacity: 1;
+        }
+
+        .widget-action-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--brand-muted);
+            border: none;
+            border-radius: 6px;
+            color: var(--brand-text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .widget-action-btn:hover {
+            background: var(--brand-primary);
+            color: white;
+        }
+
+        .widget-action-btn.delete:hover {
+            background: #ef4444;
+        }
+
+        .widget-content {
+            padding: 16px;
+            height: calc(100% - 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brand-text-tertiary);
+        }
+
+        /* Widget Preview Content */
+        .widget-preview-stat {
+            text-align: center;
+        }
+
+        .widget-preview-stat .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+        }
+
+        .widget-preview-stat .label {
+            font-size: 0.85rem;
+            color: var(--brand-text-secondary);
+        }
+
+        .widget-preview-chart {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 10px;
+        }
+
+        .chart-bar {
+            width: 20%;
+            background: linear-gradient(180deg, var(--brand-primary), var(--brand-accent));
+            border-radius: 4px 4px 0 0;
+            transition: height 0.3s;
+        }
+
+        .widget-preview-table {
+            width: 100%;
+            font-size: 0.8rem;
+        }
+
+        .widget-preview-table tr {
+            border-bottom: 1px solid var(--brand-border);
+        }
+
+        .widget-preview-table td {
+            padding: 8px;
+            color: var(--brand-text-secondary);
+        }
+
+        /* Config Panel (Right Sidebar) */
+        .config-panel {
+            background: rgba(15, 15, 20, 0.8);
+            border-left: 1px solid var(--brand-border);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .config-section {
+            margin-bottom: 24px;
+        }
+
+        .config-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--brand-text-tertiary);
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .config-group {
+            margin-bottom: 16px;
+        }
+
+        .config-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: var(--brand-text-secondary);
+        }
+
+        .config-group input,
+        .config-group select,
+        .config-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            color: var(--brand-text-primary);
+            font-size: 0.9rem;
+        }
+
+        .config-group input:focus,
+        .config-group select:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .config-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-picker-group input[type="color"] {
+            width: 40px;
+            height: 36px;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .color-picker-group input[type="text"] {
+            flex: 1;
+        }
+
+        .no-selection {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--brand-text-tertiary);
+        }
+
+        .no-selection-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Size Buttons */
+        .size-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .size-btn {
+            padding: 8px;
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 6px;
+            color: var(--brand-text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .size-btn:hover, .size-btn.active {
+            border-color: var(--brand-primary);
+            color: var(--brand-primary);
+        }
+
+        /* Preview Mode */
+        .preview-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .preview-overlay.active {
+            display: flex;
+        }
+
+        .preview-toolbar {
+            background: var(--brand-panel);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--brand-border);
+        }
+
+        .preview-content {
+            flex: 1;
+            padding: 24px;
+            overflow: auto;
+        }
+
+        /* Save Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            animation: modalIn 0.2s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* JSON Output */
+        .json-output {
+            background: #0a0a0f;
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            max-height: 300px;
+            overflow: auto;
+            white-space: pre-wrap;
+            color: var(--brand-text-secondary);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-primary);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-color: #22c55e; }
+        .toast.error { border-color: #ef4444; }
+    </style>
+</head>
+<body>
+
+<div class="builder-layout">
+    <!-- Toolbar -->
+    <header class="builder-toolbar">
+        <div class="toolbar-left">
+            <span class="toolbar-title">PHOENIX Dashboard Builder</span>
+            <input type="text" class="dashboard-name" id="dashboard-name" value="Untitled Dashboard" placeholder="Dashboard name...">
+        </div>
+        <div class="toolbar-center">
+            <button class="toolbar-btn" onclick="clearCanvas()">
+                <span>&#128465;</span> Clear
+            </button>
+            <button class="toolbar-btn" onclick="showLoadModal()">
+                <span>&#128194;</span> Load
+            </button>
+            <button class="toolbar-btn" onclick="showExportModal()">
+                <span>&#128190;</span> Export JSON
+            </button>
+            <button class="toolbar-btn primary" onclick="saveDashboard()">
+                <span>&#128190;</span> Save
+            </button>
+        </div>
+        <div class="toolbar-right">
+            <button class="toolbar-btn" onclick="togglePreview()">
+                <span>&#128065;</span> Preview
+            </button>
+            <a href="/en/architecture-guide/" class="toolbar-btn">
+                <span>&#128218;</span> Docs
+            </a>
+        </div>
+    </header>
+
+    <!-- Widget Palette -->
+    <aside class="widget-palette">
+        <div class="palette-section">
+            <div class="palette-title">Data Display</div>
+            <div class="widget-item" draggable="true" data-widget-type="stat-card">
+                <div class="widget-icon">&#128200;</div>
+                <div class="widget-info">
+                    <h4>Stat Card</h4>
+                    <p>Single metric display</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="chart-bar">
+                <div class="widget-icon">&#128202;</div>
+                <div class="widget-info">
+                    <h4>Bar Chart</h4>
+                    <p>Vertical bar visualization</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="chart-line">
+                <div class="widget-icon">&#128201;</div>
+                <div class="widget-info">
+                    <h4>Line Chart</h4>
+                    <p>Trend over time</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="data-table">
+                <div class="widget-icon">&#128203;</div>
+                <div class="widget-info">
+                    <h4>Data Table</h4>
+                    <p>Tabular data display</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="progress-bar">
+                <div class="widget-icon">&#9632;</div>
+                <div class="widget-info">
+                    <h4>Progress Bar</h4>
+                    <p>Percentage indicator</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="palette-section">
+            <div class="palette-title">Content</div>
+            <div class="widget-item" draggable="true" data-widget-type="text-block">
+                <div class="widget-icon">&#128221;</div>
+                <div class="widget-info">
+                    <h4>Text Block</h4>
+                    <p>Rich text content</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="image">
+                <div class="widget-icon">&#128247;</div>
+                <div class="widget-info">
+                    <h4>Image</h4>
+                    <p>Picture or logo</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="video">
+                <div class="widget-icon">&#127909;</div>
+                <div class="widget-info">
+                    <h4>Video</h4>
+                    <p>Video embed or stream</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="palette-section">
+            <div class="palette-title">Interactive</div>
+            <div class="widget-item" draggable="true" data-widget-type="form">
+                <div class="widget-icon">&#128221;</div>
+                <div class="widget-info">
+                    <h4>Form</h4>
+                    <p>Input form</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="button-group">
+                <div class="widget-icon">&#128307;</div>
+                <div class="widget-info">
+                    <h4>Buttons</h4>
+                    <p>Action buttons</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="ai-chat">
+                <div class="widget-icon">&#129302;</div>
+                <div class="widget-info">
+                    <h4>AI Chat</h4>
+                    <p>AI assistant widget</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="palette-section">
+            <div class="palette-title">Layout</div>
+            <div class="widget-item" draggable="true" data-widget-type="spacer">
+                <div class="widget-icon">&#9723;</div>
+                <div class="widget-info">
+                    <h4>Spacer</h4>
+                    <p>Empty space</p>
+                </div>
+            </div>
+            <div class="widget-item" draggable="true" data-widget-type="divider">
+                <div class="widget-icon">&#9473;</div>
+                <div class="widget-info">
+                    <h4>Divider</h4>
+                    <p>Horizontal line</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Canvas -->
+    <main class="builder-canvas">
+        <div class="canvas-grid" id="canvas-grid">
+            <!-- Grid cells will be generated by JS -->
+        </div>
+    </main>
+
+    <!-- Config Panel -->
+    <aside class="config-panel" id="config-panel">
+        <div class="no-selection" id="no-selection">
+            <div class="no-selection-icon">&#128204;</div>
+            <p>Select a widget to configure</p>
+            <p style="font-size: 0.85rem; margin-top: 8px;">Drag widgets from the left panel onto the canvas</p>
+        </div>
+
+        <div id="widget-config" style="display: none;">
+            <div class="config-section">
+                <div class="config-title">Widget Settings</div>
+                <div class="config-group">
+                    <label>Title</label>
+                    <input type="text" id="config-title" placeholder="Widget title">
+                </div>
+                <div class="config-group">
+                    <label>Subtitle</label>
+                    <input type="text" id="config-subtitle" placeholder="Optional subtitle">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-title">Size</div>
+                <div class="config-group">
+                    <label>Width (columns)</label>
+                    <div class="size-buttons" id="width-buttons">
+                        <button class="size-btn" data-size="3">3</button>
+                        <button class="size-btn active" data-size="4">4</button>
+                        <button class="size-btn" data-size="6">6</button>
+                        <button class="size-btn" data-size="12">12</button>
+                    </div>
+                </div>
+                <div class="config-group">
+                    <label>Height (rows)</label>
+                    <div class="size-buttons" id="height-buttons">
+                        <button class="size-btn active" data-size="1">1</button>
+                        <button class="size-btn" data-size="2">2</button>
+                        <button class="size-btn" data-size="3">3</button>
+                        <button class="size-btn" data-size="4">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-title">Appearance</div>
+                <div class="config-group">
+                    <label>Accent Color</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="config-color" value="#f97316">
+                        <input type="text" id="config-color-text" value="#f97316">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-section" id="data-config">
+                <div class="config-title">Data Source</div>
+                <div class="config-group">
+                    <label>Source Type</label>
+                    <select id="config-data-source">
+                        <option value="static">Static Value</option>
+                        <option value="gate">Gate (AJAX)</option>
+                        <option value="api">REST API</option>
+                    </select>
+                </div>
+                <div class="config-group" id="static-value-group">
+                    <label>Value</label>
+                    <input type="text" id="config-static-value" placeholder="Enter value">
+                </div>
+                <div class="config-group" id="gate-group" style="display: none;">
+                    <label>Gate Name</label>
+                    <input type="text" id="config-gate" placeholder="e.g., command_center">
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<!-- Preview Overlay -->
+<div class="preview-overlay" id="preview-overlay">
+    <div class="preview-toolbar">
+        <span style="font-weight: 600;">Preview Mode</span>
+        <button class="toolbar-btn" onclick="togglePreview()">
+            <span>&#10005;</span> Close Preview
+        </button>
+    </div>
+    <div class="preview-content" id="preview-content">
+        <!-- Preview renders here -->
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="export-modal">
+    <div class="modal">
+        <h3>&#128190; Export Dashboard JSON</h3>
+        <p style="color: var(--brand-text-secondary); margin-bottom: 16px;">
+            Copy this configuration to save or use in your code:
+        </p>
+        <div class="json-output" id="json-output"></div>
+        <div class="modal-actions">
+            <button class="toolbar-btn" onclick="copyJson()">&#128203; Copy</button>
+            <button class="toolbar-btn" onclick="downloadJson()">&#128229; Download</button>
+            <button class="toolbar-btn" onclick="closeModal('export-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Modal -->
+<div class="modal-overlay" id="load-modal">
+    <div class="modal">
+        <h3>&#128194; Load Dashboard</h3>
+        <p style="color: var(--brand-text-secondary); margin-bottom: 16px;">
+            Paste a dashboard JSON configuration:
+        </p>
+        <div class="config-group">
+            <textarea id="load-json" rows="10" placeholder='{"name": "My Dashboard", "widgets": [...]}'></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="toolbar-btn primary" onclick="loadFromJson()">Load</button>
+            <button class="toolbar-btn" onclick="closeModal('load-modal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Dashboard Builder State
+const state = {
+    widgets: [],
+    selectedWidget: null,
+    nextId: 1
+};
+
+// Widget type definitions
+const widgetTypes = {
+    'stat-card': { icon: '&#128200;', name: 'Stat Card', defaultWidth: 3, defaultHeight: 1 },
+    'chart-bar': { icon: '&#128202;', name: 'Bar Chart', defaultWidth: 6, defaultHeight: 2 },
+    'chart-line': { icon: '&#128201;', name: 'Line Chart', defaultWidth: 6, defaultHeight: 2 },
+    'data-table': { icon: '&#128203;', name: 'Data Table', defaultWidth: 6, defaultHeight: 3 },
+    'progress-bar': { icon: '&#9632;', name: 'Progress', defaultWidth: 4, defaultHeight: 1 },
+    'text-block': { icon: '&#128221;', name: 'Text', defaultWidth: 4, defaultHeight: 2 },
+    'image': { icon: '&#128247;', name: 'Image', defaultWidth: 4, defaultHeight: 2 },
+    'video': { icon: '&#127909;', name: 'Video', defaultWidth: 6, defaultHeight: 3 },
+    'form': { icon: '&#128221;', name: 'Form', defaultWidth: 4, defaultHeight: 3 },
+    'button-group': { icon: '&#128307;', name: 'Buttons', defaultWidth: 4, defaultHeight: 1 },
+    'ai-chat': { icon: '&#129302;', name: 'AI Chat', defaultWidth: 4, defaultHeight: 4 },
+    'spacer': { icon: '&#9723;', name: 'Spacer', defaultWidth: 3, defaultHeight: 1 },
+    'divider': { icon: '&#9473;', name: 'Divider', defaultWidth: 12, defaultHeight: 1 }
+};
+
+// Initialize grid
+function initGrid() {
+    const grid = document.getElementById('canvas-grid');
+    grid.innerHTML = '';
+
+    // Create 4 rows x 12 columns of cells
+    for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 12; col++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+
+            cell.addEventListener('dragover', handleDragOver);
+            cell.addEventListener('dragleave', handleDragLeave);
+            cell.addEventListener('drop', handleDrop);
+
+            grid.appendChild(cell);
+        }
+    }
+
+    renderWidgets();
+}
+
+// Drag and drop handlers
+let draggedType = null;
+
+document.querySelectorAll('.widget-item').forEach(item => {
+    item.addEventListener('dragstart', (e) => {
+        draggedType = item.dataset.widgetType;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'copy';
+    });
+
+    item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        draggedType = null;
+    });
+});
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+
+    if (!draggedType) return;
+
+    const row = parseInt(e.currentTarget.dataset.row);
+    const col = parseInt(e.currentTarget.dataset.col);
+    const typeDef = widgetTypes[draggedType];
+
+    const widget = {
+        id: state.nextId++,
+        type: draggedType,
+        title: typeDef.name,
+        subtitle: '',
+        row: row,
+        col: col,
+        width: typeDef.defaultWidth,
+        height: typeDef.defaultHeight,
+        color: '#f97316',
+        dataSource: 'static',
+        staticValue: '0',
+        gate: ''
+    };
+
+    state.widgets.push(widget);
+    renderWidgets();
+    selectWidget(widget.id);
+    showToast('Widget added!', 'success');
+}
+
+// Render widgets on canvas
+function renderWidgets() {
+    // Clear existing widget elements
+    document.querySelectorAll('.placed-widget').forEach(el => el.remove());
+
+    // Reset all cells
+    document.querySelectorAll('.grid-cell').forEach(cell => {
+        cell.classList.remove('has-widget');
+        cell.style.display = '';
+    });
+
+    state.widgets.forEach(widget => {
+        const startCell = document.querySelector(
+            `.grid-cell[data-row="${widget.row}"][data-col="${widget.col}"]`
+        );
+        if (!startCell) return;
+
+        // Create widget element
+        const el = document.createElement('div');
+        el.className = 'placed-widget' + (state.selectedWidget === widget.id ? ' selected' : '');
+        el.dataset.widgetId = widget.id;
+        el.style.gridColumn = `span ${widget.width}`;
+        el.style.gridRow = `span ${widget.height}`;
+
+        const typeDef = widgetTypes[widget.type];
+        el.innerHTML = `
+            <div class="widget-header">
+                <span class="widget-title">${typeDef.icon} ${widget.title}</span>
+                <div class="widget-actions">
+                    <button class="widget-action-btn" onclick="selectWidget(${widget.id})" title="Configure">&#9881;</button>
+                    <button class="widget-action-btn delete" onclick="deleteWidget(${widget.id})" title="Delete">&#128465;</button>
+                </div>
+            </div>
+            <div class="widget-content">${renderWidgetPreview(widget)}</div>
+        `;
+
+        el.addEventListener('click', () => selectWidget(widget.id));
+
+        // Replace cell with widget
+        startCell.classList.add('has-widget');
+        startCell.appendChild(el);
+
+        // Hide cells that this widget spans
+        for (let r = widget.row; r < widget.row + widget.height; r++) {
+            for (let c = widget.col; c < widget.col + widget.width; c++) {
+                if (r === widget.row && c === widget.col) continue;
+                const cell = document.querySelector(`.grid-cell[data-row="${r}"][data-col="${c}"]`);
+                if (cell) cell.style.display = 'none';
+            }
+        }
+    });
+}
+
+// Render preview content based on widget type
+function renderWidgetPreview(widget) {
+    switch (widget.type) {
+        case 'stat-card':
+            return `<div class="widget-preview-stat">
+                <div class="value" style="color: ${widget.color}">${widget.staticValue || '0'}</div>
+                <div class="label">${widget.subtitle || 'Metric'}</div>
+            </div>`;
+        case 'chart-bar':
+            return `<div class="widget-preview-chart">
+                <div class="chart-bar" style="height: 60%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
+                <div class="chart-bar" style="height: 80%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
+                <div class="chart-bar" style="height: 45%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
+                <div class="chart-bar" style="height: 90%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
+                <div class="chart-bar" style="height: 70%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
+            </div>`;
+        case 'chart-line':
+            return `<div style="color: ${widget.color}; font-size: 2rem;">&#128201;</div><div>Line Chart</div>`;
+        case 'data-table':
+            return `<table class="widget-preview-table">
+                <tr><td>Row 1</td><td>Data</td><td>Value</td></tr>
+                <tr><td>Row 2</td><td>Data</td><td>Value</td></tr>
+                <tr><td>Row 3</td><td>Data</td><td>Value</td></tr>
+            </table>`;
+        case 'progress-bar':
+            return `<div style="width: 100%;">
+                <div style="background: var(--brand-muted); height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div style="width: ${widget.staticValue || 50}%; height: 100%; background: ${widget.color}; border-radius: 4px;"></div>
+                </div>
+                <div style="text-align: center; margin-top: 8px; font-size: 0.9rem;">${widget.staticValue || 50}%</div>
+            </div>`;
+        case 'ai-chat':
+            return `<div style="text-align: center;"><div style="font-size: 2.5rem;">&#129302;</div><div>AI Assistant</div></div>`;
+        default:
+            return `<div>${widgetTypes[widget.type]?.icon || ''} ${widget.type}</div>`;
+    }
+}
+
+// Select widget for configuration
+function selectWidget(id) {
+    state.selectedWidget = id;
+    const widget = state.widgets.find(w => w.id === id);
+
+    if (!widget) return;
+
+    document.getElementById('no-selection').style.display = 'none';
+    document.getElementById('widget-config').style.display = 'block';
+
+    // Populate config fields
+    document.getElementById('config-title').value = widget.title;
+    document.getElementById('config-subtitle').value = widget.subtitle;
+    document.getElementById('config-color').value = widget.color;
+    document.getElementById('config-color-text').value = widget.color;
+    document.getElementById('config-data-source').value = widget.dataSource;
+    document.getElementById('config-static-value').value = widget.staticValue;
+    document.getElementById('config-gate').value = widget.gate;
+
+    // Update size buttons
+    document.querySelectorAll('#width-buttons .size-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.size) === widget.width);
+    });
+    document.querySelectorAll('#height-buttons .size-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.size) === widget.height);
+    });
+
+    // Show/hide data source fields
+    document.getElementById('static-value-group').style.display = widget.dataSource === 'static' ? 'block' : 'none';
+    document.getElementById('gate-group').style.display = widget.dataSource === 'gate' ? 'block' : 'none';
+
+    renderWidgets();
+}
+
+// Delete widget
+function deleteWidget(id) {
+    state.widgets = state.widgets.filter(w => w.id !== id);
+    if (state.selectedWidget === id) {
+        state.selectedWidget = null;
+        document.getElementById('no-selection').style.display = 'block';
+        document.getElementById('widget-config').style.display = 'none';
+    }
+    renderWidgets();
+    showToast('Widget removed', 'success');
+}
+
+// Config change handlers
+document.getElementById('config-title').addEventListener('input', (e) => {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (widget) { widget.title = e.target.value; renderWidgets(); }
+});
+
+document.getElementById('config-subtitle').addEventListener('input', (e) => {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (widget) { widget.subtitle = e.target.value; renderWidgets(); }
+});
+
+document.getElementById('config-color').addEventListener('input', (e) => {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (widget) {
+        widget.color = e.target.value;
+        document.getElementById('config-color-text').value = e.target.value;
+        renderWidgets();
+    }
+});
+
+document.getElementById('config-color-text').addEventListener('input', (e) => {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (widget && /^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+        widget.color = e.target.value;
+        document.getElementById('config-color').value = e.target.value;
+        renderWidgets();
+    }
+});
+
+document.getElementById('config-data-source').addEventListener('change', (e) => {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (widget) {
+        widget.dataSource = e.target.value;
+        document.getElementById('static-value-group').style.display = e.target.value === 'static' ? 'block' : 'none';
+        document.getElementById('gate-group').style.display = e.target.value === 'gate' ? 'block' : 'none';
+    }
+});
+
+document.getElementById('config-static-value').addEventListener('input', (e) => {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (widget) { widget.staticValue = e.target.value; renderWidgets(); }
+});
+
+document.getElementById('config-gate').addEventListener('input', (e) => {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (widget) { widget.gate = e.target.value; }
+});
+
+// Size button handlers
+document.querySelectorAll('#width-buttons .size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const widget = state.widgets.find(w => w.id === state.selectedWidget);
+        if (widget) {
+            widget.width = parseInt(btn.dataset.size);
+            document.querySelectorAll('#width-buttons .size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderWidgets();
+        }
+    });
+});
+
+document.querySelectorAll('#height-buttons .size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const widget = state.widgets.find(w => w.id === state.selectedWidget);
+        if (widget) {
+            widget.height = parseInt(btn.dataset.size);
+            document.querySelectorAll('#height-buttons .size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderWidgets();
+        }
+    });
+});
+
+// Save/Load/Export functions
+function getDashboardConfig() {
+    return {
+        name: document.getElementById('dashboard-name').value,
+        created: new Date().toISOString(),
+        widgets: state.widgets.map(w => ({
+            type: w.type,
+            title: w.title,
+            subtitle: w.subtitle,
+            row: w.row,
+            col: w.col,
+            width: w.width,
+            height: w.height,
+            color: w.color,
+            dataSource: w.dataSource,
+            staticValue: w.staticValue,
+            gate: w.gate
+        }))
+    };
+}
+
+function saveDashboard() {
+    const config = getDashboardConfig();
+    localStorage.setItem('phoenix-dashboard-' + config.name, JSON.stringify(config));
+    showToast('Dashboard saved to local storage!', 'success');
+}
+
+function showExportModal() {
+    const config = getDashboardConfig();
+    document.getElementById('json-output').textContent = JSON.stringify(config, null, 2);
+    document.getElementById('export-modal').classList.add('active');
+}
+
+function showLoadModal() {
+    document.getElementById('load-modal').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+function copyJson() {
+    const json = document.getElementById('json-output').textContent;
+    navigator.clipboard.writeText(json);
+    showToast('Copied to clipboard!', 'success');
+}
+
+function downloadJson() {
+    const config = getDashboardConfig();
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = config.name.replace(/\s+/g, '-').toLowerCase() + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Downloaded!', 'success');
+}
+
+function loadFromJson() {
+    try {
+        const json = document.getElementById('load-json').value;
+        const config = JSON.parse(json);
+
+        document.getElementById('dashboard-name').value = config.name || 'Loaded Dashboard';
+        state.widgets = config.widgets.map((w, i) => ({ ...w, id: i + 1 }));
+        state.nextId = state.widgets.length + 1;
+        state.selectedWidget = null;
+
+        document.getElementById('no-selection').style.display = 'block';
+        document.getElementById('widget-config').style.display = 'none';
+
+        renderWidgets();
+        closeModal('load-modal');
+        showToast('Dashboard loaded!', 'success');
+    } catch (e) {
+        showToast('Invalid JSON format', 'error');
+    }
+}
+
+function clearCanvas() {
+    if (confirm('Clear all widgets from the canvas?')) {
+        state.widgets = [];
+        state.selectedWidget = null;
+        document.getElementById('no-selection').style.display = 'block';
+        document.getElementById('widget-config').style.display = 'none';
+        renderWidgets();
+        showToast('Canvas cleared', 'success');
+    }
+}
+
+// Preview mode
+function togglePreview() {
+    const overlay = document.getElementById('preview-overlay');
+    overlay.classList.toggle('active');
+
+    if (overlay.classList.contains('active')) {
+        const previewContent = document.getElementById('preview-content');
+        previewContent.innerHTML = generatePreviewHTML();
+    }
+}
+
+function generatePreviewHTML() {
+    const config = getDashboardConfig();
+    let html = `
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <h1 style="font-size: 2rem; margin-bottom: 24px; background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                ${config.name}
+            </h1>
+            <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px;">
+    `;
+
+    config.widgets.forEach(widget => {
+        html += `
+            <div style="grid-column: span ${widget.width}; grid-row: span ${widget.height}; background: var(--brand-panel); border: 1px solid var(--brand-border); border-radius: 12px; padding: 20px; min-height: ${widget.height * 100}px;">
+                <h3 style="margin-bottom: 12px; color: ${widget.color};">${widget.title}</h3>
+                <div style="display: flex; align-items: center; justify-content: center; height: calc(100% - 40px); color: var(--brand-text-tertiary);">
+                    ${renderWidgetPreview(widget)}
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div></div>';
+    return html;
+}
+
+// Toast notifications
+function showToast(message, type = 'success') {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = `<span>${type === 'success' ? '&#10003;' : '&#10007;'}</span> ${message}`;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Initialize
+initGrid();
+
+// Click outside to deselect
+document.getElementById('canvas-grid').addEventListener('click', (e) => {
+    if (e.target.classList.contains('grid-cell') && !e.target.classList.contains('has-widget')) {
+        state.selectedWidget = null;
+        document.getElementById('no-selection').style.display = 'block';
+        document.getElementById('widget-config').style.display = 'none';
+        renderWidgets();
+    }
+});
+
+console.log('PHOENIX Dashboard Builder loaded');
+</script>
+
+</body>
+</html>
