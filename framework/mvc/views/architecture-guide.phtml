@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>micro-MVC Architecture Explorer</title>
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <style>
+        :root {
+            --code-bg: #1a1a2e;
+            --code-border: #2d2d44;
+            --highlight: #f97316;
+            --success: #22c55e;
+            --info: #3b82f6;
+            --warning: #eab308;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(180deg, #0a0a1a 0%, #0d1424 50%, #0F0F0F 100%);
+            color: var(--brand-text-primary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--brand-border);
+            padding: 0 20px;
+            z-index: 100;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 16px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            color: var(--brand-text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover { color: var(--brand-text-primary); }
+        .nav-tab.active {
+            color: var(--highlight);
+            border-bottom-color: var(--highlight);
+        }
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .section-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--brand-border);
+        }
+
+        .section-header h1 {
+            font-size: 2rem;
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, var(--highlight), #fcd083);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            color: var(--brand-text-secondary);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            font-size: 1.4rem;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .function { color: #fbbf24; }
+        .code-block .class { color: #67e8f9; }
+        .code-block .variable { color: #f97316; }
+
+        /* Flow Diagram */
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 20px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .flow-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40px;
+            flex-shrink: 0;
+        }
+
+        .flow-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--highlight);
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+            flex-shrink: 0;
+        }
+
+        .flow-connector {
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(180deg, var(--highlight), transparent);
+        }
+
+        .flow-content {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+
+        .flow-title {
+            font-weight: 600;
+            color: var(--brand-text-primary);
+            margin-bottom: 4px;
+        }
+
+        .flow-desc {
+            color: var(--brand-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .flow-file {
+            display: inline-block;
+            background: var(--code-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--highlight);
+            margin-top: 6px;
+        }
+
+        /* Interactive Demo */
+        .demo-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .demo-input, .demo-output {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 200px;
+        }
+
+        .demo-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--brand-text-tertiary);
+            margin-bottom: 12px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--highlight), #ea580c);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--brand-muted);
+            color: var(--brand-text-primary);
+            border: 1px solid var(--brand-border);
+        }
+        .btn-secondary:hover { background: var(--brand-border); }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+
+        /* Tables */
+        .config-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .config-table th, .config-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--brand-border);
+        }
+
+        .config-table th {
+            background: var(--brand-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .config-table td code {
+            background: var(--code-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* Status Indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status-success { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+        .status-info { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+        .status-warning { background: rgba(234, 179, 8, 0.2); color: var(--warning); }
+
+        /* File Tree */
+        .file-tree {
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .file-tree .folder { color: #fbbf24; }
+        .file-tree .file { color: var(--brand-text-secondary); }
+        .file-tree .important { color: var(--highlight); font-weight: 600; }
+        .file-tree .indent { margin-left: 20px; }
+        .file-tree .indent2 { margin-left: 40px; }
+        .file-tree .indent3 { margin-left: 60px; }
+
+        /* AJAX Console */
+        .ajax-console {
+            background: #0a0a0f;
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .console-line {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        .console-line.request { background: rgba(59, 130, 246, 0.1); border-left: 3px solid var(--info); }
+        .console-line.response { background: rgba(34, 197, 94, 0.1); border-left: 3px solid var(--success); }
+        .console-line.error { background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; }
+
+        /* Grid layouts */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3, .demo-panel { grid-template-columns: 1fr; }
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.05));
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .highlight-box h4 {
+            margin: 0 0 8px 0;
+            color: var(--highlight);
+        }
+
+        /* Wizard */
+        .wizard-step {
+            display: none;
+        }
+        .wizard-step.active { display: block; }
+
+        .wizard-progress {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+        }
+
+        .wizard-progress-step {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: var(--brand-muted);
+            border: 1px solid var(--brand-border);
+            font-size: 0.85rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        .wizard-progress-step:first-child { border-radius: 8px 0 0 8px; }
+        .wizard-progress-step:last-child { border-radius: 0 8px 8px 0; }
+        .wizard-progress-step.active {
+            background: var(--highlight);
+            color: white;
+            border-color: var(--highlight);
+        }
+        .wizard-progress-step.completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        /* Form inputs */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--code-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            color: var(--brand-text-primary);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--highlight);
+        }
+
+        /* Dashboard Builder Preview */
+        .builder-preview {
+            background: var(--brand-bg);
+            border: 1px solid var(--brand-border);
+            border-radius: 8px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .builder-toolbar {
+            display: flex;
+            gap: 10px;
+            padding: 12px;
+            background: var(--brand-muted);
+            border-bottom: 1px solid var(--brand-border);
+            flex-wrap: wrap;
+        }
+
+        .builder-widget {
+            padding: 8px 16px;
+            background: var(--brand-panel);
+            border: 1px dashed var(--brand-border);
+            border-radius: 6px;
+            cursor: grab;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .builder-widget:hover {
+            border-color: var(--highlight);
+            background: rgba(249, 115, 22, 0.1);
+        }
+
+        .builder-canvas {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            align-content: start;
+        }
+
+        .canvas-slot {
+            border: 2px dashed var(--brand-border);
+            border-radius: 8px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brand-text-tertiary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .canvas-slot:hover {
+            border-color: var(--highlight);
+            background: rgba(249, 115, 22, 0.05);
+        }
+
+        .canvas-slot.has-widget {
+            border-style: solid;
+            border-color: var(--highlight);
+            background: var(--brand-panel);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav-tabs">
+    <button class="nav-tab active" data-section="overview">Overview</button>
+    <button class="nav-tab" data-section="request-flow">Request Flow</button>
+    <button class="nav-tab" data-section="ajax">AJAX System</button>
+    <button class="nav-tab" data-section="config">Configuration</button>
+    <button class="nav-tab" data-section="extensions">Extensions</button>
+    <button class="nav-tab" data-section="database">Database</button>
+    <button class="nav-tab" data-section="create-page">Create a Page</button>
+    <button class="nav-tab" data-section="builder-vision">Dashboard Builder Vision</button>
+</nav>
+
+<div class="main-container">
+
+    <!-- OVERVIEW SECTION -->
+    <div id="overview" class="section active">
+        <div class="section-header">
+            <h1>micro-MVC Architecture Explorer</h1>
+            <p>Interactive guide to George Delaportas' micro-MVC framework - your foundation for dashboard systems</p>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128736;</span> Core Classes</h3>
+                <table class="config-table">
+                    <tr>
+                        <td><code>MVC</code></td>
+                        <td>Virtual routing, model/view orchestration</td>
+                    </tr>
+                    <tr>
+                        <td><code>UTIL</code></td>
+                        <td>Config loading, extensions, content management</td>
+                    </tr>
+                    <tr>
+                        <td><code>LANG</code></td>
+                        <td>Multi-language support (i18n)</td>
+                    </tr>
+                    <tr>
+                        <td><code>DB</code></td>
+                        <td>MySQL database abstraction (MySQLi)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128193;</span> Key Directories</h3>
+                <div class="file-tree">
+                    <div><span class="folder">framework/</span></div>
+                    <div class="indent"><span class="folder">libs/</span> <span class="file">- Core classes (mvc.php, util.php, db.php, lang.php)</span></div>
+                    <div class="indent"><span class="folder">config/</span> <span class="file">- .cfg files (routes, langs, gates)</span></div>
+                    <div class="indent"><span class="folder">mvc/models/</span> <span class="file">- Data models ({route}.php)</span></div>
+                    <div class="indent"><span class="folder">mvc/views/</span> <span class="file">- Templates ({route}.phtml)</span></div>
+                    <div class="indent"><span class="important">misc/dispatchers/</span> <span class="file">- Request handlers</span></div>
+                    <div class="indent2"><span class="important">gates/</span> <span class="file">- AJAX endpoints</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#9889;</span> Two Request Paths</h3>
+            <div class="grid-2">
+                <div class="highlight-box">
+                    <h4>Page Requests (Dragon)</h4>
+                    <p>Normal browser requests go through <code>dragon.php</code> dispatcher</p>
+                    <p><code>GET /en/dashboard/</code> &rarr; Model &rarr; Controller &rarr; View</p>
+                </div>
+                <div class="highlight-box">
+                    <h4>AJAX Requests (Fortress)</h4>
+                    <p>POST requests with <code>gate</code> param go through <code>fortress.php</code></p>
+                    <p><code>POST {gate: 'auth'}</code> &rarr; Gate Handler &rarr; JSON Response</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#127919;</span> Why This Framework for Dashboards?</h3>
+            <ul style="color: var(--brand-text-secondary); line-height: 2;">
+                <li><strong>Clean separation</strong> - Models handle data, views handle display</li>
+                <li><strong>Built-in AJAX</strong> - Gates system perfect for real-time updates</li>
+                <li><strong>Extension architecture</strong> - Add features without touching core</li>
+                <li><strong>Multi-language ready</strong> - i18n built into the framework</li>
+                <li><strong>Lightweight</strong> - No bloat, fast execution</li>
+                <li><strong>PHP + MySQL</strong> - Standard stack, easy deployment</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- REQUEST FLOW SECTION -->
+    <div id="request-flow" class="section">
+        <div class="section-header">
+            <h1>Request Flow</h1>
+            <p>How a request travels through the framework</p>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">Page Request: <code>/en/dashboard/</code></h3>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">1. Entry Point</div>
+                        <div class="flow-desc">Apache rewrites URL to index.php, starts session, loads framework</div>
+                        <div class="flow-file">index.php</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">2. Configuration Loading</div>
+                        <div class="flow-desc">Reads langs.cfg, routes.cfg - registers available languages and routes</div>
+                        <div class="flow-file">framework/misc/config_loader.php</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">3. Supervisor (Traffic Cop)</div>
+                        <div class="flow-desc">Checks if $_POST['gate'] exists. If empty &rarr; page request, load Dragon</div>
+                        <div class="flow-file">framework/misc/supervisor.php</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">4. Dragon Dispatcher</div>
+                        <div class="flow-desc">Loads condition files (can intercept requests), prepares for MVC</div>
+                        <div class="flow-file">framework/misc/dispatchers/dragon.php</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">5. Site Template</div>
+                        <div class="flow-desc">Loads header, calls MVC::Go_To($route), loads footer</div>
+                        <div class="flow-file">site/index.phtml</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">6. MVC Processing</div>
+                        <div class="flow-desc">Loads model &rarr; calls controller method &rarr; renders view</div>
+                        <div class="flow-file">framework/libs/mvc.php :: Go_To()</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">7. Response</div>
+                        <div class="flow-desc">HTML rendered and sent to browser</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">Data Flow: Model &rarr; Controller &rarr; View</h3>
+            <div class="code-block">
+<span class="comment">// 1. Model (framework/mvc/models/dashboard.php)</span>
+<span class="keyword">class</span> <span class="class">DASHBOARD_MODEL</span> {
+    <span class="keyword">public static function</span> <span class="function">Get_Data</span>() {
+        <span class="keyword">return</span> [
+            <span class="string">'title'</span> => <span class="string">'My Dashboard'</span>,
+            <span class="string">'stats'</span> => <span class="variable">$stats_from_db</span>
+        ];
+    }
+}
+
+<span class="comment">// 2. Controller (framework/mvc/controller.php)</span>
+<span class="keyword">class</span> <span class="class">MVC_CONTROLLER</span> {
+    <span class="keyword">public static function</span> <span class="function">dashboard</span>() {
+        <span class="variable">$data</span> = <span class="class">DASHBOARD_MODEL</span>::<span class="function">Get_Data</span>();
+        <span class="class">MVC</span>::<span class="function">Store_Content</span>(<span class="string">'dashboard'</span>, <span class="variable">$data</span>);
+    }
+}
+
+<span class="comment">// 3. View (framework/mvc/views/dashboard.phtml)</span>
+&lt;?php <span class="variable">$data</span> = <span class="class">MVC</span>::<span class="function">Restore_Content</span>(<span class="string">'dashboard'</span>); ?&gt;
+&lt;h1&gt;&lt;?= <span class="variable">$data</span>[<span class="string">'title'</span>] ?&gt;&lt;/h1&gt;
+            </div>
+        </div>
+    </div>
+
+    <!-- AJAX SECTION -->
+    <div id="ajax" class="section">
+        <div class="section-header">
+            <h1>AJAX System (Fortress)</h1>
+            <p>Real-time data exchange through Gates</p>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128274;</span> How Gates Work</h3>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">1. Client sends POST with <code>gate</code> parameter</div>
+                        <div class="code-block">
+fetch('/', {
+    method: 'POST',
+    body: new URLSearchParams({
+        gate: 'command_center',
+        action: 'get_stats'
+    })
+})
+                        </div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">2. Supervisor routes to Fortress</div>
+                        <div class="flow-desc">Detects $_POST['gate'] is set, loads fortress.php instead of dragon.php</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">3. Fortress validates gate name</div>
+                        <div class="flow-desc">Checks gates.cfg to ensure gate is registered</div>
+                        <div class="flow-file">framework/config/gates.cfg</div>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-line"><div class="flow-dot"></div></div>
+                    <div class="flow-content">
+                        <div class="flow-title">4. Gate handler processes request</div>
+                        <div class="flow-file">framework/misc/dispatchers/gates/{gate_name}.php</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#9889;</span> Live AJAX Demo</h3>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="testAjax('content', {content_id: 'title'})">
+                    Test Content Gate
+                </button>
+                <button class="btn btn-secondary" onclick="testAjax('command_center', {action: 'ping'})">
+                    Test Command Center
+                </button>
+                <button class="btn btn-secondary" onclick="testAjax('invalid_gate', {})">
+                    Test Invalid Gate
+                </button>
+                <button class="btn btn-secondary" onclick="clearConsole()">
+                    Clear Console
+                </button>
+            </div>
+            <div class="ajax-console" id="ajax-console">
+                <div style="color: var(--brand-text-tertiary);">// AJAX responses will appear here...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128221;</span> Registered Gates</h3>
+            <table class="config-table">
+                <thead>
+                    <tr><th>Gate</th><th>Purpose</th><th>Response</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>content</code></td>
+                        <td>Fetch localized content blocks</td>
+                        <td>HTML content</td>
+                    </tr>
+                    <tr>
+                        <td><code>auth</code></td>
+                        <td>Login/logout handling</td>
+                        <td>1 (success), -1 (fail)</td>
+                    </tr>
+                    <tr>
+                        <td><code>command_center</code></td>
+                        <td>Dashboard real-time data</td>
+                        <td>JSON object</td>
+                    </tr>
+                    <tr>
+                        <td><code>send_email</code></td>
+                        <td>Email sending via Woody</td>
+                        <td>Status code</td>
+                    </tr>
+                    <tr>
+                        <td><code>media_hub</code></td>
+                        <td>Media file operations</td>
+                        <td>JSON/Status</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128187;</span> Gate Code Structure</h3>
+            <div class="code-block">
+<span class="comment">// framework/misc/dispatchers/gates/my_gate.php</span>
+&lt;?php
+<span class="keyword">if</span> (!defined(<span class="string">'micro_mvc'</span>)) <span class="keyword">exit</span>();
+
+<span class="comment">// Access POST parameters</span>
+<span class="variable">$action</span> = <span class="variable">$_POST</span>[<span class="string">'action'</span>] ?? <span class="string">''</span>;
+
+<span class="keyword">switch</span> (<span class="variable">$action</span>) {
+    <span class="keyword">case</span> <span class="string">'get_data'</span>:
+        <span class="comment">// Query database</span>
+        <span class="variable">$result</span> = <span class="class">DB</span>::<span class="function">Exec_SQL_Command</span>(<span class="string">"SELECT * FROM stats"</span>);
+        <span class="keyword">echo</span> json_encode([<span class="string">'success'</span> => <span class="keyword">true</span>, <span class="string">'data'</span> => <span class="variable">$result</span>]);
+        <span class="keyword">break</span>;
+
+    <span class="keyword">case</span> <span class="string">'update_item'</span>:
+        <span class="comment">// Process update...</span>
+        <span class="keyword">echo</span> <span class="string">'1'</span>; <span class="comment">// Success</span>
+        <span class="keyword">break</span>;
+
+    <span class="keyword">default</span>:
+        <span class="keyword">echo</span> <span class="string">'-1'</span>; <span class="comment">// Error</span>
+}
+?&gt;
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIGURATION SECTION -->
+    <div id="config" class="section">
+        <div class="section-header">
+            <h1>Configuration Files</h1>
+            <p>Simple .cfg files control the framework behavior</p>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#127760;</span> routes.cfg</h3>
+                <p style="color: var(--brand-text-secondary);">Comma-separated list of registered page routes</p>
+                <div class="code-block" id="routes-cfg">Loading...</div>
+                <p><span class="status status-info">Location:</span> <code>framework/config/routes.cfg</code></p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#127757;</span> langs.cfg</h3>
+                <p style="color: var(--brand-text-secondary);">Supported language codes (2-letter ISO)</p>
+                <div class="code-block" id="langs-cfg">Loading...</div>
+                <p><span class="status status-info">Location:</span> <code>framework/config/langs.cfg</code></p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128274;</span> gates.cfg</h3>
+                <p style="color: var(--brand-text-secondary);">Registered AJAX endpoint names</p>
+                <div class="code-block" id="gates-cfg">Loading...</div>
+                <p><span class="status status-info">Location:</span> <code>framework/config/gates.cfg</code></p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128450;</span> db.cfg</h3>
+                <p style="color: var(--brand-text-secondary);">Database connection string</p>
+                <div class="code-block">user:password:host:database:port</div>
+                <p><span class="status status-warning">Runtime Generated</span> - Created when DB is configured</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128230;</span> Extension Registry</h3>
+            <div class="grid-2">
+                <div>
+                    <h4>PHP Extensions (php.json)</h4>
+                    <div class="code-block">
+{
+    "portal": "core",
+    "splash": "user",
+    "woody": "user",
+    "anti_hijack": "user"
+}
+                    </div>
+                </div>
+                <div>
+                    <h4>JS Extensions (js.json)</h4>
+                    <div class="code-block">
+{
+    "bull": "core",
+    "ajax_factory": "core",
+    "vulcan": "core",
+    "pythia": "core"
+}
+                    </div>
+                </div>
+            </div>
+            <p style="color: var(--brand-text-secondary); margin-top: 16px;">
+                Extensions are loaded via <code>UTIL::Load_Extension('name', 'php|js')</code>
+            </p>
+        </div>
+    </div>
+
+    <!-- EXTENSIONS SECTION -->
+    <div id="extensions" class="section">
+        <div class="section-header">
+            <h1>Extension System</h1>
+            <p>Modular add-ons for both PHP and JavaScript</p>
+        </div>
+
+        <div class="grid-3">
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128225;</span> Bull</h3>
+                <p style="color: var(--brand-text-secondary);">Core AJAX subsystem. Low-level XHR wrapper.</p>
+                <span class="status status-info">JS / Core</span>
+            </div>
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#127963;</span> Ajax Factory</h3>
+                <p style="color: var(--brand-text-secondary);">Higher-level AJAX builder with callbacks.</p>
+                <span class="status status-info">JS / Core</span>
+            </div>
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128295;</span> Vulcan</h3>
+                <p style="color: var(--brand-text-secondary);">JS utilities (DOM manipulation, helpers).</p>
+                <span class="status status-info">JS / Core</span>
+            </div>
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#9989;</span> Pythia</h3>
+                <p style="color: var(--brand-text-secondary);">Form validation framework.</p>
+                <span class="status status-info">JS / Core</span>
+            </div>
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#127800;</span> Splash</h3>
+                <p style="color: var(--brand-text-secondary);">Server-side UI controls.</p>
+                <span class="status status-success">PHP / User</span>
+            </div>
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128231;</span> Woody</h3>
+                <p style="color: var(--brand-text-secondary);">Email sending utility.</p>
+                <span class="status status-success">PHP / User</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128268;</span> Loading Extensions</h3>
+            <div class="code-block">
+<span class="comment">// In your view or model:</span>
+
+<span class="comment">// Load a PHP extension (only loads once - cached)</span>
+<span class="class">UTIL</span>::<span class="function">Load_Extension</span>(<span class="string">'woody'</span>, <span class="string">'php'</span>);
+
+<span class="comment">// Load a JS extension (outputs script tag)</span>
+<span class="class">UTIL</span>::<span class="function">Load_Extension</span>(<span class="string">'bull'</span>, <span class="string">'js'</span>);
+
+<span class="comment">// Autoload all extensions from ext_autoload.json</span>
+<span class="class">UTIL</span>::<span class="function">Autoload_Extensions</span>();
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Creating Your Own Extension</h4>
+            <ol style="color: var(--brand-text-secondary); line-height: 2;">
+                <li>Create folder: <code>framework/extensions/php/user/my_ext/</code></li>
+                <li>Create file: <code>my_ext.php</code> with your class</li>
+                <li>Register in <code>framework/config/registry/php.json</code></li>
+                <li>Load with <code>UTIL::Load_Extension('my_ext', 'php')</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- DATABASE SECTION -->
+    <div id="database" class="section">
+        <div class="section-header">
+            <h1>Database Layer</h1>
+            <p>MySQL abstraction via the DB class</p>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128450;</span> DB Class Methods</h3>
+            <table class="config-table">
+                <thead>
+                    <tr><th>Method</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>DB::Connect($user, $pass, $host, $db, $port)</code></td>
+                        <td>Establish new MySQLi connection</td>
+                    </tr>
+                    <tr>
+                        <td><code>DB::Use_Connection()</code></td>
+                        <td>Get cached connection or create from db.cfg</td>
+                    </tr>
+                    <tr>
+                        <td><code>DB::Exec_SQL_Command($sql)</code></td>
+                        <td>Execute query, returns array of results</td>
+                    </tr>
+                    <tr>
+                        <td><code>DB::Exec_SQL_Script($file)</code></td>
+                        <td>Execute multi-query SQL file</td>
+                    </tr>
+                    <tr>
+                        <td><code>DB::Store_Connection()</code></td>
+                        <td>Save credentials to db.cfg</td>
+                    </tr>
+                    <tr>
+                        <td><code>DB::Disconnect($conn_id)</code></td>
+                        <td>Close connection</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128187;</span> Usage Examples</h3>
+            <div class="code-block">
+<span class="comment">// In a Model class</span>
+<span class="keyword">class</span> <span class="class">DASHBOARD_MODEL</span> {
+    <span class="keyword">public static function</span> <span class="function">Get_Stats</span>() {
+        <span class="comment">// Simple query</span>
+        <span class="variable">$sql</span> = <span class="string">"SELECT * FROM dashboard_stats ORDER BY created_at DESC LIMIT 10"</span>;
+        <span class="variable">$result</span> = <span class="class">DB</span>::<span class="function">Exec_SQL_Command</span>(<span class="variable">$sql</span>);
+
+        <span class="keyword">return</span> <span class="variable">$result</span>; <span class="comment">// Returns array of associative arrays</span>
+    }
+
+    <span class="keyword">public static function</span> <span class="function">Update_Stat</span>(<span class="variable">$id</span>, <span class="variable">$value</span>) {
+        <span class="comment">// Parameterized query (manual escaping needed)</span>
+        <span class="variable">$conn</span> = <span class="class">DB</span>::<span class="function">Use_Connection</span>();
+        <span class="variable">$value</span> = mysqli_real_escape_string(<span class="variable">$conn</span>, <span class="variable">$value</span>);
+        <span class="variable">$sql</span> = <span class="string">"UPDATE dashboard_stats SET value = '{$value}' WHERE id = {$id}"</span>;
+
+        <span class="keyword">return</span> <span class="class">DB</span>::<span class="function">Exec_SQL_Command</span>(<span class="variable">$sql</span>);
+    }
+}
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Current Docker DB Config</h4>
+            <table class="config-table" style="background: transparent;">
+                <tr><td>Host</td><td><code>db</code> (Docker service name)</td></tr>
+                <tr><td>Database</td><td><code>micro_mvc</code></td></tr>
+                <tr><td>User</td><td><code>mvc_user</code></td></tr>
+                <tr><td>Password</td><td><code>mvc_password</code></td></tr>
+                <tr><td>Port</td><td><code>3306</code></td></tr>
+            </table>
+            <p style="margin-top: 12px;"><a href="http://localhost:8081" target="_blank" style="color: var(--highlight);">Open phpMyAdmin &rarr;</a></p>
+        </div>
+    </div>
+
+    <!-- CREATE PAGE SECTION -->
+    <div id="create-page" class="section">
+        <div class="section-header">
+            <h1>Create a Page</h1>
+            <p>Step-by-step guide to adding new pages</p>
+        </div>
+
+        <div class="card">
+            <div class="wizard-progress">
+                <div class="wizard-progress-step active" data-step="1">1. Add Route</div>
+                <div class="wizard-progress-step" data-step="2">2. Create Model</div>
+                <div class="wizard-progress-step" data-step="3">3. Add Controller</div>
+                <div class="wizard-progress-step" data-step="4">4. Create View</div>
+            </div>
+
+            <div class="wizard-step active" data-step="1">
+                <h3>Step 1: Register the Route</h3>
+                <p style="color: var(--brand-text-secondary);">Add your route name to <code>framework/config/routes.cfg</code></p>
+                <div class="code-block">
+<span class="comment">// routes.cfg (comma-separated, no spaces)</span>
+beat,test,dashboard,<span class="variable">my-new-page</span>
+                </div>
+                <div class="highlight-box">
+                    <h4>Naming Convention</h4>
+                    <ul style="color: var(--brand-text-secondary);">
+                        <li>Use lowercase with hyphens: <code>my-new-page</code></li>
+                        <li>Internally converted to underscores: <code>my_new_page</code></li>
+                        <li>URL will be: <code>/en/my-new-page/</code></li>
+                    </ul>
+                </div>
+                <button class="btn btn-primary" onclick="nextWizardStep()">Next: Create Model &rarr;</button>
+            </div>
+
+            <div class="wizard-step" data-step="2">
+                <h3>Step 2: Create the Model</h3>
+                <p style="color: var(--brand-text-secondary);">Create <code>framework/mvc/models/my_new_page.php</code></p>
+                <div class="code-block">
+&lt;?php
+<span class="keyword">class</span> <span class="class">MY_NEW_PAGE_MODEL</span>
+{
+    <span class="keyword">public static function</span> <span class="function">Get_Data</span>()
+    {
+        <span class="keyword">return</span> [
+            <span class="string">'title'</span> => <span class="string">'My New Page'</span>,
+            <span class="string">'phoenix'</span> => <span class="keyword">true</span>, <span class="comment">// Use PHOENIX layout</span>
+            <span class="string">'items'</span> => [
+                [<span class="string">'name'</span> => <span class="string">'Item 1'</span>, <span class="string">'value'</span> => 100],
+                [<span class="string">'name'</span> => <span class="string">'Item 2'</span>, <span class="string">'value'</span> => 200],
+            ]
+        ];
+    }
+}
+?&gt;
+                </div>
+                <button class="btn btn-secondary" onclick="prevWizardStep()">&larr; Back</button>
+                <button class="btn btn-primary" onclick="nextWizardStep()">Next: Add Controller &rarr;</button>
+            </div>
+
+            <div class="wizard-step" data-step="3">
+                <h3>Step 3: Add Controller Method (Optional)</h3>
+                <p style="color: var(--brand-text-secondary);">Add method to <code>framework/mvc/controller.php</code></p>
+                <div class="code-block">
+<span class="keyword">class</span> <span class="class">MVC_CONTROLLER</span>
+{
+    <span class="comment">// ... existing methods ...</span>
+
+    <span class="keyword">public static function</span> <span class="function">my_new_page</span>()
+    {
+        <span class="variable">$data</span> = <span class="class">MY_NEW_PAGE_MODEL</span>::<span class="function">Get_Data</span>();
+
+        <span class="comment">// Optional: Process data, add computed fields</span>
+        <span class="variable">$data</span>[<span class="string">'total'</span>] = array_sum(array_column(<span class="variable">$data</span>[<span class="string">'items'</span>], <span class="string">'value'</span>));
+
+        <span class="class">MVC</span>::<span class="function">Store_Content</span>(<span class="string">'my_new_page'</span>, <span class="variable">$data</span>);
+    }
+}
+                </div>
+                <div class="highlight-box">
+                    <h4>Note</h4>
+                    <p style="color: var(--brand-text-secondary);">Controller is optional if your view directly accesses the model or if using PHOENIX pattern where model data is loaded automatically.</p>
+                </div>
+                <button class="btn btn-secondary" onclick="prevWizardStep()">&larr; Back</button>
+                <button class="btn btn-primary" onclick="nextWizardStep()">Next: Create View &rarr;</button>
+            </div>
+
+            <div class="wizard-step" data-step="4">
+                <h3>Step 4: Create the View</h3>
+                <p style="color: var(--brand-text-secondary);">Create <code>framework/mvc/views/my_new_page.phtml</code></p>
+                <div class="code-block">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;&lt;?= htmlspecialchars(<span class="variable">$data</span>[<span class="string">'title'</span>]) ?&gt;&lt;/title&gt;
+    &lt;link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css"&gt;
+&lt;/head&gt;
+&lt;body class="phoenix-page theme-cyber"&gt;
+    &lt;h1&gt;&lt;?= htmlspecialchars(<span class="variable">$data</span>[<span class="string">'title'</span>]) ?&gt;&lt;/h1&gt;
+
+    &lt;div class="stats-grid"&gt;
+        &lt;?php <span class="keyword">foreach</span> (<span class="variable">$data</span>[<span class="string">'items'</span>] <span class="keyword">as</span> <span class="variable">$item</span>): ?&gt;
+        &lt;div class="stat-card"&gt;
+            &lt;h3&gt;&lt;?= htmlspecialchars(<span class="variable">$item</span>[<span class="string">'name'</span>]) ?&gt;&lt;/h3&gt;
+            &lt;p&gt;&lt;?= <span class="variable">$item</span>[<span class="string">'value'</span>] ?&gt;&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;?php <span class="keyword">endforeach</span>; ?&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                </div>
+                <div class="highlight-box">
+                    <h4>Done!</h4>
+                    <p style="color: var(--brand-text-secondary);">Your page is now accessible at <code>/en/my-new-page/</code></p>
+                </div>
+                <button class="btn btn-secondary" onclick="prevWizardStep()">&larr; Back</button>
+                <button class="btn btn-primary" onclick="resetWizard()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUILDER VISION SECTION -->
+    <div id="builder-vision" class="section">
+        <div class="section-header">
+            <h1>Dashboard Builder Vision</h1>
+            <p>Turning micro-MVC into a universal dashboard platform</p>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#127919;</span> The Goal</h3>
+            <p style="color: var(--brand-text-secondary); font-size: 1.1rem; line-height: 1.8;">
+                Transform this framework into a <strong>generic starting point</strong> for building any browser-based dashboard:
+                HMIs, AI control panels, inventory systems, CRM, business intelligence, and more.
+            </p>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#129520;</span> What We Have</h3>
+                <ul style="color: var(--brand-text-secondary); line-height: 2;">
+                    <li>Clean MVC architecture</li>
+                    <li>AJAX system (Gates) for real-time data</li>
+                    <li>Extension system for modularity</li>
+                    <li>Multi-language support</li>
+                    <li>PHOENIX styling system</li>
+                    <li>Docker-ready deployment</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3 class="card-title"><span class="icon">&#128640;</span> What We'll Build</h3>
+                <ul style="color: var(--brand-text-secondary); line-height: 2;">
+                    <li>Visual page/dashboard builder</li>
+                    <li>Widget library (charts, tables, forms, etc.)</li>
+                    <li>Data source connectors (SQL, REST, MQTT)</li>
+                    <li>AI integration layer</li>
+                    <li>Role-based access control</li>
+                    <li>Template marketplace</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128204;</span> Dashboard Builder Preview</h3>
+            <div class="builder-preview">
+                <div class="builder-toolbar">
+                    <div class="builder-widget" draggable="true">&#128202; Chart</div>
+                    <div class="builder-widget" draggable="true">&#128200; Stats Card</div>
+                    <div class="builder-widget" draggable="true">&#128203; Table</div>
+                    <div class="builder-widget" draggable="true">&#128221; Form</div>
+                    <div class="builder-widget" draggable="true">&#128506; Map</div>
+                    <div class="builder-widget" draggable="true">&#128247; Media</div>
+                    <div class="builder-widget" draggable="true">&#129302; AI Chat</div>
+                </div>
+                <div class="builder-canvas">
+                    <div class="canvas-slot">Drop widget here</div>
+                    <div class="canvas-slot">Drop widget here</div>
+                    <div class="canvas-slot">Drop widget here</div>
+                    <div class="canvas-slot">Drop widget here</div>
+                    <div class="canvas-slot">Drop widget here</div>
+                    <div class="canvas-slot">Drop widget here</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title"><span class="icon">&#128736;</span> Architecture Extensions Needed</h3>
+            <div class="grid-3">
+                <div class="highlight-box">
+                    <h4>Widget System</h4>
+                    <p style="color: var(--brand-text-secondary); font-size: 0.9rem;">
+                        Standardized widget interface with render(), configure(), and getData() methods.
+                    </p>
+                </div>
+                <div class="highlight-box">
+                    <h4>Data Binding</h4>
+                    <p style="color: var(--brand-text-secondary); font-size: 0.9rem;">
+                        Connect widgets to data sources (Gates, REST APIs, WebSockets).
+                    </p>
+                </div>
+                <div class="highlight-box">
+                    <h4>Layout Engine</h4>
+                    <p style="color: var(--brand-text-secondary); font-size: 0.9rem;">
+                        Grid-based layout system with drag-and-drop support.
+                    </p>
+                </div>
+                <div class="highlight-box">
+                    <h4>Config Storage</h4>
+                    <p style="color: var(--brand-text-secondary); font-size: 0.9rem;">
+                        JSON-based dashboard configs stored in DB or filesystem.
+                    </p>
+                </div>
+                <div class="highlight-box">
+                    <h4>AI Layer</h4>
+                    <p style="color: var(--brand-text-secondary); font-size: 0.9rem;">
+                        Gate for AI inference, natural language queries, auto-generation.
+                    </p>
+                </div>
+                <div class="highlight-box">
+                    <h4>Access Control</h4>
+                    <p style="color: var(--brand-text-secondary); font-size: 0.9rem;">
+                        Role-based permissions for pages, widgets, and data.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Navigation
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.section).classList.add('active');
+    });
+});
+
+// AJAX Demo
+function testAjax(gate, params) {
+    const console = document.getElementById('ajax-console');
+    const formData = new URLSearchParams({ gate, ...params });
+
+    // Log request
+    const reqLine = document.createElement('div');
+    reqLine.className = 'console-line request';
+    reqLine.innerHTML = `<strong>REQUEST</strong> POST {gate: "${gate}", ${Object.entries(params).map(([k,v]) => `${k}: "${v}"`).join(', ')}}`;
+    console.appendChild(reqLine);
+
+    fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+    })
+    .then(res => res.text())
+    .then(data => {
+        const respLine = document.createElement('div');
+        respLine.className = 'console-line response';
+        respLine.innerHTML = `<strong>RESPONSE</strong> ${data.substring(0, 500)}${data.length > 500 ? '...' : ''}`;
+        console.appendChild(respLine);
+        console.scrollTop = console.scrollHeight;
+    })
+    .catch(err => {
+        const errLine = document.createElement('div');
+        errLine.className = 'console-line error';
+        errLine.innerHTML = `<strong>ERROR</strong> ${err.message}`;
+        console.appendChild(errLine);
+    });
+}
+
+function clearConsole() {
+    document.getElementById('ajax-console').innerHTML = '<div style="color: var(--brand-text-tertiary);">// Console cleared</div>';
+}
+
+// Wizard
+let currentStep = 1;
+
+function nextWizardStep() {
+    if (currentStep < 4) {
+        document.querySelector(`.wizard-progress-step[data-step="${currentStep}"]`).classList.remove('active');
+        document.querySelector(`.wizard-progress-step[data-step="${currentStep}"]`).classList.add('completed');
+        document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('active');
+        currentStep++;
+        document.querySelector(`.wizard-progress-step[data-step="${currentStep}"]`).classList.add('active');
+        document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+    }
+}
+
+function prevWizardStep() {
+    if (currentStep > 1) {
+        document.querySelector(`.wizard-progress-step[data-step="${currentStep}"]`).classList.remove('active');
+        document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.remove('active');
+        currentStep--;
+        document.querySelector(`.wizard-progress-step[data-step="${currentStep}"]`).classList.remove('completed');
+        document.querySelector(`.wizard-progress-step[data-step="${currentStep}"]`).classList.add('active');
+        document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+    }
+}
+
+function resetWizard() {
+    document.querySelectorAll('.wizard-progress-step').forEach(s => s.classList.remove('active', 'completed'));
+    document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+    currentStep = 1;
+    document.querySelector('.wizard-progress-step[data-step="1"]').classList.add('active');
+    document.querySelector('.wizard-step[data-step="1"]').classList.add('active');
+}
+
+// Load config files via AJAX (simulated - would need a gate for real implementation)
+document.getElementById('routes-cfg').textContent = 'beat,test,dashboard,phoenix-demo,sales-dashboard,...,architecture-guide';
+document.getElementById('langs-cfg').textContent = 'en,gr';
+document.getElementById('gates-cfg').textContent = 'content,splash_event,register,auth,send_email,hijack_protection,command_center,media_hub';
+
+// Drag and drop for builder preview (basic demo)
+document.querySelectorAll('.builder-widget').forEach(widget => {
+    widget.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', widget.textContent);
+    });
+});
+
+document.querySelectorAll('.canvas-slot').forEach(slot => {
+    slot.addEventListener('dragover', e => e.preventDefault());
+    slot.addEventListener('drop', e => {
+        e.preventDefault();
+        const data = e.dataTransfer.getData('text/plain');
+        slot.textContent = data;
+        slot.classList.add('has-widget');
+    });
+});
+</script>
+
+</body>
+</html>

@@ -43,6 +43,7 @@ html {
 
     /* Dark Theme Foundation */
     --brand-background: #0F0F0F;
+    --brand-bg: #0F0F0F;  /* Alias for compatibility */
     --brand-panel: #1C1C1E;
     --brand-card: #1C1C1E;
     --brand-muted: #2C2C2E;
