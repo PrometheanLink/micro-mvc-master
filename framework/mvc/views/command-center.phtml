@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $data['title']; ?> - PHOENIX</title>
+    <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
+    <style>
+        :root {
+            --glow-cyan: rgba(0, 212, 255, 0.5);
+            --glow-orange: rgba(249, 115, 22, 0.5);
+            --glow-green: rgba(34, 197, 94, 0.5);
+            --glow-purple: rgba(168, 85, 247, 0.5);
+            --glow-gold: rgba(250, 204, 21, 0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: linear-gradient(135deg, #0a0a12 0%, #0d1420 50%, #0a0a12 100%);
+            color: var(--brand-text-primary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow-1 {
+            top: -200px;
+            left: -200px;
+            background: var(--brand-primary);
+            animation: pulse-glow 8s ease-in-out infinite;
+        }
+
+        .bg-glow-2 {
+            bottom: -200px;
+            right: -200px;
+            background: #00d4ff;
+            animation: pulse-glow 8s ease-in-out infinite 4s;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.1); }
+        }
+
+        /* Header */
+        .dashboard-header {
+            position: relative;
+            z-index: 10;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(10, 10, 18, 0.8);
+            backdrop-filter: blur(20px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-orb {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(254, 168, 47, 0.9), rgba(249, 122, 22, 0.8));
+            box-shadow: 0 0 30px var(--glow-orange), 0 0 60px rgba(249, 115, 22, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--brand-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .header-title p {
+            font-size: 0.9rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .live-clock {
+            font-size: 2rem;
+            font-weight: 300;
+            font-family: 'Courier New', monospace;
+            color: var(--brand-text-primary);
+            text-shadow: 0 0 20px var(--glow-cyan);
+        }
+
+        .live-clock .seconds {
+            font-size: 1rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 30px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 10px var(--glow-green);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            color: #22c55e;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        .dashboard-content {
+            position: relative;
+            z-index: 10;
+            padding: 30px 40px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-card.cyan::before { background: linear-gradient(90deg, #00d4ff, #67e8f9); }
+        .stat-card.cyan:hover { box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2); }
+
+        .stat-card.green::before { background: linear-gradient(90deg, #22c55e, #6EE7B7); }
+        .stat-card.green:hover { box-shadow: 0 10px 40px rgba(34, 197, 94, 0.2); }
+
+        .stat-card.orange::before { background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent)); }
+        .stat-card.orange:hover { box-shadow: 0 10px 40px rgba(249, 115, 22, 0.2); }
+
+        .stat-card.purple::before { background: linear-gradient(90deg, #7b2cbf, #a855f7); }
+        .stat-card.purple:hover { box-shadow: 0 10px 40px rgba(168, 85, 247, 0.2); }
+
+        .stat-card.gold::before { background: linear-gradient(90deg, #facc15, #fcd083); }
+        .stat-card.gold:hover { box-shadow: 0 10px 40px rgba(250, 204, 21, 0.2); }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            font-size: 0.8rem;
+            color: var(--brand-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .stat-icon {
+            font-size: 1.4rem;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-card.cyan .stat-value { color: #00d4ff; }
+        .stat-card.green .stat-value { color: #22c55e; }
+        .stat-card.orange .stat-value { color: var(--brand-primary); }
+        .stat-card.purple .stat-value { color: #a855f7; }
+        .stat-card.gold .stat-value { color: #facc15; }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stat-trend.up { color: #22c55e; }
+        .stat-trend.down { color: #22c55e; } /* Down is good for response time */
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--brand-primary), var(--brand-accent));
+            border-radius: 2px;
+        }
+
+        .panel-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            color: #00d4ff;
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        /* Chart */
+        .chart-container {
+            height: 280px;
+            position: relative;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Alerts Panel */
+        .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            border-left: 3px solid;
+            transition: all 0.2s;
+        }
+
+        .alert-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .alert-item.success { border-color: #22c55e; }
+        .alert-item.info { border-color: #00d4ff; }
+        .alert-item.warning { border-color: #eab308; }
+        .alert-item.error { border-color: #ef4444; }
+
+        .alert-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .alert-item.success .alert-icon { background: rgba(34, 197, 94, 0.15); }
+        .alert-item.info .alert-icon { background: rgba(0, 212, 255, 0.15); }
+        .alert-item.warning .alert-icon { background: rgba(234, 179, 8, 0.15); }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-message {
+            font-size: 0.9rem;
+            color: var(--brand-text-primary);
+            margin-bottom: 2px;
+        }
+
+        .alert-time {
+            font-size: 0.75rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        /* Bottom Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* Activity Feed */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .activity-item::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--brand-primary);
+            box-shadow: 0 0 10px var(--glow-orange);
+        }
+
+        .activity-item::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 20px;
+            bottom: -16px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-item:last-child::after { display: none; }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-user {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--brand-primary);
+            margin-bottom: 2px;
+        }
+
+        .activity-action {
+            font-size: 0.9rem;
+            color: var(--brand-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        /* Systems Status */
+        .systems-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .system-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .system-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .system-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .system-region {
+            font-size: 0.75rem;
+            color: var(--brand-text-tertiary);
+        }
+
+        .system-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .system-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .system-bar-fill.low { background: linear-gradient(90deg, #22c55e, #4ade80); }
+        .system-bar-fill.medium { background: linear-gradient(90deg, #eab308, #fcd34d); }
+        .system-bar-fill.high { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .system-status {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .system-status.operational {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .system-status.degraded {
+            background: rgba(234, 179, 8, 0.15);
+            color: #eab308;
+        }
+
+        /* AI Chat Panel */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 350px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .chat-message.assistant {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            align-self: flex-start;
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, var(--brand-primary), #ea580c);
+            align-self: flex-end;
+        }
+
+        .chat-input-container {
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--brand-text-primary);
+            font-size: 0.9rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .chat-send {
+            background: linear-gradient(135deg, var(--brand-primary), #ea580c);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px var(--glow-orange);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .quick-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .quick-action:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--brand-primary);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-icon {
+            font-size: 1.5rem;
+        }
+
+        .quick-action-label {
+            font-size: 0.8rem;
+            color: var(--brand-text-secondary);
+        }
+
+        /* Chart Legend */
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--brand-text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-dot.cpu { background: #00d4ff; }
+        .legend-dot.memory { background: #a855f7; }
+        .legend-dot.network { background: #22c55e; }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+            .bottom-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 1000px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+    </style>
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo-orb">🔥</div>
+            <div class="header-title">
+                <h1><?php echo $data['title']; ?></h1>
+                <p><?php echo $data['subtitle']; ?></p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="live-clock">
+                <span id="clock-time">00:00</span><span class="seconds" id="clock-seconds">:00</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span class="status-text">All Systems Operational</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <?php foreach ($data['stats'] as $stat): ?>
+            <div class="stat-card <?php echo $stat['color']; ?>">
+                <div class="stat-header">
+                    <span class="stat-title"><?php echo $stat['title']; ?></span>
+                    <span class="stat-icon"><?php echo $stat['icon']; ?></span>
+                </div>
+                <div class="stat-value"><?php echo $stat['prefix'] . $stat['value'] . $stat['suffix']; ?></div>
+                <?php if ($stat['trend'] !== 'none'): ?>
+                <div class="stat-trend <?php echo $stat['trend']; ?>">
+                    <?php echo $stat['trend'] === 'up' ? '▲' : '▼'; ?> <?php echo $stat['trend_value']; ?>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Chart Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">System Metrics</span>
+                    <span class="panel-badge">Live</span>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-container">
+                        <canvas id="metrics-chart"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><div class="legend-dot cpu"></div> CPU</div>
+                        <div class="legend-item"><div class="legend-dot memory"></div> Memory</div>
+                        <div class="legend-item"><div class="legend-dot network"></div> Network</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">System Alerts</span>
+                    <span class="panel-badge"><?php echo count($data['alerts']); ?> Active</span>
+                </div>
+                <div class="panel-body">
+                    <div class="alerts-list">
+                        <?php foreach ($data['alerts'] as $alert): ?>
+                        <div class="alert-item <?php echo $alert['type']; ?>">
+                            <div class="alert-icon"><?php echo $alert['icon']; ?></div>
+                            <div class="alert-content">
+                                <div class="alert-message"><?php echo $alert['message']; ?></div>
+                                <div class="alert-time"><?php echo $alert['time']; ?></div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Grid -->
+        <div class="bottom-grid">
+            <!-- Activity Feed -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Activity Feed</span>
+                </div>
+                <div class="panel-body">
+                    <div class="activity-list">
+                        <?php foreach ($data['activity'] as $activity): ?>
+                        <div class="activity-item">
+                            <div class="activity-content">
+                                <div class="activity-user"><?php echo $activity['user']; ?></div>
+                                <div class="activity-action"><?php echo $activity['action']; ?></div>
+                                <div class="activity-time"><?php echo $activity['time']; ?></div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Systems Status -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Infrastructure Status</span>
+                </div>
+                <div class="panel-body">
+                    <div class="systems-grid">
+                        <?php foreach ($data['systems'] as $system):
+                            $loadClass = $system['load'] < 50 ? 'low' : ($system['load'] < 80 ? 'medium' : 'high');
+                        ?>
+                        <div class="system-item">
+                            <div class="system-info">
+                                <div class="system-header">
+                                    <span class="system-name"><?php echo $system['name']; ?></span>
+                                    <span class="system-region"><?php echo $system['region']; ?></span>
+                                </div>
+                                <div class="system-bar">
+                                    <div class="system-bar-fill <?php echo $loadClass; ?>" style="width: <?php echo $system['load']; ?>%"></div>
+                                </div>
+                            </div>
+                            <div class="system-status <?php echo $system['status']; ?>">
+                                <?php echo $system['status'] === 'operational' ? '✓' : '!'; ?>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Assistant -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">AI Assistant</span>
+                    <span class="panel-badge">PHOENIX AI</span>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="chat-message assistant">
+                            Hello! I'm your PHOENIX AI assistant. I can help you monitor systems, analyze metrics, and answer questions about your infrastructure.
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" id="chat-input" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter')sendMessage()">
+                        <button class="chat-send" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <a class="quick-action" onclick="quickAsk('What is the current system status?')">
+                        <span class="quick-action-icon">📊</span>
+                        <span class="quick-action-label">Status</span>
+                    </a>
+                    <a class="quick-action" onclick="quickAsk('Show me the recent alerts')">
+                        <span class="quick-action-icon">🔔</span>
+                        <span class="quick-action-label">Alerts</span>
+                    </a>
+                    <a class="quick-action" onclick="quickAsk('How can I optimize performance?')">
+                        <span class="quick-action-icon">⚡</span>
+                        <span class="quick-action-label">Optimize</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-time').textContent =
+                now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            document.getElementById('clock-seconds').textContent =
+                ':' + now.getSeconds().toString().padStart(2, '0');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Metrics Chart
+        const metricsData = {
+            labels: <?php echo json_encode($data['metrics']['labels']); ?>,
+            cpu: <?php echo json_encode($data['metrics']['cpu']); ?>,
+            memory: <?php echo json_encode($data['metrics']['memory']); ?>,
+            network: <?php echo json_encode($data['metrics']['network']); ?>
+        };
+
+        function drawChart() {
+            const canvas = document.getElementById('metrics-chart');
+            const ctx = canvas.getContext('2d');
+            const container = canvas.parentElement;
+
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+
+            const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+            const w = canvas.width - padding.left - padding.right;
+            const h = canvas.height - padding.top - padding.bottom;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (h / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(canvas.width - padding.right, y);
+                ctx.stroke();
+
+                // Y-axis labels
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.font = '11px system-ui';
+                ctx.textAlign = 'right';
+                ctx.fillText((100 - 25 * i) + '%', padding.left - 10, y + 4);
+            }
+
+            // Draw labels
+            ctx.textAlign = 'center';
+            metricsData.labels.forEach((label, i) => {
+                const x = padding.left + (w / (metricsData.labels.length - 1)) * i;
+                ctx.fillText(label, x, canvas.height - 10);
+            });
+
+            // Draw lines
+            function drawLine(data, color, shadowColor) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.shadowColor = shadowColor;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+
+                data.forEach((val, i) => {
+                    const x = padding.left + (w / (data.length - 1)) * i;
+                    const y = padding.top + h - (val / 100) * h;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Draw points
+                ctx.fillStyle = color;
+                data.forEach((val, i) => {
+                    const x = padding.left + (w / (data.length - 1)) * i;
+                    const y = padding.top + h - (val / 100) * h;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            drawLine(metricsData.cpu, '#00d4ff', 'rgba(0, 212, 255, 0.5)');
+            drawLine(metricsData.memory, '#a855f7', 'rgba(168, 85, 247, 0.5)');
+            drawLine(metricsData.network, '#22c55e', 'rgba(34, 197, 94, 0.5)');
+        }
+
+        drawChart();
+        window.addEventListener('resize', drawChart);
+
+        // Simulate live data updates
+        setInterval(() => {
+            metricsData.labels.shift();
+            metricsData.labels.push(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }));
+
+            metricsData.cpu.shift();
+            metricsData.cpu.push(Math.floor(Math.random() * 40) + 25);
+
+            metricsData.memory.shift();
+            metricsData.memory.push(Math.floor(Math.random() * 20) + 55);
+
+            metricsData.network.shift();
+            metricsData.network.push(Math.floor(Math.random() * 60) + 20);
+
+            drawChart();
+        }, 5000);
+
+        // AI Chat
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesContainer = document.getElementById('chat-messages');
+
+            // Add user message
+            messagesContainer.innerHTML += `<div class="chat-message user">${escapeHtml(message)}</div>`;
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Call AI gate
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    gate: 'ai_chat',
+                    message: message,
+                    system_prompt: 'You are a helpful AI assistant for a command center dashboard. Help users understand system metrics, alerts, and infrastructure status.'
+                })
+            })
+            .then(r => r.text())
+            .then(response => {
+                messagesContainer.innerHTML += `<div class="chat-message assistant">${escapeHtml(response)}</div>`;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(err => {
+                messagesContainer.innerHTML += `<div class="chat-message assistant">I apologize, but I'm having trouble connecting. Please try again.</div>`;
+            });
+        }
+
+        function quickAsk(question) {
+            document.getElementById('chat-input').value = question;
+            sendMessage();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Animate stats on load
+        document.querySelectorAll('.stat-card').forEach((card, i) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 + i * 100);
+        });
+
+        // Animate panels
+        document.querySelectorAll('.panel').forEach((panel, i) => {
+            panel.style.opacity = '0';
+            panel.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                panel.style.transition = 'all 0.6s ease';
+                panel.style.opacity = '1';
+                panel.style.transform = 'translateY(0)';
+            }, 600 + i * 100);
+        });
+    </script>
+</body>
+</html>
