@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/phoenix/assets/css/phoenix-core.css">
     <style>
         :root {
-            --builder-sidebar: 280px;
+            --builder-sidebar: 300px;
             --builder-toolbar: 56px;
             --grid-gap: 12px;
         }
@@ -70,6 +70,7 @@
             align-items: center;
             gap: 6px;
             transition: all 0.2s;
+            text-decoration: none;
         }
 
         .toolbar-btn:hover {
@@ -145,14 +146,8 @@
             transform: translateX(4px);
         }
 
-        .widget-item:active {
-            cursor: grabbing;
-        }
-
-        .widget-item.dragging {
-            opacity: 0.5;
-            transform: scale(0.95);
-        }
+        .widget-item:active { cursor: grabbing; }
+        .widget-item.dragging { opacity: 0.5; transform: scale(0.95); }
 
         .widget-icon {
             font-size: 1.5rem;
@@ -165,16 +160,8 @@
             border-radius: 8px;
         }
 
-        .widget-info h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .widget-info p {
-            font-size: 0.75rem;
-            color: var(--brand-text-tertiary);
-        }
+        .widget-info h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+        .widget-info p { font-size: 0.75rem; color: var(--brand-text-tertiary); }
 
         /* Canvas */
         .builder-canvas {
@@ -187,40 +174,28 @@
         .canvas-grid {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
-            grid-auto-rows: minmax(80px, auto);
+            grid-auto-rows: minmax(100px, auto);
             gap: var(--grid-gap);
             min-height: calc(100vh - var(--builder-toolbar) - 48px);
             background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: calc(100% / 12) 80px;
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: calc(100% / 12) 100px;
             border-radius: 12px;
             padding: var(--grid-gap);
         }
 
         .grid-cell {
-            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.08);
             border-radius: 8px;
-            min-height: 80px;
+            min-height: 100px;
             transition: all 0.2s;
             position: relative;
         }
 
-        .grid-cell:hover {
-            border-color: rgba(249, 115, 22, 0.3);
-            background: rgba(249, 115, 22, 0.05);
-        }
-
-        .grid-cell.drag-over {
-            border-color: var(--brand-primary);
-            background: rgba(249, 115, 22, 0.15);
-            box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
-        }
-
-        .grid-cell.has-widget {
-            border: none;
-            background: transparent;
-        }
+        .grid-cell:hover { border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.05); }
+        .grid-cell.drag-over { border-color: var(--brand-primary); background: rgba(249, 115, 22, 0.15); box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+        .grid-cell.has-widget { border: none; background: transparent; }
 
         /* Placed Widgets */
         .placed-widget {
@@ -231,124 +206,136 @@
             position: relative;
             overflow: hidden;
             transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
         }
 
-        .placed-widget:hover {
-            border-color: var(--brand-primary);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .placed-widget.selected {
-            border-color: var(--brand-primary);
-            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
-        }
+        .placed-widget:hover { border-color: var(--brand-primary); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+        .placed-widget.selected { border-color: var(--brand-primary); box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3); }
 
         .widget-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid var(--brand-border);
             background: rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
         }
 
-        .widget-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .widget-actions {
-            display: flex;
-            gap: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .placed-widget:hover .widget-actions {
-            opacity: 1;
-        }
+        .widget-title { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .widget-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
+        .placed-widget:hover .widget-actions { opacity: 1; }
 
         .widget-action-btn {
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 26px; height: 26px;
+            display: flex; align-items: center; justify-content: center;
             background: var(--brand-muted);
-            border: none;
-            border-radius: 6px;
+            border: none; border-radius: 6px;
             color: var(--brand-text-secondary);
-            cursor: pointer;
-            font-size: 0.8rem;
+            cursor: pointer; font-size: 0.75rem;
             transition: all 0.2s;
         }
 
-        .widget-action-btn:hover {
-            background: var(--brand-primary);
-            color: white;
-        }
-
-        .widget-action-btn.delete:hover {
-            background: #ef4444;
-        }
+        .widget-action-btn:hover { background: var(--brand-primary); color: white; }
+        .widget-action-btn.delete:hover { background: #ef4444; }
 
         .widget-content {
-            padding: 16px;
-            height: calc(100% - 50px);
+            padding: 14px;
+            flex: 1;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--brand-text-tertiary);
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* Widget Preview Content */
-        .widget-preview-stat {
-            text-align: center;
-        }
+        /* Widget Type Specific Styles */
 
-        .widget-preview-stat .value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--brand-primary);
-        }
+        /* Stat Card */
+        .stat-widget { text-align: center; justify-content: center; align-items: center; }
+        .stat-value { font-size: 2.2rem; font-weight: 700; line-height: 1.2; }
+        .stat-label { font-size: 0.85rem; color: var(--brand-text-secondary); margin-top: 4px; }
+        .stat-trend { font-size: 0.8rem; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .stat-trend.up { color: #22c55e; }
+        .stat-trend.down { color: #ef4444; }
 
-        .widget-preview-stat .label {
-            font-size: 0.85rem;
-            color: var(--brand-text-secondary);
-        }
+        /* Charts */
+        .chart-widget { position: relative; }
+        .chart-widget canvas { width: 100% !important; height: 100% !important; }
 
-        .widget-preview-chart {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-            padding: 10px;
-        }
+        /* Data Table */
+        .table-widget { overflow: auto; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--brand-border); }
+        .data-table th { background: var(--brand-muted); font-weight: 600; color: var(--brand-text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
+        .data-table th:hover { color: var(--brand-primary); }
+        .data-table tr:hover td { background: rgba(249, 115, 22, 0.05); }
 
-        .chart-bar {
-            width: 20%;
-            background: linear-gradient(180deg, var(--brand-primary), var(--brand-accent));
-            border-radius: 4px 4px 0 0;
-            transition: height 0.3s;
-        }
+        /* Progress Bar */
+        .progress-widget { justify-content: center; }
+        .progress-container { width: 100%; }
+        .progress-bar-outer { height: 12px; background: var(--brand-muted); border-radius: 6px; overflow: hidden; }
+        .progress-bar-inner { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
+        .progress-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.85rem; }
+        .progress-value { font-weight: 600; }
 
-        .widget-preview-table {
-            width: 100%;
-            font-size: 0.8rem;
-        }
+        /* Text Block */
+        .text-widget { overflow: auto; }
+        .text-content { line-height: 1.7; color: var(--brand-text-secondary); }
+        .text-content h1, .text-content h2, .text-content h3 { color: var(--brand-text-primary); margin-bottom: 12px; }
+        .text-content p { margin-bottom: 12px; }
+        .text-content ul, .text-content ol { margin-left: 20px; margin-bottom: 12px; }
 
-        .widget-preview-table tr {
-            border-bottom: 1px solid var(--brand-border);
-        }
+        /* Image Widget */
+        .image-widget { align-items: center; justify-content: center; }
+        .image-widget img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
+        .image-placeholder { color: var(--brand-text-tertiary); text-align: center; }
 
-        .widget-preview-table td {
-            padding: 8px;
-            color: var(--brand-text-secondary);
+        /* Video Widget */
+        .video-widget { align-items: stretch; }
+        .video-widget iframe, .video-widget video { width: 100%; height: 100%; border-radius: 8px; border: none; }
+
+        /* Form Widget */
+        .form-widget { overflow: auto; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--brand-text-secondary); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px;
+            background: var(--brand-muted); border: 1px solid var(--brand-border);
+            border-radius: 8px; color: var(--brand-text-primary); font-size: 0.9rem;
         }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--brand-primary); }
+        .form-submit { margin-top: 16px; }
+
+        /* Button Group */
+        .button-widget { flex-direction: row; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; }
+        .action-btn {
+            padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
+            border: none; transition: all 0.2s; font-size: 0.9rem;
+        }
+        .action-btn.primary { background: linear-gradient(135deg, var(--brand-primary), #ea580c); color: white; }
+        .action-btn.secondary { background: var(--brand-muted); border: 1px solid var(--brand-border); color: var(--brand-text-primary); }
+        .action-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* AI Chat Widget */
+        .chat-widget { display: flex; flex-direction: column; }
+        .chat-messages { flex: 1; overflow-y: auto; padding-right: 8px; margin-bottom: 12px; }
+        .chat-message { margin-bottom: 12px; }
+        .chat-message.user { text-align: right; }
+        .chat-message .bubble {
+            display: inline-block; padding: 10px 14px; border-radius: 12px;
+            max-width: 85%; font-size: 0.9rem; line-height: 1.5;
+        }
+        .chat-message.user .bubble { background: var(--brand-primary); color: white; border-bottom-right-radius: 4px; }
+        .chat-message.assistant .bubble { background: var(--brand-muted); color: var(--brand-text-primary); border-bottom-left-radius: 4px; }
+        .chat-input-row { display: flex; gap: 8px; }
+        .chat-input { flex: 1; padding: 10px 14px; background: var(--brand-muted); border: 1px solid var(--brand-border); border-radius: 8px; color: var(--brand-text-primary); font-size: 0.9rem; }
+        .chat-input:focus { outline: none; border-color: var(--brand-primary); }
+        .chat-send { padding: 10px 16px; background: var(--brand-primary); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600; }
+
+        /* Spacer & Divider */
+        .spacer-widget { background: transparent; border: 1px dashed var(--brand-border); }
+        .divider-widget { align-items: center; justify-content: center; }
+        .divider-line { width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--brand-border), transparent); }
 
         /* Config Panel (Right Sidebar) */
         .config-panel {
@@ -358,220 +345,74 @@
             overflow-y: auto;
         }
 
-        .config-section {
-            margin-bottom: 24px;
+        .config-section { margin-bottom: 20px; }
+        .config-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--brand-text-tertiary); margin-bottom: 12px; padding-left: 4px; }
+        .config-group { margin-bottom: 14px; }
+        .config-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--brand-text-secondary); }
+        .config-group input, .config-group select, .config-group textarea {
+            width: 100%; padding: 10px 12px;
+            background: var(--brand-panel); border: 1px solid var(--brand-border);
+            border-radius: 8px; color: var(--brand-text-primary); font-size: 0.9rem;
         }
+        .config-group input:focus, .config-group select:focus, .config-group textarea:focus { outline: none; border-color: var(--brand-primary); }
+        .config-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        .config-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--brand-text-tertiary);
-            margin-bottom: 12px;
-            padding-left: 4px;
-        }
+        .color-picker-group { display: flex; gap: 8px; }
+        .color-picker-group input[type="color"] { width: 40px; height: 36px; padding: 2px; cursor: pointer; border-radius: 6px; }
+        .color-picker-group input[type="text"] { flex: 1; }
 
-        .config-group {
-            margin-bottom: 16px;
-        }
+        .no-selection { text-align: center; padding: 40px 20px; color: var(--brand-text-tertiary); }
+        .no-selection-icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
 
-        .config-group label {
-            display: block;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
-            color: var(--brand-text-secondary);
-        }
-
-        .config-group input,
-        .config-group select,
-        .config-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--brand-panel);
-            border: 1px solid var(--brand-border);
-            border-radius: 8px;
-            color: var(--brand-text-primary);
-            font-size: 0.9rem;
-        }
-
-        .config-group input:focus,
-        .config-group select:focus {
-            outline: none;
-            border-color: var(--brand-primary);
-        }
-
-        .config-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .color-picker-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .color-picker-group input[type="color"] {
-            width: 40px;
-            height: 36px;
-            padding: 2px;
-            cursor: pointer;
-        }
-
-        .color-picker-group input[type="text"] {
-            flex: 1;
-        }
-
-        .no-selection {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--brand-text-tertiary);
-        }
-
-        .no-selection-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        /* Size Buttons */
-        .size-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-
+        .size-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
         .size-btn {
-            padding: 8px;
-            background: var(--brand-panel);
-            border: 1px solid var(--brand-border);
-            border-radius: 6px;
-            color: var(--brand-text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
+            padding: 8px; background: var(--brand-panel); border: 1px solid var(--brand-border);
+            border-radius: 6px; color: var(--brand-text-secondary); font-size: 0.8rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .size-btn:hover, .size-btn.active { border-color: var(--brand-primary); color: var(--brand-primary); }
+
+        /* Field Builder */
+        .field-list { margin-bottom: 12px; }
+        .field-item {
+            display: flex; gap: 8px; align-items: center;
+            background: var(--brand-muted); padding: 8px 10px; border-radius: 6px; margin-bottom: 6px;
+        }
+        .field-item input { flex: 1; padding: 6px 8px; font-size: 0.85rem; }
+        .field-item select { width: 90px; padding: 6px 8px; font-size: 0.85rem; }
+        .field-remove { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; }
+        .add-field-btn { width: 100%; padding: 8px; background: var(--brand-muted); border: 1px dashed var(--brand-border); border-radius: 6px; color: var(--brand-text-tertiary); cursor: pointer; font-size: 0.85rem; }
+        .add-field-btn:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+
+        /* Button Config */
+        .button-list { margin-bottom: 12px; }
+        .button-item {
+            display: grid; grid-template-columns: 1fr 80px auto; gap: 8px; align-items: center;
+            background: var(--brand-muted); padding: 8px 10px; border-radius: 6px; margin-bottom: 6px;
         }
 
-        .size-btn:hover, .size-btn.active {
-            border-color: var(--brand-primary);
-            color: var(--brand-primary);
-        }
+        /* Modals & Preview - keeping same styles as before */
+        .preview-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.95); z-index: 1000; display: none; flex-direction: column; }
+        .preview-overlay.active { display: flex; }
+        .preview-toolbar { background: var(--brand-panel); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--brand-border); }
+        .preview-content { flex: 1; padding: 24px; overflow: auto; }
 
-        /* Preview Mode */
-        .preview-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--brand-panel); border: 1px solid var(--brand-border); border-radius: 16px; padding: 24px; width: 100%; max-width: 500px; animation: modalIn 0.2s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal h3 { margin-bottom: 20px; font-size: 1.2rem; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+        .json-output { background: #0a0a0f; border: 1px solid var(--brand-border); border-radius: 8px; padding: 16px; font-family: monospace; font-size: 0.8rem; max-height: 300px; overflow: auto; white-space: pre-wrap; color: var(--brand-text-secondary); }
 
-        .preview-overlay.active {
-            display: flex;
-        }
-
-        .preview-toolbar {
-            background: var(--brand-panel);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--brand-border);
-        }
-
-        .preview-content {
-            flex: 1;
-            padding: 24px;
-            overflow: auto;
-        }
-
-        /* Save Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--brand-panel);
-            border: 1px solid var(--brand-border);
-            border-radius: 16px;
-            padding: 24px;
-            width: 100%;
-            max-width: 500px;
-            animation: modalIn 0.2s ease;
-        }
-
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal h3 {
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        /* JSON Output */
-        .json-output {
-            background: #0a0a0f;
-            border: 1px solid var(--brand-border);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: monospace;
-            font-size: 0.8rem;
-            max-height: 300px;
-            overflow: auto;
-            white-space: pre-wrap;
-            color: var(--brand-text-secondary);
-        }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--brand-panel);
-            border: 1px solid var(--brand-primary);
-            border-radius: 12px;
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1001;
-            animation: slideIn 0.3s ease;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
+        .toast { position: fixed; bottom: 24px; right: 24px; background: var(--brand-panel); border: 1px solid var(--brand-primary); border-radius: 12px; padding: 16px 24px; display: flex; align-items: center; gap: 12px; z-index: 1001; animation: slideIn 0.3s ease; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .toast.success { border-color: #22c55e; }
         .toast.error { border-color: #ef4444; }
+
+        /* Refresh indicator */
+        .refresh-indicator { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
@@ -584,26 +425,15 @@
             <input type="text" class="dashboard-name" id="dashboard-name" value="Untitled Dashboard" placeholder="Dashboard name...">
         </div>
         <div class="toolbar-center">
-            <button class="toolbar-btn" onclick="clearCanvas()">
-                <span>&#128465;</span> Clear
-            </button>
-            <button class="toolbar-btn" onclick="showLoadModal()">
-                <span>&#128194;</span> Load
-            </button>
-            <button class="toolbar-btn" onclick="showExportModal()">
-                <span>&#128190;</span> Export JSON
-            </button>
-            <button class="toolbar-btn primary" onclick="saveDashboard()">
-                <span>&#128190;</span> Save
-            </button>
+            <button class="toolbar-btn" onclick="clearCanvas()"><span>&#128465;</span> Clear</button>
+            <button class="toolbar-btn" onclick="showLoadModal()"><span>&#128194;</span> Load</button>
+            <button class="toolbar-btn" onclick="showExportModal()"><span>&#128190;</span> Export</button>
+            <button class="toolbar-btn primary" onclick="saveDashboard()"><span>&#128190;</span> Save</button>
         </div>
         <div class="toolbar-right">
-            <button class="toolbar-btn" onclick="togglePreview()">
-                <span>&#128065;</span> Preview
-            </button>
-            <a href="/en/architecture-guide/" class="toolbar-btn">
-                <span>&#128218;</span> Docs
-            </a>
+            <button class="toolbar-btn" onclick="refreshAllWidgets()"><span>&#128260;</span> Refresh</button>
+            <button class="toolbar-btn" onclick="togglePreview()"><span>&#128065;</span> Preview</button>
+            <a href="/en/architecture-guide/" class="toolbar-btn"><span>&#128218;</span> Docs</a>
         </div>
     </header>
 
@@ -613,38 +443,23 @@
             <div class="palette-title">Data Display</div>
             <div class="widget-item" draggable="true" data-widget-type="stat-card">
                 <div class="widget-icon">&#128200;</div>
-                <div class="widget-info">
-                    <h4>Stat Card</h4>
-                    <p>Single metric display</p>
-                </div>
+                <div class="widget-info"><h4>Stat Card</h4><p>KPI with trend indicator</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="chart-bar">
                 <div class="widget-icon">&#128202;</div>
-                <div class="widget-info">
-                    <h4>Bar Chart</h4>
-                    <p>Vertical bar visualization</p>
-                </div>
+                <div class="widget-info"><h4>Bar Chart</h4><p>Vertical bar visualization</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="chart-line">
                 <div class="widget-icon">&#128201;</div>
-                <div class="widget-info">
-                    <h4>Line Chart</h4>
-                    <p>Trend over time</p>
-                </div>
+                <div class="widget-info"><h4>Line Chart</h4><p>Trend over time</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="data-table">
                 <div class="widget-icon">&#128203;</div>
-                <div class="widget-info">
-                    <h4>Data Table</h4>
-                    <p>Tabular data display</p>
-                </div>
+                <div class="widget-info"><h4>Data Table</h4><p>Sortable data grid</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="progress-bar">
                 <div class="widget-icon">&#9632;</div>
-                <div class="widget-info">
-                    <h4>Progress Bar</h4>
-                    <p>Percentage indicator</p>
-                </div>
+                <div class="widget-info"><h4>Progress Bar</h4><p>Percentage with thresholds</p></div>
             </div>
         </div>
 
@@ -652,24 +467,15 @@
             <div class="palette-title">Content</div>
             <div class="widget-item" draggable="true" data-widget-type="text-block">
                 <div class="widget-icon">&#128221;</div>
-                <div class="widget-info">
-                    <h4>Text Block</h4>
-                    <p>Rich text content</p>
-                </div>
+                <div class="widget-info"><h4>Text Block</h4><p>Rich text content</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="image">
                 <div class="widget-icon">&#128247;</div>
-                <div class="widget-info">
-                    <h4>Image</h4>
-                    <p>Picture or logo</p>
-                </div>
+                <div class="widget-info"><h4>Image</h4><p>Picture from URL</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="video">
                 <div class="widget-icon">&#127909;</div>
-                <div class="widget-info">
-                    <h4>Video</h4>
-                    <p>Video embed or stream</p>
-                </div>
+                <div class="widget-info"><h4>Video</h4><p>YouTube, Vimeo, or URL</p></div>
             </div>
         </div>
 
@@ -677,24 +483,15 @@
             <div class="palette-title">Interactive</div>
             <div class="widget-item" draggable="true" data-widget-type="form">
                 <div class="widget-icon">&#128221;</div>
-                <div class="widget-info">
-                    <h4>Form</h4>
-                    <p>Input form</p>
-                </div>
+                <div class="widget-info"><h4>Form</h4><p>Input fields with submit</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="button-group">
                 <div class="widget-icon">&#128307;</div>
-                <div class="widget-info">
-                    <h4>Buttons</h4>
-                    <p>Action buttons</p>
-                </div>
+                <div class="widget-info"><h4>Buttons</h4><p>Action triggers</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="ai-chat">
                 <div class="widget-icon">&#129302;</div>
-                <div class="widget-info">
-                    <h4>AI Chat</h4>
-                    <p>AI assistant widget</p>
-                </div>
+                <div class="widget-info"><h4>AI Chat</h4><p>AI assistant interface</p></div>
             </div>
         </div>
 
@@ -702,26 +499,18 @@
             <div class="palette-title">Layout</div>
             <div class="widget-item" draggable="true" data-widget-type="spacer">
                 <div class="widget-icon">&#9723;</div>
-                <div class="widget-info">
-                    <h4>Spacer</h4>
-                    <p>Empty space</p>
-                </div>
+                <div class="widget-info"><h4>Spacer</h4><p>Empty space</p></div>
             </div>
             <div class="widget-item" draggable="true" data-widget-type="divider">
                 <div class="widget-icon">&#9473;</div>
-                <div class="widget-info">
-                    <h4>Divider</h4>
-                    <p>Horizontal line</p>
-                </div>
+                <div class="widget-info"><h4>Divider</h4><p>Section separator</p></div>
             </div>
         </div>
     </aside>
 
     <!-- Canvas -->
     <main class="builder-canvas">
-        <div class="canvas-grid" id="canvas-grid">
-            <!-- Grid cells will be generated by JS -->
-        </div>
+        <div class="canvas-grid" id="canvas-grid"></div>
     </main>
 
     <!-- Config Panel -->
@@ -729,48 +518,49 @@
         <div class="no-selection" id="no-selection">
             <div class="no-selection-icon">&#128204;</div>
             <p>Select a widget to configure</p>
-            <p style="font-size: 0.85rem; margin-top: 8px;">Drag widgets from the left panel onto the canvas</p>
+            <p style="font-size: 0.85rem; margin-top: 8px;">Drag widgets from the left panel</p>
         </div>
 
         <div id="widget-config" style="display: none;">
+            <!-- Common Settings -->
             <div class="config-section">
                 <div class="config-title">Widget Settings</div>
                 <div class="config-group">
                     <label>Title</label>
                     <input type="text" id="config-title" placeholder="Widget title">
                 </div>
-                <div class="config-group">
-                    <label>Subtitle</label>
-                    <input type="text" id="config-subtitle" placeholder="Optional subtitle">
-                </div>
             </div>
 
+            <!-- Size -->
             <div class="config-section">
                 <div class="config-title">Size</div>
-                <div class="config-group">
-                    <label>Width (columns)</label>
-                    <div class="size-buttons" id="width-buttons">
-                        <button class="size-btn" data-size="3">3</button>
-                        <button class="size-btn active" data-size="4">4</button>
-                        <button class="size-btn" data-size="6">6</button>
-                        <button class="size-btn" data-size="12">12</button>
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>Width</label>
+                        <div class="size-buttons" id="width-buttons">
+                            <button class="size-btn" data-size="3">3</button>
+                            <button class="size-btn" data-size="4">4</button>
+                            <button class="size-btn" data-size="6">6</button>
+                            <button class="size-btn" data-size="12">12</button>
+                        </div>
                     </div>
-                </div>
-                <div class="config-group">
-                    <label>Height (rows)</label>
-                    <div class="size-buttons" id="height-buttons">
-                        <button class="size-btn active" data-size="1">1</button>
-                        <button class="size-btn" data-size="2">2</button>
-                        <button class="size-btn" data-size="3">3</button>
-                        <button class="size-btn" data-size="4">4</button>
+                    <div class="config-group">
+                        <label>Height</label>
+                        <div class="size-buttons" id="height-buttons">
+                            <button class="size-btn" data-size="1">1</button>
+                            <button class="size-btn" data-size="2">2</button>
+                            <button class="size-btn" data-size="3">3</button>
+                            <button class="size-btn" data-size="4">4</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Appearance -->
             <div class="config-section">
                 <div class="config-title">Appearance</div>
                 <div class="config-group">
-                    <label>Accent Color</label>
+                    <label>Color</label>
                     <div class="color-picker-group">
                         <input type="color" id="config-color" value="#f97316">
                         <input type="text" id="config-color-text" value="#f97316">
@@ -778,23 +568,197 @@
                 </div>
             </div>
 
-            <div class="config-section" id="data-config">
+            <!-- Type-Specific Configs (shown/hidden based on widget type) -->
+
+            <!-- Stat Card Config -->
+            <div class="config-section widget-type-config" data-for="stat-card">
+                <div class="config-title">Stat Card Options</div>
+                <div class="config-group">
+                    <label>Value (or use data source)</label>
+                    <input type="text" id="config-stat-value" placeholder="1,234">
+                </div>
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>Prefix</label>
+                        <input type="text" id="config-stat-prefix" placeholder="$">
+                    </div>
+                    <div class="config-group">
+                        <label>Suffix</label>
+                        <input type="text" id="config-stat-suffix" placeholder="%">
+                    </div>
+                </div>
+                <div class="config-group">
+                    <label>Subtitle</label>
+                    <input type="text" id="config-stat-subtitle" placeholder="Total Revenue">
+                </div>
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>Trend</label>
+                        <select id="config-stat-trend">
+                            <option value="none">None</option>
+                            <option value="up">Up</option>
+                            <option value="down">Down</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label>Trend Value</label>
+                        <input type="text" id="config-stat-trend-value" placeholder="+12.5%">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Config -->
+            <div class="config-section widget-type-config" data-for="chart-bar,chart-line">
+                <div class="config-title">Chart Options</div>
+                <div class="config-group">
+                    <label>Labels (comma-separated)</label>
+                    <input type="text" id="config-chart-labels" placeholder="Jan, Feb, Mar, Apr, May">
+                </div>
+                <div class="config-group">
+                    <label>Values (comma-separated)</label>
+                    <input type="text" id="config-chart-values" placeholder="10, 25, 15, 30, 20">
+                </div>
+            </div>
+
+            <!-- Data Table Config -->
+            <div class="config-section widget-type-config" data-for="data-table">
+                <div class="config-title">Table Options</div>
+                <div class="config-group">
+                    <label>Columns (comma-separated)</label>
+                    <input type="text" id="config-table-columns" placeholder="Name, Value, Status">
+                </div>
+                <div class="config-group">
+                    <label>Data (JSON array)</label>
+                    <textarea id="config-table-data" rows="4" placeholder='[{"name":"Item 1","value":100,"status":"Active"}]'></textarea>
+                </div>
+            </div>
+
+            <!-- Progress Bar Config -->
+            <div class="config-section widget-type-config" data-for="progress-bar">
+                <div class="config-title">Progress Options</div>
+                <div class="config-group">
+                    <label>Value (%)</label>
+                    <input type="number" id="config-progress-value" min="0" max="100" placeholder="75">
+                </div>
+                <div class="config-group">
+                    <label>Label</label>
+                    <input type="text" id="config-progress-label" placeholder="Completion">
+                </div>
+                <div class="config-row">
+                    <div class="config-group">
+                        <label>Warning At (%)</label>
+                        <input type="number" id="config-progress-warn" placeholder="50">
+                    </div>
+                    <div class="config-group">
+                        <label>Danger At (%)</label>
+                        <input type="number" id="config-progress-danger" placeholder="25">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Block Config -->
+            <div class="config-section widget-type-config" data-for="text-block">
+                <div class="config-title">Text Content</div>
+                <div class="config-group">
+                    <label>Content (supports basic HTML)</label>
+                    <textarea id="config-text-content" rows="6" placeholder="<h3>Hello World</h3><p>Your content here...</p>"></textarea>
+                </div>
+            </div>
+
+            <!-- Image Config -->
+            <div class="config-section widget-type-config" data-for="image">
+                <div class="config-title">Image Options</div>
+                <div class="config-group">
+                    <label>Image URL</label>
+                    <input type="text" id="config-image-url" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="config-group">
+                    <label>Alt Text</label>
+                    <input type="text" id="config-image-alt" placeholder="Image description">
+                </div>
+            </div>
+
+            <!-- Video Config -->
+            <div class="config-section widget-type-config" data-for="video">
+                <div class="config-title">Video Options</div>
+                <div class="config-group">
+                    <label>Video URL (YouTube, Vimeo, or direct)</label>
+                    <input type="text" id="config-video-url" placeholder="https://youtube.com/watch?v=...">
+                </div>
+                <div class="config-group">
+                    <label>Autoplay</label>
+                    <select id="config-video-autoplay">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Form Config -->
+            <div class="config-section widget-type-config" data-for="form">
+                <div class="config-title">Form Fields</div>
+                <div class="field-list" id="form-field-list"></div>
+                <button class="add-field-btn" onclick="addFormField()">+ Add Field</button>
+                <div class="config-group" style="margin-top: 16px;">
+                    <label>Submit Gate</label>
+                    <input type="text" id="config-form-gate" placeholder="e.g., register">
+                </div>
+                <div class="config-group">
+                    <label>Submit Button Text</label>
+                    <input type="text" id="config-form-submit-text" placeholder="Submit">
+                </div>
+            </div>
+
+            <!-- Button Group Config -->
+            <div class="config-section widget-type-config" data-for="button-group">
+                <div class="config-title">Buttons</div>
+                <div class="button-list" id="button-list"></div>
+                <button class="add-field-btn" onclick="addButton()">+ Add Button</button>
+            </div>
+
+            <!-- AI Chat Config -->
+            <div class="config-section widget-type-config" data-for="ai-chat">
+                <div class="config-title">AI Chat Options</div>
+                <div class="config-group">
+                    <label>AI Gate</label>
+                    <input type="text" id="config-ai-gate" placeholder="ai_chat" value="ai_chat">
+                </div>
+                <div class="config-group">
+                    <label>System Prompt</label>
+                    <textarea id="config-ai-prompt" rows="3" placeholder="You are a helpful assistant..."></textarea>
+                </div>
+                <div class="config-group">
+                    <label>Welcome Message</label>
+                    <input type="text" id="config-ai-welcome" placeholder="Hello! How can I help you?">
+                </div>
+            </div>
+
+            <!-- Data Source -->
+            <div class="config-section" id="data-source-section">
                 <div class="config-title">Data Source</div>
                 <div class="config-group">
                     <label>Source Type</label>
                     <select id="config-data-source">
-                        <option value="static">Static Value</option>
+                        <option value="static">Static (configured above)</option>
                         <option value="gate">Gate (AJAX)</option>
                         <option value="api">REST API</option>
                     </select>
                 </div>
-                <div class="config-group" id="static-value-group">
-                    <label>Value</label>
-                    <input type="text" id="config-static-value" placeholder="Enter value">
-                </div>
-                <div class="config-group" id="gate-group" style="display: none;">
+                <div class="config-group" id="gate-config" style="display: none;">
                     <label>Gate Name</label>
-                    <input type="text" id="config-gate" placeholder="e.g., command_center">
+                    <input type="text" id="config-gate-name" placeholder="command_center">
+                </div>
+                <div class="config-group" id="gate-action" style="display: none;">
+                    <label>Action/Param</label>
+                    <input type="text" id="config-gate-action" placeholder="get_stats">
+                </div>
+                <div class="config-group" id="api-config" style="display: none;">
+                    <label>API URL</label>
+                    <input type="text" id="config-api-url" placeholder="https://api.example.com/data">
+                </div>
+                <div class="config-group" id="refresh-config" style="display: none;">
+                    <label>Refresh Interval (seconds, 0 = off)</label>
+                    <input type="number" id="config-refresh-interval" min="0" value="0" placeholder="30">
                 </div>
             </div>
         </div>
@@ -804,23 +768,17 @@
 <!-- Preview Overlay -->
 <div class="preview-overlay" id="preview-overlay">
     <div class="preview-toolbar">
-        <span style="font-weight: 600;">Preview Mode</span>
-        <button class="toolbar-btn" onclick="togglePreview()">
-            <span>&#10005;</span> Close Preview
-        </button>
+        <span style="font-weight: 600;">&#128065; Live Preview</span>
+        <button class="toolbar-btn" onclick="togglePreview()"><span>&#10005;</span> Close</button>
     </div>
-    <div class="preview-content" id="preview-content">
-        <!-- Preview renders here -->
-    </div>
+    <div class="preview-content" id="preview-content"></div>
 </div>
 
 <!-- Export Modal -->
 <div class="modal-overlay" id="export-modal">
     <div class="modal">
-        <h3>&#128190; Export Dashboard JSON</h3>
-        <p style="color: var(--brand-text-secondary); margin-bottom: 16px;">
-            Copy this configuration to save or use in your code:
-        </p>
+        <h3>&#128190; Export Dashboard</h3>
+        <p style="color: var(--brand-text-secondary); margin-bottom: 16px;">Copy or download the configuration:</p>
         <div class="json-output" id="json-output"></div>
         <div class="modal-actions">
             <button class="toolbar-btn" onclick="copyJson()">&#128203; Copy</button>
@@ -834,9 +792,7 @@
 <div class="modal-overlay" id="load-modal">
     <div class="modal">
         <h3>&#128194; Load Dashboard</h3>
-        <p style="color: var(--brand-text-secondary); margin-bottom: 16px;">
-            Paste a dashboard JSON configuration:
-        </p>
+        <p style="color: var(--brand-text-secondary); margin-bottom: 16px;">Paste a dashboard JSON:</p>
         <div class="config-group">
             <textarea id="load-json" rows="10" placeholder='{"name": "My Dashboard", "widgets": [...]}'></textarea>
         </div>
@@ -848,55 +804,100 @@
 </div>
 
 <script>
-// Dashboard Builder State
+// ============================================
+// Dashboard Builder - Full Implementation
+// ============================================
+
 const state = {
     widgets: [],
     selectedWidget: null,
-    nextId: 1
+    nextId: 1,
+    refreshTimers: {}
 };
 
-// Widget type definitions
+// Widget type definitions with defaults
 const widgetTypes = {
-    'stat-card': { icon: '&#128200;', name: 'Stat Card', defaultWidth: 3, defaultHeight: 1 },
-    'chart-bar': { icon: '&#128202;', name: 'Bar Chart', defaultWidth: 6, defaultHeight: 2 },
-    'chart-line': { icon: '&#128201;', name: 'Line Chart', defaultWidth: 6, defaultHeight: 2 },
-    'data-table': { icon: '&#128203;', name: 'Data Table', defaultWidth: 6, defaultHeight: 3 },
-    'progress-bar': { icon: '&#9632;', name: 'Progress', defaultWidth: 4, defaultHeight: 1 },
-    'text-block': { icon: '&#128221;', name: 'Text', defaultWidth: 4, defaultHeight: 2 },
-    'image': { icon: '&#128247;', name: 'Image', defaultWidth: 4, defaultHeight: 2 },
-    'video': { icon: '&#127909;', name: 'Video', defaultWidth: 6, defaultHeight: 3 },
-    'form': { icon: '&#128221;', name: 'Form', defaultWidth: 4, defaultHeight: 3 },
-    'button-group': { icon: '&#128307;', name: 'Buttons', defaultWidth: 4, defaultHeight: 1 },
-    'ai-chat': { icon: '&#129302;', name: 'AI Chat', defaultWidth: 4, defaultHeight: 4 },
-    'spacer': { icon: '&#9723;', name: 'Spacer', defaultWidth: 3, defaultHeight: 1 },
-    'divider': { icon: '&#9473;', name: 'Divider', defaultWidth: 12, defaultHeight: 1 }
+    'stat-card': { icon: '&#128200;', name: 'Stat Card', defaultWidth: 3, defaultHeight: 1, hasDataSource: true },
+    'chart-bar': { icon: '&#128202;', name: 'Bar Chart', defaultWidth: 6, defaultHeight: 2, hasDataSource: true },
+    'chart-line': { icon: '&#128201;', name: 'Line Chart', defaultWidth: 6, defaultHeight: 2, hasDataSource: true },
+    'data-table': { icon: '&#128203;', name: 'Data Table', defaultWidth: 6, defaultHeight: 3, hasDataSource: true },
+    'progress-bar': { icon: '&#9632;', name: 'Progress', defaultWidth: 4, defaultHeight: 1, hasDataSource: true },
+    'text-block': { icon: '&#128221;', name: 'Text', defaultWidth: 4, defaultHeight: 2, hasDataSource: false },
+    'image': { icon: '&#128247;', name: 'Image', defaultWidth: 4, defaultHeight: 2, hasDataSource: false },
+    'video': { icon: '&#127909;', name: 'Video', defaultWidth: 6, defaultHeight: 3, hasDataSource: false },
+    'form': { icon: '&#128221;', name: 'Form', defaultWidth: 4, defaultHeight: 3, hasDataSource: false },
+    'button-group': { icon: '&#128307;', name: 'Buttons', defaultWidth: 4, defaultHeight: 1, hasDataSource: false },
+    'ai-chat': { icon: '&#129302;', name: 'AI Chat', defaultWidth: 4, defaultHeight: 4, hasDataSource: false },
+    'spacer': { icon: '&#9723;', name: 'Spacer', defaultWidth: 3, defaultHeight: 1, hasDataSource: false },
+    'divider': { icon: '&#9473;', name: 'Divider', defaultWidth: 12, defaultHeight: 1, hasDataSource: false }
 };
 
-// Initialize grid
+// Default widget configurations
+function getDefaultConfig(type) {
+    const base = {
+        title: widgetTypes[type].name,
+        color: '#f97316',
+        dataSource: 'static',
+        gateName: '',
+        gateAction: '',
+        apiUrl: '',
+        refreshInterval: 0
+    };
+
+    switch(type) {
+        case 'stat-card':
+            return { ...base, value: '0', prefix: '', suffix: '', subtitle: 'Metric', trend: 'none', trendValue: '' };
+        case 'chart-bar':
+        case 'chart-line':
+            return { ...base, labels: 'Jan,Feb,Mar,Apr,May', values: '10,25,15,30,20' };
+        case 'data-table':
+            return { ...base, columns: 'Name,Value,Status', data: '[{"name":"Item 1","value":100,"status":"Active"}]' };
+        case 'progress-bar':
+            return { ...base, value: 75, label: 'Progress', warnAt: 50, dangerAt: 25 };
+        case 'text-block':
+            return { ...base, content: '<h3>Hello World</h3><p>Your content here...</p>' };
+        case 'image':
+            return { ...base, imageUrl: '', imageAlt: 'Image' };
+        case 'video':
+            return { ...base, videoUrl: '', autoplay: 'no' };
+        case 'form':
+            return { ...base, fields: [{ name: 'email', type: 'email', label: 'Email' }], formGate: '', submitText: 'Submit' };
+        case 'button-group':
+            return { ...base, buttons: [{ text: 'Action', style: 'primary', action: 'gate', gate: '' }] };
+        case 'ai-chat':
+            return { ...base, aiGate: 'ai_chat', systemPrompt: 'You are a helpful assistant.', welcomeMessage: 'Hello! How can I help?', messages: [] };
+        default:
+            return base;
+    }
+}
+
+// ============================================
+// Grid Initialization
+// ============================================
+
 function initGrid() {
     const grid = document.getElementById('canvas-grid');
     grid.innerHTML = '';
 
-    // Create 4 rows x 12 columns of cells
     for (let row = 0; row < 6; row++) {
         for (let col = 0; col < 12; col++) {
             const cell = document.createElement('div');
             cell.className = 'grid-cell';
             cell.dataset.row = row;
             cell.dataset.col = col;
-
             cell.addEventListener('dragover', handleDragOver);
             cell.addEventListener('dragleave', handleDragLeave);
             cell.addEventListener('drop', handleDrop);
-
             grid.appendChild(cell);
         }
     }
-
     renderWidgets();
 }
 
-// Drag and drop handlers
+// ============================================
+// Drag and Drop
+// ============================================
+
 let draggedType = null;
 
 document.querySelectorAll('.widget-item').forEach(item => {
@@ -905,45 +906,32 @@ document.querySelectorAll('.widget-item').forEach(item => {
         item.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'copy';
     });
-
     item.addEventListener('dragend', () => {
         item.classList.remove('dragging');
         draggedType = null;
     });
 });
 
-function handleDragOver(e) {
-    e.preventDefault();
-    e.currentTarget.classList.add('drag-over');
-}
-
-function handleDragLeave(e) {
-    e.currentTarget.classList.remove('drag-over');
-}
+function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
 
 function handleDrop(e) {
     e.preventDefault();
     e.currentTarget.classList.remove('drag-over');
-
     if (!draggedType) return;
 
     const row = parseInt(e.currentTarget.dataset.row);
     const col = parseInt(e.currentTarget.dataset.col);
     const typeDef = widgetTypes[draggedType];
+    const defaultConfig = getDefaultConfig(draggedType);
 
     const widget = {
         id: state.nextId++,
         type: draggedType,
-        title: typeDef.name,
-        subtitle: '',
-        row: row,
-        col: col,
+        row, col,
         width: typeDef.defaultWidth,
         height: typeDef.defaultHeight,
-        color: '#f97316',
-        dataSource: 'static',
-        staticValue: '0',
-        gate: ''
+        config: defaultConfig
     };
 
     state.widgets.push(widget);
@@ -952,24 +940,21 @@ function handleDrop(e) {
     showToast('Widget added!', 'success');
 }
 
-// Render widgets on canvas
-function renderWidgets() {
-    // Clear existing widget elements
-    document.querySelectorAll('.placed-widget').forEach(el => el.remove());
+// ============================================
+// Widget Rendering
+// ============================================
 
-    // Reset all cells
+function renderWidgets() {
+    document.querySelectorAll('.placed-widget').forEach(el => el.remove());
     document.querySelectorAll('.grid-cell').forEach(cell => {
         cell.classList.remove('has-widget');
         cell.style.display = '';
     });
 
     state.widgets.forEach(widget => {
-        const startCell = document.querySelector(
-            `.grid-cell[data-row="${widget.row}"][data-col="${widget.col}"]`
-        );
+        const startCell = document.querySelector(`.grid-cell[data-row="${widget.row}"][data-col="${widget.col}"]`);
         if (!startCell) return;
 
-        // Create widget element
         const el = document.createElement('div');
         el.className = 'placed-widget' + (state.selectedWidget === widget.id ? ' selected' : '');
         el.dataset.widgetId = widget.id;
@@ -977,24 +962,26 @@ function renderWidgets() {
         el.style.gridRow = `span ${widget.height}`;
 
         const typeDef = widgetTypes[widget.type];
+        const hasRefresh = widget.config.dataSource !== 'static' && widget.config.refreshInterval > 0;
+
         el.innerHTML = `
             <div class="widget-header">
-                <span class="widget-title">${typeDef.icon} ${widget.title}</span>
+                <span class="widget-title">${typeDef.icon} ${widget.config.title}</span>
                 <div class="widget-actions">
-                    <button class="widget-action-btn" onclick="selectWidget(${widget.id})" title="Configure">&#9881;</button>
-                    <button class="widget-action-btn delete" onclick="deleteWidget(${widget.id})" title="Delete">&#128465;</button>
+                    <button class="widget-action-btn" onclick="event.stopPropagation(); refreshWidget(${widget.id})" title="Refresh">&#128260;</button>
+                    <button class="widget-action-btn" onclick="event.stopPropagation(); selectWidget(${widget.id})" title="Configure">&#9881;</button>
+                    <button class="widget-action-btn delete" onclick="event.stopPropagation(); deleteWidget(${widget.id})" title="Delete">&#128465;</button>
                 </div>
+                ${hasRefresh ? '<div class="refresh-indicator"></div>' : ''}
             </div>
-            <div class="widget-content">${renderWidgetPreview(widget)}</div>
+            <div class="widget-content" id="widget-content-${widget.id}"></div>
         `;
 
         el.addEventListener('click', () => selectWidget(widget.id));
-
-        // Replace cell with widget
         startCell.classList.add('has-widget');
         startCell.appendChild(el);
 
-        // Hide cells that this widget spans
+        // Hide spanned cells
         for (let r = widget.row; r < widget.row + widget.height; r++) {
             for (let c = widget.col; c < widget.col + widget.width; c++) {
                 if (r === widget.row && c === widget.col) continue;
@@ -1002,67 +989,522 @@ function renderWidgets() {
                 if (cell) cell.style.display = 'none';
             }
         }
+
+        // Render widget content
+        renderWidgetContent(widget);
+
+        // Setup refresh timer
+        setupRefreshTimer(widget);
     });
 }
 
-// Render preview content based on widget type
-function renderWidgetPreview(widget) {
-    switch (widget.type) {
+function renderWidgetContent(widget) {
+    const container = document.getElementById(`widget-content-${widget.id}`);
+    if (!container) return;
+
+    const c = widget.config;
+
+    switch(widget.type) {
         case 'stat-card':
-            return `<div class="widget-preview-stat">
-                <div class="value" style="color: ${widget.color}">${widget.staticValue || '0'}</div>
-                <div class="label">${widget.subtitle || 'Metric'}</div>
-            </div>`;
+            container.className = 'widget-content stat-widget';
+            const trendHtml = c.trend !== 'none' ? `<div class="stat-trend ${c.trend}">${c.trend === 'up' ? '&#9650;' : '&#9660;'} ${c.trendValue}</div>` : '';
+            container.innerHTML = `
+                <div class="stat-value" style="color: ${c.color}">${c.prefix}${c.value}${c.suffix}</div>
+                <div class="stat-label">${c.subtitle}</div>
+                ${trendHtml}
+            `;
+            break;
+
         case 'chart-bar':
-            return `<div class="widget-preview-chart">
-                <div class="chart-bar" style="height: 60%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
-                <div class="chart-bar" style="height: 80%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
-                <div class="chart-bar" style="height: 45%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
-                <div class="chart-bar" style="height: 90%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
-                <div class="chart-bar" style="height: 70%; background: linear-gradient(180deg, ${widget.color}, ${widget.color}88)"></div>
-            </div>`;
+            container.className = 'widget-content chart-widget';
+            renderBarChart(container, c);
+            break;
+
         case 'chart-line':
-            return `<div style="color: ${widget.color}; font-size: 2rem;">&#128201;</div><div>Line Chart</div>`;
+            container.className = 'widget-content chart-widget';
+            renderLineChart(container, c);
+            break;
+
         case 'data-table':
-            return `<table class="widget-preview-table">
-                <tr><td>Row 1</td><td>Data</td><td>Value</td></tr>
-                <tr><td>Row 2</td><td>Data</td><td>Value</td></tr>
-                <tr><td>Row 3</td><td>Data</td><td>Value</td></tr>
-            </table>`;
+            container.className = 'widget-content table-widget';
+            renderDataTable(container, c);
+            break;
+
         case 'progress-bar':
-            return `<div style="width: 100%;">
-                <div style="background: var(--brand-muted); height: 8px; border-radius: 4px; overflow: hidden;">
-                    <div style="width: ${widget.staticValue || 50}%; height: 100%; background: ${widget.color}; border-radius: 4px;"></div>
+            container.className = 'widget-content progress-widget';
+            const val = parseFloat(c.value) || 0;
+            let barColor = c.color;
+            if (c.dangerAt && val <= c.dangerAt) barColor = '#ef4444';
+            else if (c.warnAt && val <= c.warnAt) barColor = '#eab308';
+            container.innerHTML = `
+                <div class="progress-container">
+                    <div class="progress-bar-outer">
+                        <div class="progress-bar-inner" style="width: ${val}%; background: ${barColor};"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>${c.label}</span>
+                        <span class="progress-value" style="color: ${barColor}">${val}%</span>
+                    </div>
                 </div>
-                <div style="text-align: center; margin-top: 8px; font-size: 0.9rem;">${widget.staticValue || 50}%</div>
-            </div>`;
+            `;
+            break;
+
+        case 'text-block':
+            container.className = 'widget-content text-widget';
+            container.innerHTML = `<div class="text-content">${c.content || '<p>Enter your content...</p>'}</div>`;
+            break;
+
+        case 'image':
+            container.className = 'widget-content image-widget';
+            if (c.imageUrl) {
+                container.innerHTML = `<img src="${c.imageUrl}" alt="${c.imageAlt || 'Image'}" onerror="this.parentElement.innerHTML='<div class=\\'image-placeholder\\'>&#128247; Image failed to load</div>'">`;
+            } else {
+                container.innerHTML = `<div class="image-placeholder">&#128247;<br>Add image URL in config</div>`;
+            }
+            break;
+
+        case 'video':
+            container.className = 'widget-content video-widget';
+            if (c.videoUrl) {
+                const embedUrl = getVideoEmbedUrl(c.videoUrl, c.autoplay === 'yes');
+                if (embedUrl) {
+                    container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                } else {
+                    container.innerHTML = `<video src="${c.videoUrl}" controls ${c.autoplay === 'yes' ? 'autoplay muted' : ''}></video>`;
+                }
+            } else {
+                container.innerHTML = `<div class="image-placeholder">&#127909;<br>Add video URL in config</div>`;
+            }
+            break;
+
+        case 'form':
+            container.className = 'widget-content form-widget';
+            renderForm(container, widget);
+            break;
+
+        case 'button-group':
+            container.className = 'widget-content button-widget';
+            renderButtons(container, widget);
+            break;
+
         case 'ai-chat':
-            return `<div style="text-align: center;"><div style="font-size: 2.5rem;">&#129302;</div><div>AI Assistant</div></div>`;
-        default:
-            return `<div>${widgetTypes[widget.type]?.icon || ''} ${widget.type}</div>`;
+            container.className = 'widget-content chat-widget';
+            renderAIChat(container, widget);
+            break;
+
+        case 'spacer':
+            container.className = 'widget-content spacer-widget';
+            container.innerHTML = '';
+            break;
+
+        case 'divider':
+            container.className = 'widget-content divider-widget';
+            container.innerHTML = `<div class="divider-line" style="background: linear-gradient(90deg, transparent, ${c.color}, transparent);"></div>`;
+            break;
     }
 }
 
-// Select widget for configuration
+// ============================================
+// Chart Rendering
+// ============================================
+
+function renderBarChart(container, config) {
+    const labels = config.labels.split(',').map(s => s.trim());
+    const values = config.values.split(',').map(s => parseFloat(s.trim()) || 0);
+    const maxVal = Math.max(...values, 1);
+
+    let barsHtml = '';
+    labels.forEach((label, i) => {
+        const height = (values[i] / maxVal) * 100;
+        barsHtml += `
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                <div style="flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center;">
+                    <div style="width: 60%; height: ${height}%; background: linear-gradient(180deg, ${config.color}, ${config.color}88); border-radius: 4px 4px 0 0; transition: height 0.3s;"></div>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--brand-text-tertiary); margin-top: 8px; text-align: center;">${label}</div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = `<div style="display: flex; height: 100%; gap: 8px; padding-bottom: 24px;">${barsHtml}</div>`;
+}
+
+function renderLineChart(container, config) {
+    const labels = config.labels.split(',').map(s => s.trim());
+    const values = config.values.split(',').map(s => parseFloat(s.trim()) || 0);
+
+    container.innerHTML = `<canvas id="line-chart-${Date.now()}"></canvas>`;
+    const canvas = container.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Simple line chart drawing
+    setTimeout(() => {
+        const rect = container.getBoundingClientRect();
+        canvas.width = rect.width - 28;
+        canvas.height = rect.height - 28;
+
+        const padding = 30;
+        const w = canvas.width - padding * 2;
+        const h = canvas.height - padding * 2;
+        const maxVal = Math.max(...values, 1);
+
+        ctx.strokeStyle = config.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        values.forEach((val, i) => {
+            const x = padding + (i / (values.length - 1)) * w;
+            const y = padding + h - (val / maxVal) * h;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Draw points
+        ctx.fillStyle = config.color;
+        values.forEach((val, i) => {
+            const x = padding + (i / (values.length - 1)) * w;
+            const y = padding + h - (val / maxVal) * h;
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Draw labels
+        ctx.fillStyle = '#888';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        labels.forEach((label, i) => {
+            const x = padding + (i / (values.length - 1)) * w;
+            ctx.fillText(label, x, canvas.height - 8);
+        });
+    }, 50);
+}
+
+// ============================================
+// Data Table Rendering
+// ============================================
+
+function renderDataTable(container, config) {
+    const columns = config.columns.split(',').map(s => s.trim());
+    let data = [];
+    try { data = JSON.parse(config.data) || []; } catch(e) {}
+
+    let html = '<table class="data-table"><thead><tr>';
+    columns.forEach(col => { html += `<th>${col}</th>`; });
+    html += '</tr></thead><tbody>';
+
+    data.forEach(row => {
+        html += '<tr>';
+        columns.forEach(col => {
+            const key = col.toLowerCase().replace(/\s+/g, '');
+            html += `<td>${row[key] ?? row[col] ?? '-'}</td>`;
+        });
+        html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+// ============================================
+// Form Rendering
+// ============================================
+
+function renderForm(container, widget) {
+    const c = widget.config;
+    let fieldsHtml = '';
+
+    (c.fields || []).forEach((field, i) => {
+        let inputHtml = '';
+        switch(field.type) {
+            case 'textarea':
+                inputHtml = `<textarea name="${field.name}" placeholder="${field.label}" rows="3"></textarea>`;
+                break;
+            case 'select':
+                inputHtml = `<select name="${field.name}"><option value="">Select...</option></select>`;
+                break;
+            default:
+                inputHtml = `<input type="${field.type}" name="${field.name}" placeholder="${field.label}">`;
+        }
+        fieldsHtml += `<div class="form-group"><label>${field.label}</label>${inputHtml}</div>`;
+    });
+
+    container.innerHTML = `
+        <form onsubmit="submitForm(event, ${widget.id})">
+            ${fieldsHtml}
+            <div class="form-submit">
+                <button type="submit" class="action-btn primary" style="width: 100%;">${c.submitText || 'Submit'}</button>
+            </div>
+        </form>
+    `;
+}
+
+function submitForm(e, widgetId) {
+    e.preventDefault();
+    const widget = state.widgets.find(w => w.id === widgetId);
+    if (!widget || !widget.config.formGate) {
+        showToast('No gate configured for form', 'error');
+        return;
+    }
+
+    const formData = new FormData(e.target);
+    const data = { gate: widget.config.formGate };
+    formData.forEach((val, key) => { data[key] = val; });
+
+    fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data)
+    })
+    .then(r => r.text())
+    .then(result => {
+        showToast('Form submitted! Response: ' + result, result === '1' ? 'success' : 'error');
+        e.target.reset();
+    })
+    .catch(err => showToast('Error: ' + err.message, 'error'));
+}
+
+// ============================================
+// Button Group Rendering
+// ============================================
+
+function renderButtons(container, widget) {
+    const buttons = widget.config.buttons || [];
+    let html = '';
+
+    buttons.forEach((btn, i) => {
+        html += `<button class="action-btn ${btn.style}" onclick="handleButtonClick(${widget.id}, ${i})">${btn.text}</button>`;
+    });
+
+    container.innerHTML = html || '<span style="color: var(--brand-text-tertiary);">Add buttons in config</span>';
+}
+
+function handleButtonClick(widgetId, btnIndex) {
+    const widget = state.widgets.find(w => w.id === widgetId);
+    if (!widget) return;
+
+    const btn = widget.config.buttons[btnIndex];
+    if (!btn) return;
+
+    if (btn.action === 'gate' && btn.gate) {
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ gate: btn.gate, action: btn.gateAction || '' })
+        })
+        .then(r => r.text())
+        .then(result => showToast('Gate response: ' + result, 'success'))
+        .catch(err => showToast('Error: ' + err.message, 'error'));
+    } else if (btn.action === 'url' && btn.url) {
+        window.open(btn.url, '_blank');
+    } else {
+        showToast('Button clicked: ' + btn.text, 'success');
+    }
+}
+
+// ============================================
+// AI Chat Rendering
+// ============================================
+
+function renderAIChat(container, widget) {
+    const c = widget.config;
+    const messages = c.messages || [];
+
+    let messagesHtml = '';
+    if (messages.length === 0 && c.welcomeMessage) {
+        messagesHtml = `<div class="chat-message assistant"><div class="bubble">${c.welcomeMessage}</div></div>`;
+    }
+    messages.forEach(msg => {
+        messagesHtml += `<div class="chat-message ${msg.role}"><div class="bubble">${msg.content}</div></div>`;
+    });
+
+    container.innerHTML = `
+        <div class="chat-messages" id="chat-messages-${widget.id}">${messagesHtml}</div>
+        <div class="chat-input-row">
+            <input type="text" class="chat-input" id="chat-input-${widget.id}" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendChatMessage(${widget.id})">
+            <button class="chat-send" onclick="sendChatMessage(${widget.id})">Send</button>
+        </div>
+    `;
+}
+
+function sendChatMessage(widgetId) {
+    const widget = state.widgets.find(w => w.id === widgetId);
+    if (!widget) return;
+
+    const input = document.getElementById(`chat-input-${widgetId}`);
+    const message = input.value.trim();
+    if (!message) return;
+
+    widget.config.messages = widget.config.messages || [];
+    widget.config.messages.push({ role: 'user', content: message });
+    input.value = '';
+    renderWidgetContent(widget);
+
+    // Call AI gate
+    fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            gate: widget.config.aiGate || 'ai_chat',
+            message: message,
+            system_prompt: widget.config.systemPrompt || ''
+        })
+    })
+    .then(r => r.text())
+    .then(response => {
+        widget.config.messages.push({ role: 'assistant', content: response || 'No response from AI gate.' });
+        renderWidgetContent(widget);
+        const msgContainer = document.getElementById(`chat-messages-${widgetId}`);
+        if (msgContainer) msgContainer.scrollTop = msgContainer.scrollHeight;
+    })
+    .catch(err => {
+        widget.config.messages.push({ role: 'assistant', content: 'Error: ' + err.message });
+        renderWidgetContent(widget);
+    });
+}
+
+// ============================================
+// Video URL Parsing
+// ============================================
+
+function getVideoEmbedUrl(url, autoplay) {
+    const ap = autoplay ? '?autoplay=1&mute=1' : '';
+
+    // YouTube
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}${ap}`;
+
+    // Vimeo
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}${ap}`;
+
+    return null;
+}
+
+// ============================================
+// Data Source & Refresh
+// ============================================
+
+function setupRefreshTimer(widget) {
+    // Clear existing timer
+    if (state.refreshTimers[widget.id]) {
+        clearInterval(state.refreshTimers[widget.id]);
+        delete state.refreshTimers[widget.id];
+    }
+
+    const interval = parseInt(widget.config.refreshInterval) || 0;
+    if (interval > 0 && widget.config.dataSource !== 'static') {
+        state.refreshTimers[widget.id] = setInterval(() => {
+            fetchWidgetData(widget);
+        }, interval * 1000);
+    }
+}
+
+function refreshWidget(widgetId) {
+    const widget = state.widgets.find(w => w.id === widgetId);
+    if (widget) {
+        fetchWidgetData(widget);
+        showToast('Refreshing...', 'success');
+    }
+}
+
+function refreshAllWidgets() {
+    state.widgets.forEach(widget => fetchWidgetData(widget));
+    showToast('All widgets refreshed', 'success');
+}
+
+function fetchWidgetData(widget) {
+    const c = widget.config;
+
+    if (c.dataSource === 'gate' && c.gateName) {
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ gate: c.gateName, action: c.gateAction || '' })
+        })
+        .then(r => r.text())
+        .then(data => {
+            applyDataToWidget(widget, data);
+        })
+        .catch(console.error);
+    } else if (c.dataSource === 'api' && c.apiUrl) {
+        fetch(c.apiUrl)
+        .then(r => r.json())
+        .then(data => {
+            applyDataToWidget(widget, data);
+        })
+        .catch(console.error);
+    }
+}
+
+function applyDataToWidget(widget, data) {
+    // Try to parse as JSON
+    let parsed = data;
+    if (typeof data === 'string') {
+        try { parsed = JSON.parse(data); } catch(e) { parsed = data; }
+    }
+
+    switch(widget.type) {
+        case 'stat-card':
+            if (typeof parsed === 'object' && parsed.value !== undefined) {
+                widget.config.value = parsed.value;
+                if (parsed.trend) widget.config.trend = parsed.trend;
+                if (parsed.trendValue) widget.config.trendValue = parsed.trendValue;
+            } else {
+                widget.config.value = parsed;
+            }
+            break;
+        case 'progress-bar':
+            widget.config.value = typeof parsed === 'object' ? parsed.value : parsed;
+            break;
+        case 'chart-bar':
+        case 'chart-line':
+            if (typeof parsed === 'object') {
+                if (parsed.labels) widget.config.labels = Array.isArray(parsed.labels) ? parsed.labels.join(',') : parsed.labels;
+                if (parsed.values) widget.config.values = Array.isArray(parsed.values) ? parsed.values.join(',') : parsed.values;
+            }
+            break;
+        case 'data-table':
+            if (Array.isArray(parsed)) {
+                widget.config.data = JSON.stringify(parsed);
+            }
+            break;
+    }
+
+    renderWidgetContent(widget);
+}
+
+// ============================================
+// Widget Selection & Configuration
+// ============================================
+
 function selectWidget(id) {
     state.selectedWidget = id;
     const widget = state.widgets.find(w => w.id === id);
-
     if (!widget) return;
 
     document.getElementById('no-selection').style.display = 'none';
     document.getElementById('widget-config').style.display = 'block';
 
-    // Populate config fields
-    document.getElementById('config-title').value = widget.title;
-    document.getElementById('config-subtitle').value = widget.subtitle;
-    document.getElementById('config-color').value = widget.color;
-    document.getElementById('config-color-text').value = widget.color;
-    document.getElementById('config-data-source').value = widget.dataSource;
-    document.getElementById('config-static-value').value = widget.staticValue;
-    document.getElementById('config-gate').value = widget.gate;
+    // Show/hide type-specific configs
+    document.querySelectorAll('.widget-type-config').forEach(el => {
+        const forTypes = el.dataset.for.split(',');
+        el.style.display = forTypes.includes(widget.type) ? 'block' : 'none';
+    });
 
-    // Update size buttons
+    // Show/hide data source section
+    const hasDataSource = widgetTypes[widget.type].hasDataSource;
+    document.getElementById('data-source-section').style.display = hasDataSource ? 'block' : 'none';
+
+    const c = widget.config;
+
+    // Common fields
+    document.getElementById('config-title').value = c.title;
+    document.getElementById('config-color').value = c.color;
+    document.getElementById('config-color-text').value = c.color;
+
+    // Size buttons
     document.querySelectorAll('#width-buttons .size-btn').forEach(btn => {
         btn.classList.toggle('active', parseInt(btn.dataset.size) === widget.width);
     });
@@ -1070,74 +1512,206 @@ function selectWidget(id) {
         btn.classList.toggle('active', parseInt(btn.dataset.size) === widget.height);
     });
 
-    // Show/hide data source fields
-    document.getElementById('static-value-group').style.display = widget.dataSource === 'static' ? 'block' : 'none';
-    document.getElementById('gate-group').style.display = widget.dataSource === 'gate' ? 'block' : 'none';
+    // Type-specific fields
+    if (widget.type === 'stat-card') {
+        document.getElementById('config-stat-value').value = c.value || '';
+        document.getElementById('config-stat-prefix').value = c.prefix || '';
+        document.getElementById('config-stat-suffix').value = c.suffix || '';
+        document.getElementById('config-stat-subtitle').value = c.subtitle || '';
+        document.getElementById('config-stat-trend').value = c.trend || 'none';
+        document.getElementById('config-stat-trend-value').value = c.trendValue || '';
+    }
+
+    if (widget.type === 'chart-bar' || widget.type === 'chart-line') {
+        document.getElementById('config-chart-labels').value = c.labels || '';
+        document.getElementById('config-chart-values').value = c.values || '';
+    }
+
+    if (widget.type === 'data-table') {
+        document.getElementById('config-table-columns').value = c.columns || '';
+        document.getElementById('config-table-data').value = c.data || '';
+    }
+
+    if (widget.type === 'progress-bar') {
+        document.getElementById('config-progress-value').value = c.value || 0;
+        document.getElementById('config-progress-label').value = c.label || '';
+        document.getElementById('config-progress-warn').value = c.warnAt || '';
+        document.getElementById('config-progress-danger').value = c.dangerAt || '';
+    }
+
+    if (widget.type === 'text-block') {
+        document.getElementById('config-text-content').value = c.content || '';
+    }
+
+    if (widget.type === 'image') {
+        document.getElementById('config-image-url').value = c.imageUrl || '';
+        document.getElementById('config-image-alt').value = c.imageAlt || '';
+    }
+
+    if (widget.type === 'video') {
+        document.getElementById('config-video-url').value = c.videoUrl || '';
+        document.getElementById('config-video-autoplay').value = c.autoplay || 'no';
+    }
+
+    if (widget.type === 'form') {
+        renderFormFieldsConfig(c.fields || []);
+        document.getElementById('config-form-gate').value = c.formGate || '';
+        document.getElementById('config-form-submit-text').value = c.submitText || 'Submit';
+    }
+
+    if (widget.type === 'button-group') {
+        renderButtonsConfig(c.buttons || []);
+    }
+
+    if (widget.type === 'ai-chat') {
+        document.getElementById('config-ai-gate').value = c.aiGate || 'ai_chat';
+        document.getElementById('config-ai-prompt').value = c.systemPrompt || '';
+        document.getElementById('config-ai-welcome').value = c.welcomeMessage || '';
+    }
+
+    // Data source
+    document.getElementById('config-data-source').value = c.dataSource || 'static';
+    document.getElementById('config-gate-name').value = c.gateName || '';
+    document.getElementById('config-gate-action').value = c.gateAction || '';
+    document.getElementById('config-api-url').value = c.apiUrl || '';
+    document.getElementById('config-refresh-interval').value = c.refreshInterval || 0;
+    updateDataSourceVisibility();
 
     renderWidgets();
 }
 
-// Delete widget
-function deleteWidget(id) {
-    state.widgets = state.widgets.filter(w => w.id !== id);
-    if (state.selectedWidget === id) {
-        state.selectedWidget = null;
-        document.getElementById('no-selection').style.display = 'block';
-        document.getElementById('widget-config').style.display = 'none';
-    }
-    renderWidgets();
-    showToast('Widget removed', 'success');
+function updateDataSourceVisibility() {
+    const source = document.getElementById('config-data-source').value;
+    document.getElementById('gate-config').style.display = source === 'gate' ? 'block' : 'none';
+    document.getElementById('gate-action').style.display = source === 'gate' ? 'block' : 'none';
+    document.getElementById('api-config').style.display = source === 'api' ? 'block' : 'none';
+    document.getElementById('refresh-config').style.display = source !== 'static' ? 'block' : 'none';
 }
 
-// Config change handlers
-document.getElementById('config-title').addEventListener('input', (e) => {
-    const widget = state.widgets.find(w => w.id === state.selectedWidget);
-    if (widget) { widget.title = e.target.value; renderWidgets(); }
-});
+// ============================================
+// Form Fields Config
+// ============================================
 
-document.getElementById('config-subtitle').addEventListener('input', (e) => {
-    const widget = state.widgets.find(w => w.id === state.selectedWidget);
-    if (widget) { widget.subtitle = e.target.value; renderWidgets(); }
-});
+function renderFormFieldsConfig(fields) {
+    const container = document.getElementById('form-field-list');
+    container.innerHTML = '';
 
-document.getElementById('config-color').addEventListener('input', (e) => {
+    fields.forEach((field, i) => {
+        container.innerHTML += `
+            <div class="field-item">
+                <input type="text" value="${field.label}" placeholder="Label" onchange="updateFormField(${i}, 'label', this.value)">
+                <select onchange="updateFormField(${i}, 'type', this.value)">
+                    <option value="text" ${field.type === 'text' ? 'selected' : ''}>Text</option>
+                    <option value="email" ${field.type === 'email' ? 'selected' : ''}>Email</option>
+                    <option value="number" ${field.type === 'number' ? 'selected' : ''}>Number</option>
+                    <option value="textarea" ${field.type === 'textarea' ? 'selected' : ''}>Textarea</option>
+                </select>
+                <button class="field-remove" onclick="removeFormField(${i})">&#10005;</button>
+            </div>
+        `;
+    });
+}
+
+function addFormField() {
     const widget = state.widgets.find(w => w.id === state.selectedWidget);
-    if (widget) {
-        widget.color = e.target.value;
-        document.getElementById('config-color-text').value = e.target.value;
-        renderWidgets();
+    if (!widget) return;
+    widget.config.fields = widget.config.fields || [];
+    widget.config.fields.push({ name: 'field_' + Date.now(), type: 'text', label: 'New Field' });
+    renderFormFieldsConfig(widget.config.fields);
+    renderWidgetContent(widget);
+}
+
+function updateFormField(index, prop, value) {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (!widget || !widget.config.fields[index]) return;
+    widget.config.fields[index][prop] = value;
+    if (prop === 'label') widget.config.fields[index].name = value.toLowerCase().replace(/\s+/g, '_');
+    renderWidgetContent(widget);
+}
+
+function removeFormField(index) {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (!widget) return;
+    widget.config.fields.splice(index, 1);
+    renderFormFieldsConfig(widget.config.fields);
+    renderWidgetContent(widget);
+}
+
+// ============================================
+// Button Config
+// ============================================
+
+function renderButtonsConfig(buttons) {
+    const container = document.getElementById('button-list');
+    container.innerHTML = '';
+
+    buttons.forEach((btn, i) => {
+        container.innerHTML += `
+            <div class="button-item">
+                <input type="text" value="${btn.text}" placeholder="Text" onchange="updateButton(${i}, 'text', this.value)">
+                <select onchange="updateButton(${i}, 'style', this.value)">
+                    <option value="primary" ${btn.style === 'primary' ? 'selected' : ''}>Primary</option>
+                    <option value="secondary" ${btn.style === 'secondary' ? 'selected' : ''}>Secondary</option>
+                </select>
+                <button class="field-remove" onclick="removeButton(${i})">&#10005;</button>
+            </div>
+        `;
+    });
+}
+
+function addButton() {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (!widget) return;
+    widget.config.buttons = widget.config.buttons || [];
+    widget.config.buttons.push({ text: 'Button', style: 'primary', action: 'gate', gate: '' });
+    renderButtonsConfig(widget.config.buttons);
+    renderWidgetContent(widget);
+}
+
+function updateButton(index, prop, value) {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (!widget || !widget.config.buttons[index]) return;
+    widget.config.buttons[index][prop] = value;
+    renderWidgetContent(widget);
+}
+
+function removeButton(index) {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (!widget) return;
+    widget.config.buttons.splice(index, 1);
+    renderButtonsConfig(widget.config.buttons);
+    renderWidgetContent(widget);
+}
+
+// ============================================
+// Config Change Handlers
+// ============================================
+
+// Helper to update widget config
+function updateConfig(field, value) {
+    const widget = state.widgets.find(w => w.id === state.selectedWidget);
+    if (!widget) return;
+    widget.config[field] = value;
+    renderWidgetContent(widget);
+    if (field === 'refreshInterval' || field === 'dataSource' || field === 'gateName') {
+        setupRefreshTimer(widget);
     }
-});
+}
 
-document.getElementById('config-color-text').addEventListener('input', (e) => {
-    const widget = state.widgets.find(w => w.id === state.selectedWidget);
-    if (widget && /^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
-        widget.color = e.target.value;
+// Common handlers
+document.getElementById('config-title').addEventListener('input', e => updateConfig('title', e.target.value));
+document.getElementById('config-color').addEventListener('input', e => {
+    updateConfig('color', e.target.value);
+    document.getElementById('config-color-text').value = e.target.value;
+});
+document.getElementById('config-color-text').addEventListener('input', e => {
+    if (/^#[0-9A-Fa-f]{6}$/.test(e.target.value)) {
+        updateConfig('color', e.target.value);
         document.getElementById('config-color').value = e.target.value;
-        renderWidgets();
     }
 });
 
-document.getElementById('config-data-source').addEventListener('change', (e) => {
-    const widget = state.widgets.find(w => w.id === state.selectedWidget);
-    if (widget) {
-        widget.dataSource = e.target.value;
-        document.getElementById('static-value-group').style.display = e.target.value === 'static' ? 'block' : 'none';
-        document.getElementById('gate-group').style.display = e.target.value === 'gate' ? 'block' : 'none';
-    }
-});
-
-document.getElementById('config-static-value').addEventListener('input', (e) => {
-    const widget = state.widgets.find(w => w.id === state.selectedWidget);
-    if (widget) { widget.staticValue = e.target.value; renderWidgets(); }
-});
-
-document.getElementById('config-gate').addEventListener('input', (e) => {
-    const widget = state.widgets.find(w => w.id === state.selectedWidget);
-    if (widget) { widget.gate = e.target.value; }
-});
-
-// Size button handlers
+// Size handlers
 document.querySelectorAll('#width-buttons .size-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const widget = state.widgets.find(w => w.id === state.selectedWidget);
@@ -1162,23 +1736,84 @@ document.querySelectorAll('#height-buttons .size-btn').forEach(btn => {
     });
 });
 
-// Save/Load/Export functions
+// Type-specific handlers
+document.getElementById('config-stat-value').addEventListener('input', e => updateConfig('value', e.target.value));
+document.getElementById('config-stat-prefix').addEventListener('input', e => updateConfig('prefix', e.target.value));
+document.getElementById('config-stat-suffix').addEventListener('input', e => updateConfig('suffix', e.target.value));
+document.getElementById('config-stat-subtitle').addEventListener('input', e => updateConfig('subtitle', e.target.value));
+document.getElementById('config-stat-trend').addEventListener('change', e => updateConfig('trend', e.target.value));
+document.getElementById('config-stat-trend-value').addEventListener('input', e => updateConfig('trendValue', e.target.value));
+
+document.getElementById('config-chart-labels').addEventListener('input', e => updateConfig('labels', e.target.value));
+document.getElementById('config-chart-values').addEventListener('input', e => updateConfig('values', e.target.value));
+
+document.getElementById('config-table-columns').addEventListener('input', e => updateConfig('columns', e.target.value));
+document.getElementById('config-table-data').addEventListener('input', e => updateConfig('data', e.target.value));
+
+document.getElementById('config-progress-value').addEventListener('input', e => updateConfig('value', e.target.value));
+document.getElementById('config-progress-label').addEventListener('input', e => updateConfig('label', e.target.value));
+document.getElementById('config-progress-warn').addEventListener('input', e => updateConfig('warnAt', e.target.value));
+document.getElementById('config-progress-danger').addEventListener('input', e => updateConfig('dangerAt', e.target.value));
+
+document.getElementById('config-text-content').addEventListener('input', e => updateConfig('content', e.target.value));
+
+document.getElementById('config-image-url').addEventListener('input', e => updateConfig('imageUrl', e.target.value));
+document.getElementById('config-image-alt').addEventListener('input', e => updateConfig('imageAlt', e.target.value));
+
+document.getElementById('config-video-url').addEventListener('input', e => updateConfig('videoUrl', e.target.value));
+document.getElementById('config-video-autoplay').addEventListener('change', e => updateConfig('autoplay', e.target.value));
+
+document.getElementById('config-form-gate').addEventListener('input', e => updateConfig('formGate', e.target.value));
+document.getElementById('config-form-submit-text').addEventListener('input', e => updateConfig('submitText', e.target.value));
+
+document.getElementById('config-ai-gate').addEventListener('input', e => updateConfig('aiGate', e.target.value));
+document.getElementById('config-ai-prompt').addEventListener('input', e => updateConfig('systemPrompt', e.target.value));
+document.getElementById('config-ai-welcome').addEventListener('input', e => updateConfig('welcomeMessage', e.target.value));
+
+// Data source handlers
+document.getElementById('config-data-source').addEventListener('change', e => {
+    updateConfig('dataSource', e.target.value);
+    updateDataSourceVisibility();
+});
+document.getElementById('config-gate-name').addEventListener('input', e => updateConfig('gateName', e.target.value));
+document.getElementById('config-gate-action').addEventListener('input', e => updateConfig('gateAction', e.target.value));
+document.getElementById('config-api-url').addEventListener('input', e => updateConfig('apiUrl', e.target.value));
+document.getElementById('config-refresh-interval').addEventListener('input', e => updateConfig('refreshInterval', parseInt(e.target.value) || 0));
+
+// ============================================
+// Delete Widget
+// ============================================
+
+function deleteWidget(id) {
+    if (state.refreshTimers[id]) {
+        clearInterval(state.refreshTimers[id]);
+        delete state.refreshTimers[id];
+    }
+    state.widgets = state.widgets.filter(w => w.id !== id);
+    if (state.selectedWidget === id) {
+        state.selectedWidget = null;
+        document.getElementById('no-selection').style.display = 'block';
+        document.getElementById('widget-config').style.display = 'none';
+    }
+    renderWidgets();
+    showToast('Widget removed', 'success');
+}
+
+// ============================================
+// Save/Load/Export
+// ============================================
+
 function getDashboardConfig() {
     return {
         name: document.getElementById('dashboard-name').value,
         created: new Date().toISOString(),
         widgets: state.widgets.map(w => ({
             type: w.type,
-            title: w.title,
-            subtitle: w.subtitle,
             row: w.row,
             col: w.col,
             width: w.width,
             height: w.height,
-            color: w.color,
-            dataSource: w.dataSource,
-            staticValue: w.staticValue,
-            gate: w.gate
+            config: w.config
         }))
     };
 }
@@ -1186,64 +1821,52 @@ function getDashboardConfig() {
 function saveDashboard() {
     const config = getDashboardConfig();
     localStorage.setItem('phoenix-dashboard-' + config.name, JSON.stringify(config));
-    showToast('Dashboard saved to local storage!', 'success');
+    showToast('Dashboard saved!', 'success');
 }
 
 function showExportModal() {
-    const config = getDashboardConfig();
-    document.getElementById('json-output').textContent = JSON.stringify(config, null, 2);
+    document.getElementById('json-output').textContent = JSON.stringify(getDashboardConfig(), null, 2);
     document.getElementById('export-modal').classList.add('active');
 }
 
-function showLoadModal() {
-    document.getElementById('load-modal').classList.add('active');
-}
-
-function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
-}
+function showLoadModal() { document.getElementById('load-modal').classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
 function copyJson() {
-    const json = document.getElementById('json-output').textContent;
-    navigator.clipboard.writeText(json);
-    showToast('Copied to clipboard!', 'success');
+    navigator.clipboard.writeText(document.getElementById('json-output').textContent);
+    showToast('Copied!', 'success');
 }
 
 function downloadJson() {
     const config = getDashboardConfig();
     const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
+    a.href = URL.createObjectURL(blob);
     a.download = config.name.replace(/\s+/g, '-').toLowerCase() + '.json';
     a.click();
-    URL.revokeObjectURL(url);
-    showToast('Downloaded!', 'success');
 }
 
 function loadFromJson() {
     try {
-        const json = document.getElementById('load-json').value;
-        const config = JSON.parse(json);
-
+        const config = JSON.parse(document.getElementById('load-json').value);
         document.getElementById('dashboard-name').value = config.name || 'Loaded Dashboard';
         state.widgets = config.widgets.map((w, i) => ({ ...w, id: i + 1 }));
         state.nextId = state.widgets.length + 1;
         state.selectedWidget = null;
-
         document.getElementById('no-selection').style.display = 'block';
         document.getElementById('widget-config').style.display = 'none';
-
         renderWidgets();
         closeModal('load-modal');
         showToast('Dashboard loaded!', 'success');
-    } catch (e) {
-        showToast('Invalid JSON format', 'error');
+    } catch(e) {
+        showToast('Invalid JSON', 'error');
     }
 }
 
 function clearCanvas() {
-    if (confirm('Clear all widgets from the canvas?')) {
+    if (confirm('Clear all widgets?')) {
+        Object.values(state.refreshTimers).forEach(clearInterval);
+        state.refreshTimers = {};
         state.widgets = [];
         state.selectedWidget = null;
         document.getElementById('no-selection').style.display = 'block';
@@ -1253,59 +1876,97 @@ function clearCanvas() {
     }
 }
 
-// Preview mode
+// ============================================
+// Preview Mode
+// ============================================
+
 function togglePreview() {
     const overlay = document.getElementById('preview-overlay');
     overlay.classList.toggle('active');
-
     if (overlay.classList.contains('active')) {
-        const previewContent = document.getElementById('preview-content');
-        previewContent.innerHTML = generatePreviewHTML();
+        document.getElementById('preview-content').innerHTML = generatePreviewHTML();
     }
 }
 
 function generatePreviewHTML() {
     const config = getDashboardConfig();
     let html = `
-        <div style="max-width: 1400px; margin: 0 auto;">
-            <h1 style="font-size: 2rem; margin-bottom: 24px; background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                ${config.name}
-            </h1>
+        <div style="max-width: 1600px; margin: 0 auto;">
+            <h1 style="font-size: 2rem; margin-bottom: 24px; background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${config.name}</h1>
             <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px;">
     `;
 
-    config.widgets.forEach(widget => {
+    config.widgets.forEach((w, i) => {
         html += `
-            <div style="grid-column: span ${widget.width}; grid-row: span ${widget.height}; background: var(--brand-panel); border: 1px solid var(--brand-border); border-radius: 12px; padding: 20px; min-height: ${widget.height * 100}px;">
-                <h3 style="margin-bottom: 12px; color: ${widget.color};">${widget.title}</h3>
-                <div style="display: flex; align-items: center; justify-content: center; height: calc(100% - 40px); color: var(--brand-text-tertiary);">
-                    ${renderWidgetPreview(widget)}
-                </div>
+            <div style="grid-column: span ${w.width}; grid-row: span ${w.height}; background: var(--brand-panel); border: 1px solid var(--brand-border); border-radius: 12px; overflow: hidden; min-height: ${w.height * 120}px;">
+                <div style="padding: 10px 14px; border-bottom: 1px solid var(--brand-border); font-weight: 600; font-size: 0.85rem;">${w.config.title}</div>
+                <div id="preview-widget-${i}" style="padding: 14px; height: calc(100% - 44px);"></div>
             </div>
         `;
     });
 
     html += '</div></div>';
+
+    // Render each widget after DOM is ready
+    setTimeout(() => {
+        config.widgets.forEach((w, i) => {
+            const container = document.getElementById(`preview-widget-${i}`);
+            if (container) {
+                const tempWidget = { id: 1000 + i, type: w.type, config: w.config };
+                renderPreviewWidget(container, tempWidget);
+            }
+        });
+    }, 50);
+
     return html;
 }
 
-// Toast notifications
-function showToast(message, type = 'success') {
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
+function renderPreviewWidget(container, widget) {
+    const c = widget.config;
+    switch(widget.type) {
+        case 'stat-card':
+            const trendHtml = c.trend !== 'none' ? `<div class="stat-trend ${c.trend}">${c.trend === 'up' ? '&#9650;' : '&#9660;'} ${c.trendValue}</div>` : '';
+            container.innerHTML = `<div class="stat-widget"><div class="stat-value" style="color: ${c.color}">${c.prefix}${c.value}${c.suffix}</div><div class="stat-label">${c.subtitle}</div>${trendHtml}</div>`;
+            container.querySelector('.stat-widget').style.cssText = 'text-align:center;display:flex;flex-direction:column;justify-content:center;height:100%;';
+            break;
+        case 'chart-bar':
+            container.className = 'chart-widget';
+            renderBarChart(container, c);
+            break;
+        case 'chart-line':
+            container.className = 'chart-widget';
+            renderLineChart(container, c);
+            break;
+        case 'progress-bar':
+            const val = parseFloat(c.value) || 0;
+            let barColor = c.color;
+            if (c.dangerAt && val <= c.dangerAt) barColor = '#ef4444';
+            else if (c.warnAt && val <= c.warnAt) barColor = '#eab308';
+            container.innerHTML = `<div class="progress-container" style="display:flex;flex-direction:column;justify-content:center;height:100%;"><div class="progress-bar-outer"><div class="progress-bar-inner" style="width: ${val}%; background: ${barColor};"></div></div><div class="progress-labels"><span>${c.label}</span><span style="color: ${barColor}; font-weight: 600;">${val}%</span></div></div>`;
+            break;
+        default:
+            // Use same rendering logic
+            const tempContainer = document.createElement('div');
+            tempContainer.id = `widget-content-${widget.id}`;
+            container.appendChild(tempContainer);
+            renderWidgetContent(widget);
+    }
+}
 
+// ============================================
+// Toast & Init
+// ============================================
+
+function showToast(message, type = 'success') {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
     const toast = document.createElement('div');
     toast.className = 'toast ' + type;
     toast.innerHTML = `<span>${type === 'success' ? '&#10003;' : '&#10007;'}</span> ${message}`;
     document.body.appendChild(toast);
-
     setTimeout(() => toast.remove(), 3000);
 }
 
-// Initialize
-initGrid();
-
-// Click outside to deselect
+// Click to deselect
 document.getElementById('canvas-grid').addEventListener('click', (e) => {
     if (e.target.classList.contains('grid-cell') && !e.target.classList.contains('has-widget')) {
         state.selectedWidget = null;
@@ -1315,7 +1976,9 @@ document.getElementById('canvas-grid').addEventListener('click', (e) => {
     }
 });
 
-console.log('PHOENIX Dashboard Builder loaded');
+// Initialize
+initGrid();
+console.log('PHOENIX Dashboard Builder v2.0 loaded');
 </script>
 
 </body>
