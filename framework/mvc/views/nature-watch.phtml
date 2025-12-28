@@ -1117,9 +1117,10 @@
         async function checkAuthState() {
             try {
                 const formData = new FormData();
+                formData.append('gate', 'users');
                 formData.append('action', 'check_auth');
 
-                const response = await fetch('/en/users', {
+                const response = await fetch('/', {
                     method: 'POST',
                     body: formData
                 });
@@ -1191,9 +1192,10 @@
         async function logout() {
             try {
                 const formData = new FormData();
+                formData.append('gate', 'users');
                 formData.append('action', 'logout');
 
-                await fetch('/en/users', {
+                await fetch('/', {
                     method: 'POST',
                     body: formData
                 });

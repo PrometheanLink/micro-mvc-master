@@ -421,11 +421,12 @@
 
             try {
                 const formData = new FormData();
+                formData.append('gate', 'users');
                 formData.append('action', 'login');
                 formData.append('email', email);
                 formData.append('password', password);
 
-                const response = await fetch('/en/users', {
+                const response = await fetch('/', {
                     method: 'POST',
                     body: formData
                 });
@@ -461,10 +462,11 @@
         async function resendVerification(email) {
             try {
                 const formData = new FormData();
+                formData.append('gate', 'users');
                 formData.append('action', 'resend_verification');
                 formData.append('email', email);
 
-                const response = await fetch('/en/users', {
+                const response = await fetch('/', {
                     method: 'POST',
                     body: formData
                 });

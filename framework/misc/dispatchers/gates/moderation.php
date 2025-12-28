@@ -21,12 +21,14 @@
 if (!defined('micro_mvc'))
     exit();
 
+header('Content-Type: application/json; charset=utf-8');
+
 // Role constants
-define('ROLE_BANNED', 0);
-define('ROLE_REGISTERED', 1);
-define('ROLE_TRUSTED', 2);
-define('ROLE_MODERATOR', 5);
-define('ROLE_ADMIN', 10);
+if (!defined('ROLE_BANNED')) define('ROLE_BANNED', 0);
+if (!defined('ROLE_REGISTERED')) define('ROLE_REGISTERED', 1);
+if (!defined('ROLE_TRUSTED')) define('ROLE_TRUSTED', 2);
+if (!defined('ROLE_MODERATOR')) define('ROLE_MODERATOR', 5);
+if (!defined('ROLE_ADMIN')) define('ROLE_ADMIN', 10);
 
 // Check action mode
 if (empty($_POST['action']) && empty($_GET['action'])) {

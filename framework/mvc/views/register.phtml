@@ -634,13 +634,14 @@
 
             try {
                 const formData = new FormData();
+                formData.append('gate', 'users');
                 formData.append('action', 'register');
                 formData.append('email', email);
                 formData.append('username', username);
                 formData.append('password', password);
                 formData.append('confirm_password', confirmPassword);
 
-                const response = await fetch('/en/users', {
+                const response = await fetch('/', {
                     method: 'POST',
                     body: formData
                 });

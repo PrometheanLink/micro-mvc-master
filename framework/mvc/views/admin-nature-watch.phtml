@@ -1053,12 +1053,13 @@
         // API Helpers
         async function apiCall(action, data = {}) {
             const formData = new FormData();
+            formData.append('gate', 'moderation');
             formData.append('action', action);
             Object.entries(data).forEach(([key, value]) => {
                 formData.append(key, value);
             });
 
-            const response = await fetch('/en/moderation', {
+            const response = await fetch('/', {
                 method: 'POST',
                 body: formData
             });
@@ -1308,9 +1309,10 @@
         // Logout
         async function logout() {
             const formData = new FormData();
+            formData.append('gate', 'users');
             formData.append('action', 'logout');
 
-            await fetch('/en/users', { method: 'POST', body: formData });
+            await fetch('/', { method: 'POST', body: formData });
             window.location.href = '/en/nature-watch';
         }
 
