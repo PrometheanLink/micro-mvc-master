@@ -717,6 +717,141 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 3px; }
 
+        /* Auth UI */
+        .header-auth {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .auth-loading {
+            display: flex;
+            align-items: center;
+        }
+
+        .auth-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(34, 197, 94, 0.2);
+            border-top-color: #22c55e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-logged-out, .auth-logged-in {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .auth-btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .auth-btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .auth-btn-secondary {
+            background: var(--brand-panel);
+            border-color: var(--brand-border);
+            color: var(--brand-text-primary);
+        }
+
+        .auth-btn-secondary:hover {
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .auth-btn-admin {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: #ffaa00;
+            color: #ffaa00;
+        }
+
+        .auth-btn-admin:hover {
+            background: rgba(255, 170, 0, 0.2);
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--brand-panel);
+            border: 1px solid var(--brand-border);
+            border-radius: 20px;
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .user-role-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .user-role-badge.trusted { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
+        .user-role-badge.moderator { background: rgba(255, 170, 0, 0.2); color: #ffaa00; }
+        .user-role-badge.admin { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+
+        /* Submission status badge */
+        .sighting-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .sighting-status-badge.pending {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+
+        .sighting-status-badge.approved {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             .main-layout {
@@ -759,8 +894,31 @@
                 <div class="header-stat-label">Today</div>
             </div>
         </div>
-        <button class="nickname-btn" onclick="showNicknameModal()">
-            <span id="nickname-display">Set Nickname</span>
+        <!-- Auth UI -->
+        <div class="header-auth" id="auth-section">
+            <div class="auth-loading" id="auth-loading">
+                <span class="auth-spinner"></span>
+            </div>
+            <div class="auth-logged-out" id="auth-logged-out" style="display: none;">
+                <a href="/en/login" class="auth-btn auth-btn-secondary">Log In</a>
+                <a href="/en/register" class="auth-btn auth-btn-primary">Sign Up</a>
+            </div>
+            <div class="auth-logged-in" id="auth-logged-in" style="display: none;">
+                <div class="user-badge" id="user-badge">
+                    <span class="user-avatar" id="user-avatar">?</span>
+                    <span class="user-name" id="user-name">User</span>
+                    <span class="user-role-badge" id="user-role-badge"></span>
+                </div>
+                <button class="nickname-btn" onclick="showNicknameModal()">
+                    <span id="nickname-display">Set Nickname</span>
+                </button>
+                <a href="/en/admin-nature-watch" class="auth-btn auth-btn-admin" id="admin-link" style="display: none;">Admin</a>
+                <button class="auth-btn auth-btn-secondary" onclick="logout()">Log Out</button>
+            </div>
+        </div>
+        <!-- Nickname for anonymous users -->
+        <button class="nickname-btn" id="anon-nickname-btn" onclick="showNicknameModal()" style="display: none;">
+            <span id="anon-nickname-display">Set Nickname</span>
         </button>
     </header>
 
@@ -929,7 +1087,9 @@
             nickname: localStorage.getItem('naturewatch_nickname') || '',
             observerId: localStorage.getItem('naturewatch_observer_id') || generateObserverId(),
             currentFilter: 'all',
-            showOnlyMine: false
+            showOnlyMine: false,
+            isAuthenticated: false,
+            user: null
         };
 
         const categoryIcons = <?php echo json_encode(array_map(function($c) { return $c['icon']; }, $data['species_categories'])); ?>;
@@ -941,12 +1101,112 @@
             initMap();
             loadSightings();
             loadStats();
-            updateNicknameDisplay();
+            checkAuthState();
 
-            if (!state.nickname) {
-                setTimeout(() => showNicknameModal(), 1000);
+            // Only show nickname modal for non-authenticated users
+            if (!state.nickname && !state.isAuthenticated) {
+                setTimeout(() => {
+                    if (!state.isAuthenticated) showNicknameModal();
+                }, 2000);
             }
         });
+
+        // ============================================
+        // Auth
+        // ============================================
+        async function checkAuthState() {
+            try {
+                const formData = new FormData();
+                formData.append('action', 'check_auth');
+
+                const response = await fetch('/en/users', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                state.isAuthenticated = result.authenticated;
+                state.user = result.user || null;
+
+                updateAuthUI();
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                updateAuthUI();
+            }
+        }
+
+        function updateAuthUI() {
+            const loading = document.getElementById('auth-loading');
+            const loggedOut = document.getElementById('auth-logged-out');
+            const loggedIn = document.getElementById('auth-logged-in');
+            const anonNickname = document.getElementById('anon-nickname-btn');
+            const adminLink = document.getElementById('admin-link');
+
+            loading.style.display = 'none';
+
+            if (state.isAuthenticated && state.user) {
+                loggedOut.style.display = 'none';
+                loggedIn.style.display = 'flex';
+                anonNickname.style.display = 'none';
+
+                // Update user info
+                document.getElementById('user-avatar').textContent = state.user.username.charAt(0).toUpperCase();
+                document.getElementById('user-name').textContent = state.user.username;
+
+                // Role badge
+                const roleBadge = document.getElementById('user-role-badge');
+                const role = parseInt(state.user.role);
+                if (role >= 10) {
+                    roleBadge.textContent = 'Admin';
+                    roleBadge.className = 'user-role-badge admin';
+                } else if (role >= 5) {
+                    roleBadge.textContent = 'Mod';
+                    roleBadge.className = 'user-role-badge moderator';
+                } else if (role >= 2) {
+                    roleBadge.textContent = 'Trusted';
+                    roleBadge.className = 'user-role-badge trusted';
+                } else {
+                    roleBadge.style.display = 'none';
+                }
+
+                // Show admin link for mods+
+                if (role >= 5) {
+                    adminLink.style.display = 'inline-flex';
+                }
+
+                // Use username as nickname if not set
+                if (!state.nickname) {
+                    state.nickname = state.user.username;
+                    updateNicknameDisplay();
+                }
+            } else {
+                loggedOut.style.display = 'flex';
+                loggedIn.style.display = 'none';
+                anonNickname.style.display = 'flex';
+                updateNicknameDisplay();
+            }
+        }
+
+        async function logout() {
+            try {
+                const formData = new FormData();
+                formData.append('action', 'logout');
+
+                await fetch('/en/users', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                state.isAuthenticated = false;
+                state.user = null;
+                localStorage.removeItem('nature_watch_user');
+                updateAuthUI();
+                showToast('Logged out successfully', 'success');
+            } catch (error) {
+                showToast('Logout failed', 'error');
+            }
+        }
 
         function generateObserverId() {
             const id = 'nw_' + Math.random().toString(36).substr(2, 9);
@@ -1073,6 +1333,7 @@
                     <div class="sighting-header">
                         <span class="sighting-icon">${getCategoryIcon(s.species_category)}</span>
                         <span class="sighting-species">${escapeHtml(s.species)}</span>
+                        ${s.status === 'pending' ? '<span class="sighting-status-badge pending">Pending</span>' : ''}
                         <span class="sighting-time">${formatTimeAgo(s.sighting_date)}</span>
                     </div>
                     <div class="sighting-location">📍 ${s.location_name || formatCoords(s.latitude, s.longitude)}</div>
@@ -1379,7 +1640,9 @@
         }
 
         function updateNicknameDisplay() {
-            document.getElementById('nickname-display').textContent = state.nickname || 'Set Nickname';
+            const display = state.nickname || 'Set Nickname';
+            document.getElementById('nickname-display').textContent = display;
+            document.getElementById('anon-nickname-display').textContent = display;
         }
 
         // ============================================

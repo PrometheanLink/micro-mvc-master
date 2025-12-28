@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Nature Watch</title>
+    <link rel="icon" type="image/png" href="/site/pix/micro_mvc_icon.png">
+    <link rel="stylesheet" href="/framework/phoenix/core/css/phoenix-core.css">
+    <style>
+        :root {
+            --phoenix-bg: #0a0a0f;
+            --phoenix-surface: #12121a;
+            --phoenix-surface-2: #1a1a24;
+            --phoenix-border: #2a2a3a;
+            --phoenix-text: #e0e0e0;
+            --phoenix-text-muted: #888;
+            --phoenix-primary: #00d4ff;
+            --phoenix-primary-glow: rgba(0, 212, 255, 0.3);
+            --phoenix-success: #00ff88;
+            --phoenix-error: #ff4466;
+            --phoenix-warning: #ffaa00;
+            --nature-green: #22c55e;
+            --nature-green-glow: rgba(34, 197, 94, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--phoenix-bg);
+            color: var(--phoenix-text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle at 30% 40%, var(--nature-green-glow) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 60%, var(--phoenix-primary-glow) 0%, transparent 40%);
+            animation: bgPulse 20s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: translate(0, 0); opacity: 0.5; }
+            50% { transform: translate(-5%, -5%); opacity: 0.8; }
+        }
+
+        /* Login container */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--phoenix-surface);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Logo/Header */
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--phoenix-text);
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: var(--phoenix-text-muted);
+            font-size: 14px;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--phoenix-text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--phoenix-bg);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 8px;
+            color: var(--phoenix-text);
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--nature-green);
+            box-shadow: 0 0 0 3px var(--nature-green-glow);
+        }
+
+        .form-input::placeholder {
+            color: var(--phoenix-text-muted);
+        }
+
+        /* Remember me & forgot password */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--phoenix-text-muted);
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--nature-green);
+        }
+
+        .forgot-link {
+            color: var(--nature-green);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .forgot-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--nature-green), #16a34a);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--nature-green-glow);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 28px 0;
+            color: var(--phoenix-text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--phoenix-border);
+        }
+
+        .divider span {
+            padding: 0 16px;
+        }
+
+        /* Register link */
+        .register-section {
+            text-align: center;
+        }
+
+        .register-text {
+            color: var(--phoenix-text-muted);
+            font-size: 14px;
+        }
+
+        .register-link {
+            color: var(--nature-green);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .register-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Alert messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: rgba(255, 68, 102, 0.1);
+            border: 1px solid var(--phoenix-error);
+            color: var(--phoenix-error);
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--phoenix-success);
+            color: var(--phoenix-success);
+        }
+
+        .alert-info {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--phoenix-primary);
+            color: var(--phoenix-primary);
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--phoenix-text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .back-link:hover {
+            color: var(--nature-green);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 28px 24px;
+            }
+
+            .login-logo {
+                font-size: 40px;
+            }
+
+            .login-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <a href="/en/nature-watch" class="back-link">
+        <span>&larr;</span> Back to Nature Watch
+    </a>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">🦌</div>
+                <h1 class="login-title">Nature Watch</h1>
+                <p class="login-subtitle">Sign in to your account</p>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input"
+                           placeholder="you@example.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-input"
+                           placeholder="Enter your password" required autocomplete="current-password">
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="/en/forgot-password" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>New here?</span>
+            </div>
+
+            <div class="register-section">
+                <p class="register-text">
+                    Don't have an account?
+                    <a href="/en/register" class="register-link">Create one</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const alert = document.getElementById('alert');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Check for URL params (e.g., after registration)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('registered') === 'true') {
+            showAlert('Registration successful! Please check your email to verify your account.', 'success');
+        }
+        if (urlParams.get('verified') === 'true') {
+            showAlert('Email verified successfully! You can now log in.', 'success');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showAlert('Please fill in all fields', 'error');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'login');
+                formData.append('email', email);
+                formData.append('password', password);
+
+                const response = await fetch('/en/users', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('Login successful! Redirecting...', 'success');
+
+                    // Store user info in localStorage for quick access
+                    localStorage.setItem('nature_watch_user', JSON.stringify(result.user));
+
+                    // Redirect to nature watch or intended destination
+                    const redirect = urlParams.get('redirect') || '/en/nature-watch';
+                    setTimeout(() => {
+                        window.location.href = redirect;
+                    }, 1000);
+                } else {
+                    if (result.verification_required) {
+                        showAlert(result.error + ' <a href="#" onclick="resendVerification(\'' + result.email + '\')">Resend verification email</a>', 'info');
+                    } else {
+                        showAlert(result.error || 'Login failed', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('An error occurred. Please try again.', 'error');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        async function resendVerification(email) {
+            try {
+                const formData = new FormData();
+                formData.append('action', 'resend_verification');
+                formData.append('email', email);
+
+                const response = await fetch('/en/users', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                showAlert(result.message || 'Verification email sent!', 'success');
+            } catch (error) {
+                showAlert('Failed to resend verification email', 'error');
+            }
+        }
+
+        function showAlert(message, type) {
+            alert.innerHTML = message;
+            alert.className = 'alert alert-' + type + ' show';
+        }
+
+        function hideAlert() {
+            alert.className = 'alert';
+        }
+
+        function setLoading(loading) {
+            if (loading) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner"></span> Signing in...';
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Sign In';
+            }
+        }
+    </script>
+</body>
+</html>

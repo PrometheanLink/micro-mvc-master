@@ -16,12 +16,26 @@
 
     header('Content-Type: application/json; charset=utf-8');
 
+    // Role constants
+    define('ROLE_BANNED', 0);
+    define('ROLE_REGISTERED', 1);
+    define('ROLE_TRUSTED', 2);
+    define('ROLE_MODERATOR', 5);
+    define('ROLE_ADMIN', 10);
+
     // Get database connection
     $db_conn = DB::Use_Connection();
     if (empty($db_conn)) {
         echo json_encode(['success' => false, 'error' => 'Database connection failed']);
         exit();
     }
+
+    // Get current user auth info
+    $auth = UTIL::Get_Session_Variable('auth');
+    $is_authenticated = !empty($auth) && !empty($auth['login']);
+    $current_user = $is_authenticated ? $auth['user'] : null;
+    $user_role = $current_user ? intval($current_user['role']) : 0;
+    $is_moderator = $user_role >= ROLE_MODERATOR;
 
     $action = isset($_POST['action']) ? $_POST['action'] : '';
 
@@ -38,13 +52,25 @@
             $bounds = isset($_POST['bounds']) ? json_decode($_POST['bounds'], true) : null;
 
             $where = [];
+
+            // Non-moderators only see approved sightings (or their own pending ones)
+            if (!$is_moderator) {
+                if (!empty($observer_id)) {
+                    // User can see their own pending sightings
+                    $where[] = "(status = 'approved' OR (observer_id = '$observer_id'))";
+                } else {
+                    $where[] = "status = 'approved'";
+                }
+            }
+
             if (!empty($category) && $category !== 'all') {
                 $where[] = "species_category = '$category'";
             }
             if (!empty($species)) {
                 $where[] = "species LIKE '%$species%'";
             }
-            if (!empty($observer_id)) {
+            if (!empty($observer_id) && $is_moderator) {
+                // Only filter by observer_id for mods, regular users get it in the status filter above
                 $where[] = "observer_id = '$observer_id'";
             }
             if ($bounds && isset($bounds['north'], $bounds['south'], $bounds['east'], $bounds['west'])) {
@@ -106,8 +132,40 @@
             $observer_id = isset($_POST['observer_id']) ? mysqli_real_escape_string($db_conn, $_POST['observer_id']) : '';
             $sighting_date = isset($_POST['sighting_date']) ? mysqli_real_escape_string($db_conn, $_POST['sighting_date']) : date('Y-m-d H:i:s');
 
+            // Determine status based on user trust level
+            $status = 'pending'; // Default for anonymous users
+            $user_id = null;
+
+            if ($is_authenticated) {
+                $user_id = intval($current_user['id']);
+
+                // Check if user is verified (required to submit)
+                $user_check = DB::Exec_SQL_Command("SELECT email_verified, approved_count, role FROM users WHERE id = $user_id");
+                if (!empty($user_check)) {
+                    $user_data = $user_check[0];
+
+                    // Must be email verified to submit
+                    if (!$user_data['email_verified']) {
+                        echo json_encode(['success' => false, 'error' => 'Please verify your email before submitting sightings']);
+                        break;
+                    }
+
+                    // Determine auto-approve status
+                    if ($user_data['role'] >= ROLE_TRUSTED) {
+                        // Trusted users and above auto-approve
+                        $status = 'approved';
+                    } else if ($user_data['approved_count'] >= 3) {
+                        // Users with 3+ approved submissions auto-approve
+                        $status = 'approved';
+                        // Also promote them to trusted
+                        DB::Exec_SQL_Command("UPDATE users SET role = " . ROLE_TRUSTED . " WHERE id = $user_id AND role < " . ROLE_TRUSTED);
+                    }
+                    // Otherwise stays 'pending'
+                }
+            }
+
             $query = "INSERT INTO wildlife_sightings
-                (species, species_category, photo_path, notes, latitude, longitude, location_name, observer_name, observer_id, sighting_date)
+                (species, species_category, photo_path, notes, latitude, longitude, location_name, observer_name, observer_id, user_id, status, sighting_date)
                 VALUES (
                     '$species',
                     '$category',
@@ -118,6 +176,8 @@
                     " . ($location_name ? "'$location_name'" : "NULL") . ",
                     '$observer_name',
                     " . ($observer_id ? "'$observer_id'" : "NULL") . ",
+                    " . ($user_id ? "$user_id" : "NULL") . ",
+                    '$status',
                     '$sighting_date'
                 )";
 
@@ -129,10 +189,15 @@
                 $id_result = DB::Exec_SQL_Command($id_query);
                 $new_id = $id_result ? $id_result[0]['id'] : 0;
 
+                $message = $status === 'approved'
+                    ? 'Sighting recorded and published!'
+                    : 'Sighting recorded! It will appear after moderation.';
+
                 echo json_encode([
                     'success' => true,
-                    'message' => 'Sighting recorded!',
-                    'id' => $new_id
+                    'message' => $message,
+                    'id' => $new_id,
+                    'status' => $status
                 ]);
             } else {
                 echo json_encode(['success' => false, 'error' => 'Failed to save sighting']);
@@ -170,21 +235,25 @@
         // Get species statistics
         // ============================================
         case 'get_stats':
+            // Only count approved sightings for public stats
+            $status_filter = $is_moderator ? "" : " WHERE status = 'approved'";
+            $status_and = $is_moderator ? "" : " AND status = 'approved'";
+
             // Total count
-            $total_query = "SELECT COUNT(*) as total FROM wildlife_sightings";
+            $total_query = "SELECT COUNT(*) as total FROM wildlife_sightings" . $status_filter;
             $total_result = DB::Exec_SQL_Command($total_query);
             $total = $total_result ? intval($total_result[0]['total']) : 0;
 
             // By category
-            $category_query = "SELECT species_category, COUNT(*) as count FROM wildlife_sightings GROUP BY species_category ORDER BY count DESC";
+            $category_query = "SELECT species_category, COUNT(*) as count FROM wildlife_sightings" . $status_filter . " GROUP BY species_category ORDER BY count DESC";
             $category_result = DB::Exec_SQL_Command($category_query);
 
             // Top species
-            $species_query = "SELECT species, species_category, COUNT(*) as count FROM wildlife_sightings GROUP BY species, species_category ORDER BY count DESC LIMIT 10";
+            $species_query = "SELECT species, species_category, COUNT(*) as count FROM wildlife_sightings" . $status_filter . " GROUP BY species, species_category ORDER BY count DESC LIMIT 10";
             $species_result = DB::Exec_SQL_Command($species_query);
 
             // Recent activity (last 30 days by day)
-            $activity_query = "SELECT DATE(sighting_date) as date, COUNT(*) as count FROM wildlife_sightings WHERE sighting_date >= DATE_SUB(NOW(), INTERVAL 30 DAY) GROUP BY DATE(sighting_date) ORDER BY date";
+            $activity_query = "SELECT DATE(sighting_date) as date, COUNT(*) as count FROM wildlife_sightings WHERE sighting_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)" . $status_and . " GROUP BY DATE(sighting_date) ORDER BY date";
             $activity_result = DB::Exec_SQL_Command($activity_query);
 
             echo json_encode([

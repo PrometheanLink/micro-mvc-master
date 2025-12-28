@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= $data['title'] ?? 'Admin Panel' ?> - Nature Watch</title>
+    <link rel="icon" type="image/png" href="/site/pix/micro_mvc_icon.png">
+    <link rel="stylesheet" href="/framework/phoenix/core/css/phoenix-core.css">
+    <style>
+        :root {
+            --phoenix-bg: #0a0a0f;
+            --phoenix-surface: #12121a;
+            --phoenix-surface-2: #1a1a24;
+            --phoenix-surface-3: #22222e;
+            --phoenix-border: #2a2a3a;
+            --phoenix-text: #e0e0e0;
+            --phoenix-text-muted: #888;
+            --phoenix-primary: #00d4ff;
+            --phoenix-success: #00ff88;
+            --phoenix-error: #ff4466;
+            --phoenix-warning: #ffaa00;
+            --nature-green: #22c55e;
+            --sidebar-width: 240px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--phoenix-bg);
+            color: var(--phoenix-text);
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--phoenix-surface);
+            border-right: 1px solid var(--phoenix-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--phoenix-border);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--phoenix-text);
+        }
+
+        .sidebar-logo-icon { font-size: 28px; }
+        .sidebar-logo-text { font-size: 16px; font-weight: 600; }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 0;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            padding: 8px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--phoenix-text-muted);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--phoenix-text-muted);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--phoenix-surface-2);
+            color: var(--phoenix-text);
+        }
+
+        .nav-item.active {
+            background: var(--phoenix-surface-2);
+            color: var(--nature-green);
+            border-right: 3px solid var(--nature-green);
+        }
+
+        .nav-item-icon { font-size: 18px; width: 24px; text-align: center; }
+
+        .nav-item-badge {
+            margin-left: auto;
+            background: var(--phoenix-error);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--phoenix-border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--nature-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-details { flex: 1; }
+        .user-name { font-size: 14px; font-weight: 500; }
+        .user-role { font-size: 12px; color: var(--phoenix-text-muted); }
+
+        .btn-logout {
+            width: 100%;
+            padding: 10px;
+            background: var(--phoenix-surface-2);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 6px;
+            color: var(--phoenix-text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: var(--phoenix-error);
+            border-color: var(--phoenix-error);
+            color: white;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title { font-size: 24px; font-weight: 600; }
+        .page-subtitle { color: var(--phoenix-text-muted); font-size: 14px; margin-top: 4px; }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--phoenix-surface);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--phoenix-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon { font-size: 20px; }
+        .stat-value { font-size: 32px; font-weight: 700; }
+        .stat-value.pending { color: var(--phoenix-warning); }
+        .stat-value.flagged { color: var(--phoenix-error); }
+        .stat-value.success { color: var(--phoenix-success); }
+        .stat-value.info { color: var(--phoenix-primary); }
+
+        /* Content panels */
+        .panel {
+            background: var(--phoenix-surface);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--phoenix-border);
+        }
+
+        .panel-title { font-size: 16px; font-weight: 600; }
+
+        .panel-actions { display: flex; gap: 8px; }
+
+        .panel-body { padding: 0; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--phoenix-border);
+            padding: 0 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            color: var(--phoenix-text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.2s;
+            background: none;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            font-size: 14px;
+        }
+
+        .tab:hover { color: var(--phoenix-text); }
+
+        .tab.active {
+            color: var(--nature-green);
+            border-bottom-color: var(--nature-green);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Sighting cards */
+        .sighting-list { padding: 12px; }
+
+        .sighting-card {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--phoenix-surface-2);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .sighting-card:last-child { margin-bottom: 0; }
+
+        .sighting-photo {
+            width: 80px;
+            height: 80px;
+            background: var(--phoenix-surface-3);
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .sighting-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sighting-details { flex: 1; min-width: 0; }
+
+        .sighting-species {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .sighting-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--phoenix-text-muted);
+            margin-bottom: 8px;
+        }
+
+        .sighting-notes {
+            font-size: 14px;
+            color: var(--phoenix-text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sighting-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-approve {
+            background: var(--phoenix-success);
+            color: #000;
+        }
+
+        .btn-approve:hover { opacity: 0.9; }
+
+        .btn-reject {
+            background: var(--phoenix-error);
+            color: white;
+        }
+
+        .btn-reject:hover { opacity: 0.9; }
+
+        .btn-flag {
+            background: var(--phoenix-warning);
+            color: #000;
+        }
+
+        .btn-flag:hover { opacity: 0.9; }
+
+        .btn-secondary {
+            background: var(--phoenix-surface-3);
+            color: var(--phoenix-text);
+            border: 1px solid var(--phoenix-border);
+        }
+
+        .btn-secondary:hover { background: var(--phoenix-border); }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: rgba(255, 170, 0, 0.2); color: var(--phoenix-warning); }
+        .status-approved { background: rgba(0, 255, 136, 0.2); color: var(--phoenix-success); }
+        .status-rejected { background: rgba(255, 68, 102, 0.2); color: var(--phoenix-error); }
+        .status-flagged { background: rgba(255, 68, 102, 0.2); color: var(--phoenix-error); }
+
+        /* Role badges */
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Table styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--phoenix-border);
+        }
+
+        .data-table th {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--phoenix-text-muted);
+            background: var(--phoenix-surface-2);
+        }
+
+        .data-table tr:hover td { background: var(--phoenix-surface-2); }
+
+        /* Search and filters */
+        .filters {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--phoenix-border);
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            background: var(--phoenix-bg);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 6px;
+            color: var(--phoenix-text);
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--nature-green);
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: var(--phoenix-bg);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 6px;
+            color: var(--phoenix-text);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--phoenix-surface);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--phoenix-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title { font-size: 18px; font-weight: 600; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--phoenix-text-muted);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body { padding: 20px; }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--phoenix-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--phoenix-text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--phoenix-bg);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 6px;
+            color: var(--phoenix-text);
+            font-size: 14px;
+        }
+
+        .form-textarea { min-height: 100px; resize: vertical; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--phoenix-text-muted);
+        }
+
+        .empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state-text { font-size: 16px; }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1001;
+        }
+
+        .toast {
+            background: var(--phoenix-surface);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-left: 4px solid var(--phoenix-success); }
+        .toast.error { border-left: 4px solid var(--phoenix-error); }
+        .toast.warning { border-left: 4px solid var(--phoenix-warning); }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            background: var(--phoenix-surface-2);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 6px;
+            color: var(--phoenix-text);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--phoenix-border);
+        }
+
+        .pagination-btn.active {
+            background: var(--nature-green);
+            border-color: var(--nature-green);
+            color: #000;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Access denied */
+        .access-denied {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .access-denied-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .access-denied-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .access-denied-text {
+            color: var(--phoenix-text-muted);
+            margin-bottom: 24px;
+        }
+
+        .btn-primary {
+            background: var(--nature-green);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<?php if (!$data['has_access']): ?>
+    <!-- Access Denied -->
+    <div class="access-denied">
+        <div class="access-denied-icon">&#128274;</div>
+        <h1 class="access-denied-title">Access Denied</h1>
+        <p class="access-denied-text">
+            <?php if (!$data['is_authenticated']): ?>
+                You need to log in to access the admin panel.
+            <?php else: ?>
+                You don't have permission to access this page. Moderator access required.
+            <?php endif; ?>
+        </p>
+        <?php if (!$data['is_authenticated']): ?>
+            <a href="/en/login?redirect=/en/admin-nature-watch" class="btn-primary">Log In</a>
+        <?php else: ?>
+            <a href="/en/nature-watch" class="btn-primary">Back to Nature Watch</a>
+        <?php endif; ?>
+    </div>
+<?php else: ?>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/en/nature-watch" class="sidebar-logo">
+                    <span class="sidebar-logo-icon">&#128038;</span>
+                    <span class="sidebar-logo-text">Nature Watch</span>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Overview</div>
+                    <button class="nav-item active" data-view="dashboard">
+                        <span class="nav-item-icon">&#128202;</span>
+                        Dashboard
+                    </button>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Moderation</div>
+                    <button class="nav-item" data-view="pending">
+                        <span class="nav-item-icon">&#128229;</span>
+                        Pending Queue
+                        <?php if ($data['stats']['pending'] > 0): ?>
+                            <span class="nav-item-badge"><?= $data['stats']['pending'] ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <button class="nav-item" data-view="flagged">
+                        <span class="nav-item-icon">&#9888;</span>
+                        Flagged
+                        <?php if ($data['stats']['flagged'] > 0): ?>
+                            <span class="nav-item-badge"><?= $data['stats']['flagged'] ?></span>
+                        <?php endif; ?>
+                    </button>
+                    <button class="nav-item" data-view="all-sightings">
+                        <span class="nav-item-icon">&#128065;</span>
+                        All Sightings
+                    </button>
+                </div>
+
+                <?php if ($data['is_admin']): ?>
+                <div class="nav-section">
+                    <div class="nav-section-title">Administration</div>
+                    <button class="nav-item" data-view="users">
+                        <span class="nav-item-icon">&#128101;</span>
+                        Users
+                    </button>
+                </div>
+                <?php endif; ?>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <?= strtoupper(substr($data['user']['username'], 0, 1)) ?>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name"><?= htmlspecialchars($data['user']['username']) ?></div>
+                        <div class="user-role"><?= AdminNatureWatch_Model::Get_Role_Name($data['user']['role']) ?></div>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view active">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Nature Watch moderation overview</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Pending</span>
+                            <span class="stat-icon">&#128229;</span>
+                        </div>
+                        <div class="stat-value pending"><?= $data['stats']['pending'] ?? 0 ?></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Today</span>
+                            <span class="stat-icon">&#128197;</span>
+                        </div>
+                        <div class="stat-value info"><?= $data['stats']['today'] ?? 0 ?></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Flagged</span>
+                            <span class="stat-icon">&#9888;</span>
+                        </div>
+                        <div class="stat-value flagged"><?= $data['stats']['flagged'] ?? 0 ?></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">Users</span>
+                            <span class="stat-icon">&#128101;</span>
+                        </div>
+                        <div class="stat-value"><?= $data['stats']['users'] ?? 0 ?></div>
+                    </div>
+                </div>
+
+                <!-- Recent Pending -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Recent Pending Sightings</h2>
+                        <button class="btn btn-secondary" onclick="switchView('pending')">View All</button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="sighting-list" id="dashboard-pending-list">
+                            <?php if (empty($data['pending_sightings'])): ?>
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">&#10004;</div>
+                                    <p class="empty-state-text">No pending sightings. All caught up!</p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach (array_slice($data['pending_sightings'], 0, 5) as $sighting): ?>
+                                    <div class="sighting-card" data-id="<?= $sighting['id'] ?>">
+                                        <div class="sighting-photo">
+                                            <?php if (!empty($sighting['photo_path'])): ?>
+                                                <img src="<?= htmlspecialchars($sighting['photo_path']) ?>" alt="Photo">
+                                            <?php else: ?>
+                                                &#128247;
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="sighting-details">
+                                            <div class="sighting-species"><?= htmlspecialchars($sighting['species']) ?></div>
+                                            <div class="sighting-meta">
+                                                <span>&#128100; <?= htmlspecialchars($sighting['username'] ?? $sighting['observer_name']) ?></span>
+                                                <span>&#128197; <?= date('M j, g:i A', strtotime($sighting['created_at'])) ?></span>
+                                            </div>
+                                            <div class="sighting-notes"><?= htmlspecialchars($sighting['notes'] ?? 'No notes') ?></div>
+                                        </div>
+                                        <div class="sighting-actions">
+                                            <button class="btn btn-approve" onclick="approveSighting(<?= $sighting['id'] ?>)">&#10004; Approve</button>
+                                            <button class="btn btn-reject" onclick="showRejectModal(<?= $sighting['id'] ?>)">&#10008; Reject</button>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending View -->
+            <div id="view-pending" class="view" style="display: none;">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Pending Queue</h1>
+                        <p class="page-subtitle">Sightings awaiting moderation</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="sighting-list" id="pending-list">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">&#128260;</div>
+                                <p class="empty-state-text">Loading...</p>
+                            </div>
+                        </div>
+                        <div class="pagination" id="pending-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flagged View -->
+            <div id="view-flagged" class="view" style="display: none;">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Flagged Sightings</h1>
+                        <p class="page-subtitle">Items flagged for admin review</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="sighting-list" id="flagged-list">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">&#128260;</div>
+                                <p class="empty-state-text">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Sightings View -->
+            <div id="view-all-sightings" class="view" style="display: none;">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">All Sightings</h1>
+                        <p class="page-subtitle">Browse and manage all submissions</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="filters">
+                        <input type="text" class="search-input" id="sightings-search" placeholder="Search species, notes, observer...">
+                        <select class="filter-select" id="sightings-status-filter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="flagged">Flagged</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="loadAllSightings()">Search</button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="sighting-list" id="all-sightings-list">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">&#128260;</div>
+                                <p class="empty-state-text">Loading...</p>
+                            </div>
+                        </div>
+                        <div class="pagination" id="all-sightings-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users View (Admin Only) -->
+            <?php if ($data['is_admin']): ?>
+            <div id="view-users" class="view" style="display: none;">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">User Management</h1>
+                        <p class="page-subtitle">Manage registered users and roles</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="filters">
+                        <input type="text" class="search-input" id="users-search" placeholder="Search username or email...">
+                        <select class="filter-select" id="users-role-filter">
+                            <option value="">All Roles</option>
+                            <option value="0">Banned</option>
+                            <option value="1">Registered</option>
+                            <option value="2">Trusted</option>
+                            <option value="5">Moderator</option>
+                            <option value="10">Admin</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="loadUsers()">Search</button>
+                    </div>
+                    <div class="panel-body" style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Approved</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr><td colspan="6" style="text-align: center; padding: 40px;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination" id="users-pagination"></div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+        </main>
+    </div>
+
+    <!-- Reject Modal -->
+    <div class="modal-overlay" id="reject-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Reject Sighting</h3>
+                <button class="modal-close" onclick="closeModal('reject-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="reject-sighting-id">
+                <div class="form-group">
+                    <label class="form-label">Reason for rejection (optional)</label>
+                    <textarea class="form-textarea" id="reject-reason" placeholder="Explain why this sighting was rejected..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('reject-modal')">Cancel</button>
+                <button class="btn btn-reject" onclick="confirmReject()">Reject Sighting</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Modal -->
+    <div class="modal-overlay" id="role-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Change User Role</h3>
+                <button class="modal-close" onclick="closeModal('role-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="role-user-id">
+                <div class="form-group">
+                    <label class="form-label">Select new role</label>
+                    <select class="form-select" id="new-role">
+                        <option value="0">Banned</option>
+                        <option value="1">Registered</option>
+                        <option value="2">Trusted</option>
+                        <option value="5">Moderator</option>
+                        <option value="10">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('role-modal')">Cancel</button>
+                <button class="btn btn-approve" onclick="confirmRoleChange()">Update Role</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // State
+        let currentView = 'dashboard';
+        let pendingPage = 1;
+        let allSightingsPage = 1;
+        let usersPage = 1;
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const view = item.dataset.view;
+                switchView(view);
+            });
+        });
+
+        function switchView(view) {
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector(`.nav-item[data-view="${view}"]`)?.classList.add('active');
+
+            // Update view
+            document.querySelectorAll('.view').forEach(v => v.style.display = 'none');
+            document.getElementById(`view-${view}`).style.display = 'block';
+
+            currentView = view;
+
+            // Load data for view
+            if (view === 'pending') loadPending();
+            if (view === 'flagged') loadFlagged();
+            if (view === 'all-sightings') loadAllSightings();
+            if (view === 'users') loadUsers();
+        }
+
+        // API Helpers
+        async function apiCall(action, data = {}) {
+            const formData = new FormData();
+            formData.append('action', action);
+            Object.entries(data).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
+
+            const response = await fetch('/en/moderation', {
+                method: 'POST',
+                body: formData
+            });
+
+            return response.json();
+        }
+
+        // Load pending sightings
+        async function loadPending(page = 1) {
+            pendingPage = page;
+            const result = await apiCall('get_pending', { page, limit: 20 });
+
+            if (result.success) {
+                renderSightingsList('pending-list', result.sightings, true);
+                renderPagination('pending-pagination', result.page, result.pages, loadPending);
+            }
+        }
+
+        // Load flagged sightings
+        async function loadFlagged() {
+            const result = await apiCall('get_all_sightings', { status: 'flagged' });
+
+            if (result.success) {
+                renderSightingsList('flagged-list', result.sightings, true);
+            }
+        }
+
+        // Load all sightings
+        async function loadAllSightings(page = 1) {
+            allSightingsPage = page;
+            const search = document.getElementById('sightings-search')?.value || '';
+            const status = document.getElementById('sightings-status-filter')?.value || '';
+
+            const result = await apiCall('get_all_sightings', { page, limit: 20, search, status });
+
+            if (result.success) {
+                renderSightingsList('all-sightings-list', result.sightings, false);
+                renderPagination('all-sightings-pagination', result.page, result.pages, loadAllSightings);
+            }
+        }
+
+        // Load users
+        async function loadUsers(page = 1) {
+            usersPage = page;
+            const search = document.getElementById('users-search')?.value || '';
+            const role = document.getElementById('users-role-filter')?.value || '';
+
+            const result = await apiCall('get_users', { page, limit: 20, search, role });
+
+            if (result.success) {
+                renderUsersTable(result.users);
+                renderPagination('users-pagination', result.page, result.pages, loadUsers);
+            }
+        }
+
+        // Render sightings list
+        function renderSightingsList(containerId, sightings, showModActions) {
+            const container = document.getElementById(containerId);
+
+            if (!sightings || sightings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#128065;</div>
+                        <p class="empty-state-text">No sightings found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = sightings.map(s => `
+                <div class="sighting-card" data-id="${s.id}">
+                    <div class="sighting-photo">
+                        ${s.photo_path ? `<img src="${escapeHtml(s.photo_path)}" alt="Photo">` : '&#128247;'}
+                    </div>
+                    <div class="sighting-details">
+                        <div class="sighting-species">
+                            ${escapeHtml(s.species)}
+                            <span class="status-badge status-${s.status}">${s.status}</span>
+                        </div>
+                        <div class="sighting-meta">
+                            <span>&#128100; ${escapeHtml(s.username || s.observer_name)}</span>
+                            <span>&#128197; ${formatDate(s.created_at)}</span>
+                            ${s.location_name ? `<span>&#128205; ${escapeHtml(s.location_name)}</span>` : ''}
+                        </div>
+                        <div class="sighting-notes">${escapeHtml(s.notes || 'No notes')}</div>
+                    </div>
+                    ${showModActions && s.status === 'pending' ? `
+                        <div class="sighting-actions">
+                            <button class="btn btn-approve" onclick="approveSighting(${s.id})">&#10004; Approve</button>
+                            <button class="btn btn-reject" onclick="showRejectModal(${s.id})">&#10008; Reject</button>
+                            <button class="btn btn-flag" onclick="flagSighting(${s.id})">&#9888; Flag</button>
+                        </div>
+                    ` : showModActions && s.status === 'flagged' ? `
+                        <div class="sighting-actions">
+                            <button class="btn btn-approve" onclick="approveSighting(${s.id})">&#10004; Approve</button>
+                            <button class="btn btn-reject" onclick="showRejectModal(${s.id})">&#10008; Reject</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Render users table
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('users-table-body');
+
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No users found</td></tr>';
+                return;
+            }
+
+            const roleColors = {
+                0: '#ff4466',
+                1: '#888888',
+                2: '#00d4ff',
+                5: '#ffaa00',
+                10: '#00ff88'
+            };
+
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 32px; height: 32px; background: ${roleColors[u.role] || '#888'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
+                                ${u.username.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div style="font-weight: 500;">${escapeHtml(u.username)}</div>
+                                <div style="font-size: 12px; color: var(--phoenix-text-muted);">${escapeHtml(u.email)}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="role-badge" style="background: ${roleColors[u.role]}20; color: ${roleColors[u.role]};">${u.role_name}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${u.status === 'active' ? 'approved' : u.status === 'banned' ? 'rejected' : 'pending'}">${u.status}</span>
+                    </td>
+                    <td>${u.approved_count}</td>
+                    <td>${formatDate(u.created_at)}</td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="showRoleModal(${u.id}, ${u.role})">Change Role</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Render pagination
+        function renderPagination(containerId, currentPage, totalPages, callback) {
+            const container = document.getElementById(containerId);
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            html += `<button class="pagination-btn" ${currentPage <= 1 ? 'disabled' : ''} onclick="${callback.name}(${currentPage - 1})">Prev</button>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="${callback.name}(${i})">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += '<span style="padding: 0 8px;">...</span>';
+                }
+            }
+
+            html += `<button class="pagination-btn" ${currentPage >= totalPages ? 'disabled' : ''} onclick="${callback.name}(${currentPage + 1})">Next</button>`;
+
+            container.innerHTML = html;
+        }
+
+        // Moderation actions
+        async function approveSighting(id) {
+            const result = await apiCall('approve', { sighting_id: id });
+
+            if (result.success) {
+                showToast('Sighting approved!', 'success');
+                document.querySelector(`.sighting-card[data-id="${id}"]`)?.remove();
+
+                // Refresh counts
+                if (currentView === 'pending') loadPending(pendingPage);
+                if (currentView === 'dashboard') location.reload();
+            } else {
+                showToast(result.error || 'Failed to approve', 'error');
+            }
+        }
+
+        function showRejectModal(id) {
+            document.getElementById('reject-sighting-id').value = id;
+            document.getElementById('reject-reason').value = '';
+            document.getElementById('reject-modal').classList.add('show');
+        }
+
+        async function confirmReject() {
+            const id = document.getElementById('reject-sighting-id').value;
+            const reason = document.getElementById('reject-reason').value;
+
+            const result = await apiCall('reject', { sighting_id: id, reason });
+
+            if (result.success) {
+                showToast('Sighting rejected', 'success');
+                closeModal('reject-modal');
+                document.querySelector(`.sighting-card[data-id="${id}"]`)?.remove();
+
+                if (currentView === 'pending') loadPending(pendingPage);
+                if (currentView === 'dashboard') location.reload();
+            } else {
+                showToast(result.error || 'Failed to reject', 'error');
+            }
+        }
+
+        async function flagSighting(id) {
+            const result = await apiCall('flag', { sighting_id: id });
+
+            if (result.success) {
+                showToast('Sighting flagged for review', 'warning');
+                document.querySelector(`.sighting-card[data-id="${id}"]`)?.remove();
+
+                if (currentView === 'pending') loadPending(pendingPage);
+            } else {
+                showToast(result.error || 'Failed to flag', 'error');
+            }
+        }
+
+        // User management
+        function showRoleModal(userId, currentRole) {
+            document.getElementById('role-user-id').value = userId;
+            document.getElementById('new-role').value = currentRole;
+            document.getElementById('role-modal').classList.add('show');
+        }
+
+        async function confirmRoleChange() {
+            const userId = document.getElementById('role-user-id').value;
+            const role = document.getElementById('new-role').value;
+
+            const result = await apiCall('set_role', { user_id: userId, role });
+
+            if (result.success) {
+                showToast('User role updated', 'success');
+                closeModal('role-modal');
+                loadUsers(usersPage);
+            } else {
+                showToast(result.error || 'Failed to update role', 'error');
+            }
+        }
+
+        // Logout
+        async function logout() {
+            const formData = new FormData();
+            formData.append('action', 'logout');
+
+            await fetch('/en/users', { method: 'POST', body: formData });
+            window.location.href = '/en/nature-watch';
+        }
+
+        // Modal helpers
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = message;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Utility functions
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+        }
+
+        // Enter key search
+        document.getElementById('sightings-search')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadAllSightings();
+        });
+
+        document.getElementById('users-search')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadUsers();
+        });
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('show');
+                }
+            });
+        });
+    </script>
+<?php endif; ?>
+</body>
+</html>
